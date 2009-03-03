@@ -10,8 +10,10 @@ Deutsch,sFr
 #define ACCOUNTS_FILENAME "konten.txt"
 
 task main() {
+//initiated list of accounts, start at 0
+account accountlist[64]; 
 
-account testperson;
+testperson=accontlist[0];
 testperson.accountno="25";
 testperson.amount="1000";
 testperson.pin="1212";
@@ -33,6 +35,7 @@ string title;
 int amount;
 //int dailyout;
 }
+
 
 task menu() {
 /*
@@ -62,6 +65,7 @@ else
 }
 
 task additionalFunds(int account) {
+//does not check what is still given
 int amount=100;
 if LEFT
 amount+=100;

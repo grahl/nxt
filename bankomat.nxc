@@ -1,11 +1,14 @@
 /*
 Check after each rund if funds remaining and possibly adjust buttons accordingly
+start money: 10 each
+
 */
 
 task main() {
 
 //Wait for card
-
+if sensor_a true
+	Scan
 }
 
 task enterPIN() {
@@ -40,3 +43,22 @@ else {
 }
 
 }
+
+void scan() {
+int scan[];
+readSensorB
+if readSensorB true
+	scan[]+=readSensorC	
+
+}
+
+/*
+1 pin feld
+2 kartensensor einschub
+3 lichtsensor timing feld
+4 lichtsensor daten
+a motor 
+b
+c
+
+*/
