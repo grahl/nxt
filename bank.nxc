@@ -1,0 +1,56 @@
+/*
+Watch out for buffer overflows!!!
+Different Languages? 
+Different Currencies? 
+
+
+*/
+
+
+task main() {
+//instantiate bank accounts (from file)
+//endless loop
+	//start 3 listener for bluetooth connection AND keyboardlistener
+	// table locking equivalent?
+//task return codes?
+}
+
+task menu() {
+/*
+Left-Right-Select
+
+Update balance
+New Account
+Close account
+*/
+
+}
+
+task createAccount() {
+//pin=rand(4 digit int)
+//account=unix time "short?" + 3 randd digits
+
+
+}
+
+task closeAccount(int account) {
+if (account(value)>0)
+	Println "No";
+	return 1;
+else
+	"close array entry"
+	return 0;
+}
+
+task additionalFunds(int account) {
+int amount=100;
+if LEFT
+amount+=100;
+writeln "Add %" %amount
+if RIGHT
+amount -=100;
+writeln "Add %" %amount
+if CENTER
+account(value)+=amount;
+return 0;
+}
