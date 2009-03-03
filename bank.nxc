@@ -3,16 +3,35 @@ Watch out for buffer overflows!!!
 Different Languages? 
 Different Currencies? 
 
+Deutsch,sFr
 
 */
 
+#define ACCOUNTS_FILENAME "konten.txt"
 
 task main() {
+
+account testperson;
+testperson.accountno="25";
+testperson.amount="1000";
+testperson.pin="1212";
+testperson.lastname="Egli";
+
 //instantiate bank accounts (from file)
 //endless loop
 	//start 3 listener for bluetooth connection AND keyboardlistener
 	// table locking equivalent?
 //task return codes?
+}
+
+struct account {
+int accountno;
+int pin;
+string lastname;
+string firstname;
+string title;
+int amount;
+//int dailyout;
 }
 
 task menu() {
