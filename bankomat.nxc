@@ -1,0 +1,42 @@
+/*
+Check after each rund if funds remaining and possibly adjust buttons accordingly
+*/
+
+task main() {
+
+//Wait for card
+
+}
+
+task enterPIN() {
+
+
+}
+
+
+task distribute(amount) {
+int a,b,c;
+
+if (amount>twenties+fifties+hundreds)
+	writeln (sorry, out of funds)
+else {
+	a=amount / hundreds;
+	giveHundred(a);
+	amount-= a * hundreds;
+	b=amount / fifties;
+	giveFifty(b);
+	amount-= b * fifties;
+	c=amount / twenties;
+	giveTwenty(c);
+
+	if (amount>0) {
+		writeln CANNOT HAPPEN
+		beep 
+	}
+	else {
+		return 0;
+	}
+
+}
+
+}
