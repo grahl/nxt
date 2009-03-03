@@ -1,0 +1,62 @@
+// Programm Spurfolger
+
+#define Sensor_links S1
+#define Sensor_rechts S2
+
+int Grenzwert = 40;
+
+
+void geradeaus(int speed1)
+{
+OnFwd (OUT_A, speed1);
+OnFwd (OUT_B, speed1);
+}
+
+
+void linksabbiegen(int speed2)
+{
+OnRev (OUT_A, speed2);
+OnFwd (OUT_B, speed2);
+}
+
+
+void rechtsabbiegen(int speed3)
+{
+OnFwd (OUT_A, speed3);
+OnRev (OUT_B, speed3);
+}
+
+
+task main ()
+{
+SetSensor (Sensor_links, SENSOR_LIGHT);
+SetSensor (S2, SENSOR_LIGHT);
+
+while (1<2)
+{
+ if (Sensor(Sensor_links) > Grenzwert && Sensor(Sensor_rechts) > Grenzwert)
+    {
+    geradeaus(100);
+    }
+   else if (Sensor(Sensor_links) <= Grenzwert && Sensor(Sensor_rechts) > Grenzwert)
+    {
+    linksabbiegen(30);
+    }
+   else if (Sensor(Sensor_links) > Grenzwert && Sensor(Sensor_rechts) <= Grenzwert)
+    {
+    rechtsabbiegen(30);
+    }
+   else
+    {
+    Off (OUT_A);
+    Off (OUT_B);
+    }
+} // while
+} // task main
+
+
+ // logisch und S. 146
+ // functions S. 149
+ // speed zwischen 0 und 100
+ // Sensoren S. 154, S. 405
+

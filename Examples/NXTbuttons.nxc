@@ -1,0 +1,45 @@
+/* Dateiname: NXTbuttons.nxc */
+/* Nutzung der drei Buttons auf dem NXT Lp 24.12.2008
+(Mit der Standard-Firmware hat man keinen Zugriff auf den dunkelgrauen
+"Escape-Button" */
+
+byte pressedButton;
+
+void WaitButton()
+{
+byte wbIndex=BTNRIGHT;
+while (wbIndex <= BTNCENTER)
+  {
+  if (ButtonPressed(wbIndex,false) != 0)
+  break;
+  wbIndex++;
+  if (wbIndex > BTNCENTER)
+  wbIndex = BTNRIGHT;
+  }
+until(!ButtonPressed(wbIndex,FALSE));
+pressedButton = wbIndex;
+PlayToneEx(440,50,1,false);
+}
+
+task main()
+{
+TextOut(0,LCD_LINE1,"Waehlen Sie");
+TextOut(0,LCD_LINE2,"A (Taste links)");
+TextOut(0,LCD_LINE3,"B (Taste rechts)");
+TextOut(0,LCD_LINE4,"C (Taste orange)");
+TextOut(0,LCD_LINE5,"Taste unten Abort");
+WaitButton();
+ClearScreen();
+if (pressedButton == BTNLEFT)
+  {
+  TextOut(0,LCD_LINE1,"A gewaehlt");
+  }
+if (pressedButton == BTNRIGHT)
+  {
+  TextOut(0,LCD_LINE1,"B gewaehlt");
+  }
+if (pressedButton == BTNCENTER)
+  {
+  TextOut(0,LCD_LINE1,"C gewaehlt");
+  }
+Wait(5000);}

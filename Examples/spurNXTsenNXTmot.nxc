@@ -1,0 +1,54 @@
+// Dateiname: spurNXTsenNXTmot.nxc
+// Fährt einer schwarzen Spur nach, zeigt die Sensorwerte auf dem Display
+
+#define Motor_links OUT_B
+#define Motor_rechts OUT_A
+#define Sensor_links S2
+#define Sensor_rechts S1
+
+int Grenzwert = 45; // Hell > Grenzwert
+int speed = 70; // Geschwindigkeit der Motoren
+
+task main ()
+{
+
+ SetSensorType(Sensor_links,SENSOR_TYPE_LIGHT_ACTIVE);
+ SetSensorType(Sensor_rechts,SENSOR_TYPE_LIGHT_ACTIVE);
+ SetSensorMode(Sensor_links,IN_MODE_PCTFULLSCALE);
+ SetSensorMode(Sensor_rechts,IN_MODE_PCTFULLSCALE);
+
+while (true)
+{
+    NumOut(0,LCD_LINE1,speed,true);
+    NumOut(0,LCD_LINE2,Sensor(Sensor_links),false);
+    NumOut(0,LCD_LINE3,Sensor(Sensor_rechts),false);
+
+ if (Sensor(Sensor_links)>Grenzwert)
+ {
+   if (Sensor(Sensor_rechts)>Grenzwert)
+   {
+    OnFwd (Motor_links,speed);
+    OnFwd (Motor_rechts,speed);
+     }
+   else
+   {
+    OnFwd (Motor_links,speed);
+    Off(Motor_rechts);
+   }
+ }
+ else
+ {
+  if (Sensor(Sensor_rechts)>Grenzwert)
+  {
+    OnFwd (Motor_rechts,speed);
+    Off(Motor_links);
+  }
+  else
+  {
+     Off (Motor_links);
+     Off (Motor_rechts);
+  }
+  }
+} // while
+} //main
+

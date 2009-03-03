@@ -1,0 +1,43 @@
+//Dateiname: BluetoothSlave.nxc
+//Bluetooth Verbindung 24.12.08 Lp und Spi
+//Programm für den Slave-NXT  (Wichtige Hinweise siehe Programm für den Master)
+
+#define BT_CONN 0
+#define INBOX 5
+string msg;
+int nummer;
+
+void CheckConnection ()
+{
+  if (BluetoothStatus(BT_CONN) != NO_ERR)
+  {
+  TextOut(0,LCD_LINE1,"No connection");
+  Wait(2000);
+  Stop(true);
+  }
+}
+
+task main ()
+{
+CheckConnection();
+TextOut(0,LCD_LINE1,"Nachricht master:");
+
+until(ReceiveRemoteString(INBOX,true,msg) == NO_ERR);
+/* Der Slave muss die Nachricht des Master abwarten. (Wird der Receive-Befehl
+ausgeführt, bevor der Master seine Nachricht abgeschlossen hat, wird nichts
+empfangen.*/
+
+TextOut(0,LCD_LINE2,msg);
+
+until(BluetoothStatus(BT_CONN) == NO_ERR);
+/* wartet, bis die vorherige Bluetooth-Operation abgeschlossen ist
+(Hier unnötig, da keine vorhergehende Bluetooth-Operation vorhanden ist)*/
+
+SendResponseString(1,"hello master");
+/* Der Master darf an dieser Stelle den Receive-Befehl noch nicht
+abgearbeitet haben. */
+
+Wait(5000); //Warten, um Nachricht auf Display lesen zu können
+}
+
+

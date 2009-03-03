@@ -1,0 +1,65 @@
+//Bluetooth Verbindung 24.12.08 Lp und Spi
+//Programm für den Master-NXT
+
+/*Die Bluetooth-Verbindung von Master zu Slave muss manuell vom Master ausgehend
+aufgebaut werden: Im Menü des Masters Bluetooth wählen (falls jetzt On/Off er-
+scheint, On wählen und dies ebenso beim Slave), Search, Select NXT
+1 (Connection zu Slave 1) wählen, Select NXT (Jetzt muss ein eingerahmter NXT
+erscheinen mit einer 1 in der linken oberen Ecke, falls dies nicht der Fall ist,
+muss der andere NXT gewählt und wie oben beschrieben verfahren werden)
+ACHTUNG: Fällt der NXT in den Sleepmodus, muss die Verbindung anschliessend neu
+aufgebaut werden. Kann verhindert werden durch RemoteKeepAlive(BT_CONN) vom
+Master zum Slave
+
+Das Programm des Slave muss vor dem Programm des Masters gestartet werden */
+
+#define BT_CONN 1
+/*connection 1 von master zu slave 1 (connections 1,2,3 sind
+Kanäle für die Kommunikation vom master zum slave 1, slave 2, slave 3*/
+
+#define OUTBOX 5 //Mailbox für Nachricht von Master zu Slave
+#define INBOX 1  //Mailbox für Nachricht von Slave zu Master
+
+/*Jeder NXT besitzt 10 verschiedene Outboxes und auch 10 verschiedene Inboxes.
+Die Box-Nummer für ausgehende und eingehende Nachricht muss übereinstimmen.*/
+
+string msg;
+int nummer;
+
+void CheckConnection ()
+{
+  if (BluetoothStatus(BT_CONN) != NO_ERR)
+  {
+  TextOut(0,LCD_LINE1,"No connection");
+  Wait(2000);
+  Stop(true);
+  }
+}
+
+task main ()
+{
+CheckConnection();
+
+until(BluetoothStatus(BT_CONN) == NO_ERR);
+/* wartet, bis die vorherige Bluetooth-Operation abgeschlossen ist
+(Hier unnötig, da keine vorhergehende Bluetooth-Operation vorhanden ist)*/
+
+RemoteMessageWrite(BT_CONN,OUTBOX,"hello slave");
+/* Der Slave muss an dieser Stelle bereits "auf Empfang" sein, d.h. sein
+Programm muss bereits gestartet worden sein. */
+
+TextOut(0,LCD_LINE1,"Antwort slave:");
+
+until(ReceiveRemoteString(INBOX,true,msg) == NO_ERR);
+/* Der Master muss die Nachricht des Slave abwarten. (Wird der Receive-Befehl
+ausgeführt, bevor der Slave seine Antwort abgeschlossen hat, wird nichts
+empfangen.*/
+
+TextOut(0,LCD_LINE2,msg);
+
+Wait(5000); //Warten, um Nachricht auf Display lesen zu können
+}
+
+
+
+

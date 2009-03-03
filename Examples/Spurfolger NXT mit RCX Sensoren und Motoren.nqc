@@ -1,0 +1,45 @@
+// Dateiname: Spurfolger NXT mit RCX Sensoren und Motoren
+// Spurfolger mit NXT und RCX Sensoren    lp und spi 23.12.08
+
+
+#define Motor_links OUT_A
+#define Motor_rechts OUT_B
+#define Sensor_links S1
+#define Sensor_rechts S2
+
+int Grenzwert = 45; // hell > Grenzwert
+int speed = 100;  // Geschwindigkeit der Motoren
+
+task main()
+{
+
+SetSensor(Sensor_links,SENSOR_LIGHT);
+SetSensor(Sensor_rechts,SENSOR_LIGHT);
+
+while (true)
+{
+
+if (Sensor(Sensor_links) > Grenzwert && Sensor(Sensor_rechts) > Grenzwert)
+ {
+   OnFwd(Motor_links, speed);
+   OnFwd(Motor_rechts, speed);
+  }
+else if (Sensor(Sensor_links) <= Grenzwert && Sensor(Sensor_rechts) > Grenzwert)
+ {
+   OnRev(Motor_links, speed);
+   OnFwd(Motor_rechts, speed);
+  }
+else if (Sensor(Sensor_links) > Grenzwert && Sensor(Sensor_rechts) <= Grenzwert)
+ {
+   OnFwd(Motor_links, speed);
+   OnRev(Motor_rechts, speed);
+  }
+else
+  {
+   Off(Motor_links);
+   Off(Motor_rechts);
+  }
+} // while
+
+}  // task
+

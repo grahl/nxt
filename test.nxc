@@ -1,0 +1,9 @@
+task main() {
+SetBrickDataName("NXT-jhg");
+CommExecuteFunctionType BTargs;
+BTargs.Cmd = INTF_SETBTNAME;
+SysCommExecuteFunction(BTargs);
+
+PlayTone(440,1000);
+Wait(500);
+}

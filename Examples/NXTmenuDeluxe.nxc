@@ -1,0 +1,75 @@
+/* Menu durch Nutzung der drei Buttons auf dem NXT Lp 24.12.2008
+(Mit der Standard-Firmware hat man keinen Zugriff auf den dunkelgrauen
+"Escape-Button")
+
+Für den weiteren Verlauf des Programms eignet sich switch ... cases */
+
+byte pressedButton;
+int optionNr;
+int optionAnzahl;
+
+void WaitButton()
+{
+byte wbIndex=BTNRIGHT;
+while (wbIndex <= BTNCENTER)
+  {
+  if (ButtonPressed(wbIndex,false) != 0)
+  break;
+  wbIndex++;
+  if (wbIndex > BTNCENTER)
+  wbIndex = BTNRIGHT;
+  }
+until(!ButtonPressed(wbIndex,FALSE));
+pressedButton = wbIndex;
+PlayToneEx(440,50,1,false);
+}
+
+task main()
+{
+ClearScreen();
+optionNr=1;
+optionAnzahl=4;
+TextOut(0,LCD_LINE3,"< wechseln >");
+TextOut(0,LCD_LINE4,"[orange]: okay");
+while(true)
+{
+  switch(optionNr)
+  {
+    case 1: TextOut(0,LCD_LINE1,"Option 1");
+            break;
+    case 2: TextOut(0,LCD_LINE1,"Option 2");
+            break;
+    case 3: TextOut(0,LCD_LINE1,"Option 3");
+            break;
+    case 4: TextOut(0,LCD_LINE1,"Option 4");
+            break;
+    default: TextOut(0,LCD_LINE1,"Option 1");
+             break;
+  }
+WaitButton();
+if (pressedButton == BTNRIGHT)
+  {
+    optionNr=optionNr+1;
+    if (optionNr > optionAnzahl)
+    {
+    optionNr=1;
+    }
+  }
+if (pressedButton == BTNLEFT)
+  {
+  optionNr=optionNr-1;
+    if (optionNr < 1)
+    {
+    optionNr=4;
+    }
+  }
+if (pressedButton == BTNCENTER)
+  {
+  break;
+  }
+}
+ClearScreen();
+TextOut(0,LCD_LINE1,"Gewaehlt wurde:");
+NumOut(0,LCD_LINE3,optionNr);
+Wait(5000);
+}
