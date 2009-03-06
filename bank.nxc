@@ -48,14 +48,14 @@ Close account
 
 }
 
-task createAccount() {
+void createAccount() {
 //pin=rand(4 digit int)
 //account=unix time "short?" + 3 randd digits
 
 
 }
 
-task closeAccount(int account) {
+void closeAccount(int account) {
 if (account(value)>0)
 	Println "No";
 	return 1;
@@ -64,7 +64,7 @@ else
 	return 0;
 }
 
-task additionalFunds(int account) {
+void additionalFunds(int account) {
 //does not check what is still given
 int amount=100;
 if LEFT
