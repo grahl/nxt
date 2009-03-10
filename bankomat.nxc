@@ -17,7 +17,7 @@ task enterPIN() {
 }
 
 
-task distribute(amount) {
+void distribute(amount) {
 int a,b,c;
 
 if (amount>twenties+fifties+hundreds)
