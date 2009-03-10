@@ -1,7 +1,7 @@
 /*
 Check after each rund if funds remaining and possibly adjust buttons accordingly
 start money: 10 each
-
+wenn struct array nicht funktioniert, 2d array nehmen
 INPUTS:
 1 pin feld
 2 kartensensor einschub
