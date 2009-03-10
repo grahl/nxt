@@ -4,7 +4,7 @@ Optional: currencies, i18n
 */
 
 #define ACCOUNTS_FILENAME "konten.txt"
-define CURRENCY="sFr"
+#define CURRENCY="sFr"
 
 byte pressedButton;
 int selectButton;      
