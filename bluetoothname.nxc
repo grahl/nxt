@@ -1,5 +1,6 @@
 task main() {
 SetBrickDataName("NXT-jhg");
+//fails to compile
 CommExecuteFunctionType BTargs;
 BTargs.Cmd = INTF_SETBTNAME;
 SysCommExecuteFunction(BTargs);
