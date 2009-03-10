@@ -84,6 +84,7 @@ commandstring+="X";
 commandstring+=NumToStr(pin);
 commandstring+="X";
 commandstring+=NumToStr(amount);
+//check btdevicename==bank if possible, if creatable
 SendRemoteString(connection,queue,commandstring);
 
 }

@@ -151,6 +151,7 @@ pressedButton = wbIndex;
 } 
 
 task networkListener() {
+ReceiveRemoteString(queue,true, constring);
 //somehow get account,pin,amount from listener by extracting on X
 if (pin == request.pin && amount < request.amount ) {
 	SendResponseBool(queue,true);
