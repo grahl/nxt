@@ -18,9 +18,9 @@ int twenties=10;
 int fifties=10;
 int hundreds=10;
 
-#define TWENTY="20";
-#define FIFTY="20";
-#define HUNDRED="20";
+#define TWENTY 20
+#define FIFTY 50
+#define HUNDRED 100
 
 
 void giveHundred(int number) {
