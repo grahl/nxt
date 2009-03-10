@@ -47,7 +47,30 @@ Update balance
 New Account
 Close account
 */
-
+string option[];
+new array option[]="Update Balance";
+new array option[]="Create account";
+new array option[]="Close account";
+for (option as item) {
+Textout(0,LCD_LINE0,item);
+a=waitButton();
+switch (a)
+case 1: array++
+	break;
+case 2: array--
+	break;
+case 3: if (item="Update Balance") {
+	int account=0;
+	getAccountNo(account);
+	additionalFunds(account);
+	} else if (item="Close account") {
+	int account=0;
+	getAccountNo(account);
+	closeAccount(account);
+	} else if (item="Create account") {
+	createAccount();
+	}
+	break;
 }
 
 void createAccount() {
@@ -84,9 +107,33 @@ TextOut(0,LCD_LINE1,"Add funds:");
 TextOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
 }
 if (pressedButton="CENTER") {
-account(value)+=amount;
+//hier muss es das account value field sein statt account
+account+=amount;
 // besser return codes
 //return 0;
+}
+
+}
+
+void getAccountNo(int &account) {
+while (true){
+	a=waitButton();
+	if (pressedButton="LEFT") {
+		account--;
+		TextOut(0,LCD_LINE1,"Account number:");
+		TextOut(0,LCD_LINE2,account);
+	}
+	
+	if (pressedButton="LEFT") {
+		account++;
+		TextOut(0,LCD_LINE1,"Account number:");
+		TextOut(0,LCD_LINE2,account);
+	}
+	
+	if (pressedButton="CENTER") {
+		break; //reicht ein break?
+	}
+}
 }
 
 //taken from NXTmenu.nxc
