@@ -2,27 +2,54 @@
 Check after each rund if funds remaining and possibly adjust buttons accordingly
 start money: 10 each
 
+INPUTS:
+1 pin feld
+2 kartensensor einschub
+3 lichtsensor timing feld
+4 lichtsensor daten
+OUTPUTS:
+a motor 
+b
+c
+
 */
 
-task main() {
-SetBrickDataName("Bankomat");
-//Wait for card
-if sensor_a true
-	Scan
+int twenties=10;
+int fifties=10;
+int hundreds=10;
+
+#define TWENTY="20";
+#define FIFTY="20";
+#define HUNDRED="20";
+
+
+void giveHundred(int number) {
+//sensor move!
+}
+
+void giveFifty(int number) {
+//sensor move!
+}
+
+void giveTwenty(int number) {
+//sensor move!
 }
 
 task enterPIN() {
-
+//read variable voltage
 
 }
 
-
-void distribute(amount) {
+void distribute(int amount,int &twenties,int &fifties,int &hundreds) {
 int a,b,c;
+//using TWENTY etc breaks..wtf?!
+if (amount>( (twenties * 20) + (fifties * 50) + (hundreds * 100))) {
+	TextOut(0,LCD_LINE1,"Sorry, this machine");
+	TextOut(0,LCD_LINE2,"  is out of funds.");
+} else {
 
-if (amount>twenties+fifties+hundreds)
-	writeln (sorry, out of funds)
-else {
+	//checkt nicht den fall was passiert wenn nur ein 50 und dann 50 weiter
+	//können nicht mit 20ern ausgegeben werden
 	a=amount / hundreds;
 	giveHundred(a);
 	amount-= a * hundreds;
@@ -33,32 +60,28 @@ else {
 	giveTwenty(c);
 
 	if (amount>0) {
-		writeln CANNOT HAPPEN
-		beep 
+		TextOut(0,LCD_LINE1,"CANNOT HAPPEN");
+		PlayTone(440,1000); 
 	}
 	else {
-		return 0;
+	//not how you do return codes?!
+	//return(0);
 	}
-
-}
-
+	}
 }
 
 void scan() {
 int scan[];
-readSensorB
-if readSensorB true
-	scan[]+=readSensorC	
+//readSensorB
+//if readSensorB true
+//	scan[]+=readSensorC	
 
 }
 
-/*
-1 pin feld
-2 kartensensor einschub
-3 lichtsensor timing feld
-4 lichtsensor daten
-a motor 
-b
-c
+task main() {
+SetBrickDataName("Bankomat");
+//Wait for card
+//if sensor_a true
+//	Scan
+}
 
-*/
