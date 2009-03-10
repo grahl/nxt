@@ -1,0 +1,9 @@
+task main() {
+
+OnFwd(OUT_ABC,60);
+Wait(3000);
+OnFwd(OUT_ABC,40);
+Wait(3000);
+Off(OUT_ABC);
+
+}
