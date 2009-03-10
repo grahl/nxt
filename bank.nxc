@@ -9,6 +9,9 @@ Deutsch,sFr
 
 #define ACCOUNTS_FILENAME "konten.txt"
 
+byte pressedButton;
+int selectButton;      
+
 task main() {
 //initiated list of accounts, start at 0
 account accountlist[64]; 
@@ -77,3 +80,17 @@ if CENTER
 account(value)+=amount;
 return 0;
 }
+
+//taken from NXTmenu.nxc
+void WaitButton() {                
+byte wbIndex=BTNRIGHT;
+while (wbIndex <= BTNCENTER)   {                         
+	if (ButtonPressed(wbIndex,false) != 0)
+      		break;                                
+        	wbIndex++;                            
+	if (wbIndex > BTNCENTER)              
+		    wbIndex = BTNRIGHT;                   
+}                                     
+until(!ButtonPressed(wbIndex,FALSE));   
+pressedButton = wbIndex;                
+} 
