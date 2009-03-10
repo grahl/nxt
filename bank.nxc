@@ -79,7 +79,7 @@ void createAccount() {
 //account=unix time "short?" + 3 randd digits
 newaccount.pin=Random(9999);
 TextOut(0,LCD_LINE1,"Pin number:");
-TextOut(0,LCD_LINE2,newaccount.pin);
+NumOut(0,LCD_LINE2,newaccount.pin);
 
 }
 
@@ -99,12 +99,12 @@ int amount=100;
 if (pressedButton="LEFT") {
 amount+=100;
 TextOut(0,LCD_LINE1,"Add funds:");
-TextOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
+NumOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
 }
 if (pressedButton="RIGHT") {
 amount -=100;
 TextOut(0,LCD_LINE1,"Add funds:");
-TextOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
+NumOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
 }
 if (pressedButton="CENTER") {
 //hier muss es das account value field sein statt account
@@ -121,13 +121,13 @@ while (true){
 	if (pressedButton="LEFT") {
 		account--;
 		TextOut(0,LCD_LINE1,"Account number:");
-		TextOut(0,LCD_LINE2,account);
+		NumOut(0,LCD_LINE2,account);
 	}
 	
 	if (pressedButton="LEFT") {
 		account++;
 		TextOut(0,LCD_LINE1,"Account number:");
-		TextOut(0,LCD_LINE2,account);
+		NumOut(0,LCD_LINE2,account);
 	}
 	
 	if (pressedButton="CENTER") {
@@ -149,3 +149,15 @@ while (wbIndex <= BTNCENTER)   {
 until(!ButtonPressed(wbIndex,FALSE));   
 pressedButton = wbIndex;                
 } 
+
+task networkListener() {
+//somehow get account,pin,amount from listener by extracting on X
+if (pin == request.pin && amount < request.amount ) {
+	SendResponseBool(queue,true);
+	//wird das array aktualisiert?
+	request.amount-=amount;
+} else {
+	SendResponseBool(queue,false);
+}
+
+}

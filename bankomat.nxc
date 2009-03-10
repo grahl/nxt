@@ -78,6 +78,16 @@ int scan[];
 
 }
 
+void requestFunds(int account,int pin,int amount) {
+string commandstring=NumToStr(account);
+commandstring+="X";
+commandstring+=NumToStr(pin);
+commandstring+="X";
+commandstring+=NumToStr(amount);
+SendRemoteString(connection,queue,commandstring);
+
+}
+
 task main() {
 SetBrickDataName("Bankomat");
 //Wait for card
