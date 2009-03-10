@@ -61,26 +61,32 @@ TextOut(0,LCD_LINE2,newaccount.pin);
 }
 
 void closeAccount(int account) {
-if (account(value)>0)
-	Println "No";
-	return 1;
-else
-	"close array entry"
-	return 0;
+if (account(value)>0) {
+	TextOut(0,LCD_LINE1,"Still money in account");
+	TextOut(0,LCD_LINE2,"Withdraw it first");
+} else {
+//	"close" array entry
 }
 
+
+}
 void additionalFunds(int account) {
 //does not check what is still given
 int amount=100;
-if LEFT
+if (pressedButton="LEFT") {
 amount+=100;
-writeln "Add %" %amount
-if RIGHT
+TextOut(0,LCD_LINE1,"Add funds:");
+TextOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
+}
+if (pressedButton="RIGHT") {
 amount -=100;
-writeln "Add %" %amount
-if CENTER
+TextOut(0,LCD_LINE1,"Add funds:");
+TextOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
+}
+if (pressedButton="CENTER") {
 account(value)+=amount;
-return 0;
+// besser return codes
+//return 0;
 }
 
 //taken from NXTmenu.nxc
