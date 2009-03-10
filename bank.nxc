@@ -51,9 +51,12 @@ Close account
 }
 
 void createAccount() {
-//pin=rand(4 digit int)
+// how to add new array item?
+// account_no=array_no+1?
 //account=unix time "short?" + 3 randd digits
-
+newaccount.pin=Random(9999);
+TextOut(0,LCD_LINE1,"Pin number:");
+TextOut(0,LCD_LINE2,newaccount.pin);
 
 }
 
