@@ -13,6 +13,8 @@ byte pressedButton;
 int selectButton;      
 
 task main() {
+SetBrickDataName("Mainframe");
+
 //initiated list of accounts, start at 0
 account accountlist[64]; 
 

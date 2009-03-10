@@ -5,7 +5,7 @@ start money: 10 each
 */
 
 task main() {
-
+SetBrickDataName("Bankomat");
 //Wait for card
 if sensor_a true
 	Scan
