@@ -8,11 +8,11 @@ Optional: currencies, i18n
 
 byte pressedButton;
 int selectButton;      
-int arraycount=0;      
+int arraycount=5;      
 
 struct account {
 int accountno;
-int pin;
+int pinno;
 string lastname;
 string firstname;
 string title;
@@ -23,6 +23,22 @@ bool active;
 
 //initiated list of accounts, start at 0
 account accountlist[64]; 
+
+
+// taken from NXTmenu.nxc
+//is it necessary to pass by reference here?
+void waitButton() {                
+byte wbIndex=BTNRIGHT;
+while (wbIndex <= BTNCENTER)   {                         
+	if (ButtonPressed(wbIndex,false) != 0)
+      		break;                                
+        	wbIndex++;                            
+	if (wbIndex > BTNCENTER)              
+		    wbIndex = BTNRIGHT;                   
+}                                     
+until(!ButtonPressed(wbIndex,FALSE));   
+pressedButton = wbIndex;                
+} 
 
 
 task menu() {
@@ -60,11 +76,10 @@ case 3: if (item="Update Balance") {
 	break;
 */
 }
-
+/*
 void createAccount() {
-// how to add new array item?
 arraycount++;
-account newaccount;
+account pending;
 int trypin;
 //really fucking ugly
 while (	trypin[0]==0 || 
@@ -96,28 +111,32 @@ while (	trypin[0]==0 ||
 	trypin[4]==6 ||
 	trypin[4]==7 ||
 	trypin[4]==8 ||
-	trypin[4]==9  ) { trypin=Random(9999); }
-newaccount.pin = trypin;
+	trypin[4]==9  ) { 
+	trypin=Random(9999); 
+	}
+pending.pinno = trypin;
 TextOut(0,LCD_LINE1,"Pin number:");
-NumOut(0,LCD_LINE2,newaccount.pin);
-accountlist[arraycount]=newaccount;
+NumOut(0,LCD_LINE2,pending.pinno);
+//needed? accountlist[arraycount]=newaccounte;
 }
-
+*/
 void closeAccount(int accountno) {
 account closeme=accountlist[accountno];
-if (closeme.value>0) {
+if (closeme.amount>0) {
 	TextOut(0,LCD_LINE1,"Still money in account");
 	TextOut(0,LCD_LINE2,"Withdraw it first");
 } else {
-//	"close" array entry
-accountlist[accountno].active=FALSE;
+	closeme.active=FALSE;
+	//needed to pass?
+	accountlist[accountno]=closeme;
 }
 
 
 }
 
-void additionalFunds(int account) {
+void additionalFunds(int accountno) {
 //does not check what is still given
+account addfunds;
 int amount=100;
 if (pressedButton==BTNLEFT) {
 amount+=100;
@@ -131,9 +150,10 @@ NumOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
 }
 if (pressedButton==BTNCENTER) {
 //hier muss es das account value field sein statt account
-account+=amount;
+addfunds.amount+=amount;
 // besser return codes
 //return 0;
+accountlist[accountno]=addfunds;
 }
 
 }
@@ -162,28 +182,13 @@ while (true) {
 }
 }
 
-// taken from NXTmenu.nxc
-//is it necessary to pass by reference here?
-void waitButton() {                
-byte wbIndex=BTNRIGHT;
-while (wbIndex <= BTNCENTER)   {                         
-	if (ButtonPressed(wbIndex,false) != 0)
-      		break;                                
-        	wbIndex++;                            
-	if (wbIndex > BTNCENTER)              
-		    wbIndex = BTNRIGHT;                   
-}                                     
-until(!ButtonPressed(wbIndex,FALSE));   
-pressedButton = wbIndex;                
-} 
-
 task networkListener() {
 //ReceiveRemoteString(queue,true, constring);
 account request;
 //somehow get account,pin,amount from listener by extracting on X
 //for now static
-int account, pin, amount;
-/* if (pin == request.pin && amount < request.amount ) {
+int accountno, pinno, amount;
+/* if (pinno == request.pinno && amount < request.amount ) {
 	SendResponseBool(queue,true);
 	//wird das array aktualisiert?
 	request.amount-=amount;
@@ -198,11 +203,10 @@ int account, pin, amount;
 task main() {
 SetBrickDataName("Mainframe");
 
-
-account testperson=accontlist[0];
-testperson.accountno="25";
-testperson.amount="1000";
-testperson.pin="1212";
+account testperson=accountlist[0];
+testperson.accountno=25;
+testperson.amount=1000;
+testperson.pinno=1212;
 testperson.lastname="Egli";
 
 //instantiate bank accounts (from file)
