@@ -178,13 +178,21 @@ int accountno, pinno, amount;
 //copied from NXC Guide & modified
 
 void startfile() {
-//missing 
+//open file to read
 FileOpenType foArgs;
 foArgs.Filename = ACCOUNTS_FILENAME;
 SysFileOpenRead(foArgs); // open the file for reading
 if (foArgs.Result == NO_ERR) {
 // read data from the file using FileHandle
 }
+
+for (i in buffer) {
+account tempaccount;
+tempaccount.pin //etc, irate through byte
+accountlist[i]=tempaccount;
+
+}
+
 }
 
 void shutdownfile() {
