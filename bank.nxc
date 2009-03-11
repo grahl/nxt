@@ -204,30 +204,37 @@ option[2]="Close account";
 
 bool mstate=true;
 
+int i=0;
 while (mstate) {
-Textout(0,LCD_LINE0,item);
+if (i > 2) i=0;
+if (i < 0) i=2;
+Textout(0,LCD_LINE1,option[i]);
 waitButton();
-switch (pressedButton)
-case BTNRIGHT: array++
+switch (pressedButton) {
+case BTNRIGHT: i++;
 	break;
-case BTNLEFT: array--
+case BTNLEFT: i--;
 	break;
-case BTNCENTER: if (item=="Update Balance") {
+case BTNCENTER: if (i==0) {
 	int accountno=0;
 	getAccountNo(accountno);
 	additionalFunds(accountno);
-	} else if (item=="Close account") {
+	} else if (i==2) {
 	int accountno=0;
 	getAccountNo(accountno);
 	closeAccount(accountno);
-	} else if (item=="Create account") {
+	} else if (i==1) {
 	createAccount();
 	}
     //breakt der hier korrekt?
     mstate=false;
 	break;
+    }
 
 }
+
+}
+
 // ===Main===
 
 task main() {
