@@ -25,6 +25,8 @@ bool active;
 account accountlist[64]; 
 
 
+// === Functions & Operations ===
+
 // taken from NXTmenu.nxc
 //is it necessary to pass by reference here?
 void waitButton() {                
@@ -41,47 +43,13 @@ pressedButton = wbIndex;
 } 
 
 
-task menu() {
-/*
-Left-Right-Select
 
-Update balance
-New Account
-Close account
 
-string option[];
-new array option[]="Update Balance";
-new array option[]="Create account";
-new array option[]="Close account"; 
-
-for (option as item) {
-Textout(0,LCD_LINE0,item);
-waitButton();
-switch (a)
-case 1: array++
-	break;
-case 2: array--
-	break;
-case 3: if (item="Update Balance") {
-	int account=0;
-	getAccountNo(account);
-	additionalFunds(account);
-	} else if (item="Close account") {
-	int account=0;
-	getAccountNo(account);
-	closeAccount(account);
-	} else if (item="Create account") {
-	createAccount();
-	}
-	break;
-*/
-}
-/*
 void createAccount() {
 arraycount++;
 account pending;
-int trypin;
-//really fucking ugly
+int trypin=1234;
+/* really fucking ugly
 while (	trypin[0]==0 || 
 	trypin[0]==5 ||
 	trypin[0]==6 ||
@@ -114,12 +82,13 @@ while (	trypin[0]==0 ||
 	trypin[4]==9  ) { 
 	trypin=Random(9999); 
 	}
+*/
 pending.pinno = trypin;
 TextOut(0,LCD_LINE1,"Pin number:");
 NumOut(0,LCD_LINE2,pending.pinno);
-//needed? accountlist[arraycount]=newaccounte;
+accountlist[arraycount]=pending;
 }
-*/
+
 void closeAccount(int accountno) {
 account closeme=accountlist[accountno];
 if (closeme.amount>0) {
@@ -182,6 +151,8 @@ while (true) {
 }
 }
 
+// === Network Communication ===
+
 task networkListener() {
 //ReceiveRemoteString(queue,true, constring);
 account request;
@@ -199,6 +170,60 @@ int accountno, pinno, amount;
 
 }
 
+// === Mechanical Operations ===
+
+//*insert vaporware here*
+
+// === File I/O ===
+
+
+void startfile() {
+//missing
+
+}
+
+void shutdownfile() {
+//missing
+TextOut(0,LCD_LINE1,"Saved data, close program");
+}
+
+// === UI ===
+task menu() {
+/*
+Left-Right-Select
+
+Update balance
+New Account
+Close account
+
+string option[];
+new array option[]="Update Balance";
+new array option[]="Create account";
+new array option[]="Close account"; 
+
+for (option as item) {
+Textout(0,LCD_LINE0,item);
+waitButton();
+switch (a)
+case 1: array++
+	break;
+case 2: array--
+	break;
+case 3: if (item="Update Balance") {
+	int account=0;
+	getAccountNo(account);
+	additionalFunds(account);
+	} else if (item="Close account") {
+	int account=0;
+	getAccountNo(account);
+	closeAccount(account);
+	} else if (item="Create account") {
+	createAccount();
+	}
+	break;
+*/
+}
+// ===Main===
 
 task main() {
 SetBrickDataName("Mainframe");
