@@ -1,0 +1,21 @@
+Function		State
+Bank/Mainframe		
+Bluetooth connection	--
+Create account		WIP
+Close account		WIP
+Add funds		WIP
+i18n			--
+Read accounts/Start	--
+Write accounts/Stop	--
+Account format		WIP
+Menu			--
+
+Bankomat
+Bluetooth connection	--
+i18n			--
+Watch for activity	--
+Scan card		--
+Read Pin		--
+Request funds		--
+Menu			--
+
