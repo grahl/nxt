@@ -119,17 +119,17 @@ accountlist[accountno].active=FALSE;
 void additionalFunds(int account) {
 //does not check what is still given
 int amount=100;
-if (pressedButton=BTNLEFT) {
+if (pressedButton==BTNLEFT) {
 amount+=100;
 TextOut(0,LCD_LINE1,"Add funds:");
 NumOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
 }
-if (pressedButton=BTNRIGHT) {
+if (pressedButton==BTNRIGHT) {
 amount -=100;
 TextOut(0,LCD_LINE1,"Add funds:");
 NumOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
 }
-if (pressedButton=BTNCENTER) {
+if (pressedButton==BTNCENTER) {
 //hier muss es das account value field sein statt account
 account+=amount;
 // besser return codes
@@ -164,7 +164,7 @@ while (true) {
 
 // taken from NXTmenu.nxc
 //is it necessary to pass by reference here?
-void waitButton(byte &pressedbutton) {                
+void waitButton() {                
 byte wbIndex=BTNRIGHT;
 while (wbIndex <= BTNCENTER)   {                         
 	if (ButtonPressed(wbIndex,false) != 0)
