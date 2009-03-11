@@ -198,8 +198,6 @@ if (foArgs.Result == NO_ERR) {
 }
 }
 
-}
-
 // === UI ===
 task menu() {
 /*
