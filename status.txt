@@ -2,23 +2,23 @@ Function		State
 
 Bank/Mainframe		
 ==============
-Bluetooth connection	--
-Create account		WIP
-Close account		WIP
-Add funds		WIP
-i18n			--
-Read accounts/Start	--
-Write accounts/Stop	--
-Account format		WIP
-Menu			--
+Bluetooth connection    	--
+Create account		        VERIFY
+Close account               VERIFY
+Add funds                   VERIFY
+i18n            			--
+Read accounts/Start     	--
+Write accounts/Stop     	--
+Account format		        WIP
+Menu			            VERIFY
 
 Bankomat
 ==============
-Bluetooth connection	--
-i18n			--
-Watch for activity	--
-Scan card		--
-Read Pin		--
-Request funds		--
-Menu			--
+Bluetooth connection	    --
+i18n			            --
+Watch for activity	        --
+Scan card		            --
+Read Pin		            --
+Request funds		        --
+Menu			            --
 

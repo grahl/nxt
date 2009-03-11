@@ -42,9 +42,6 @@ until(!ButtonPressed(wbIndex,FALSE));
 pressedButton = wbIndex;                
 } 
 
-
-
-
 void createAccount() {
 //increase the count for arrays for next empty slot
 arraycount++;
@@ -90,24 +87,28 @@ if (closeme.amount>0) {
 
 void additionalFunds(int accountno) {
 //does not check what is still given
-account addfunds;
+account addfunds=accountlist[accountno];
 int amount=100;
 if (pressedButton==BTNLEFT) {
-amount+=100;
-TextOut(0,LCD_LINE1,"Add funds:");
-NumOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
+    amount+=100;
+    TextOut(0,LCD_LINE1,"Add funds:");
+    NumOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
 }
 if (pressedButton==BTNRIGHT) {
-amount -=100;
-TextOut(0,LCD_LINE1,"Add funds:");
-NumOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
+    amount -=100;
+    TextOut(0,LCD_LINE1,"Add funds:");
+    NumOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
 }
 if (pressedButton==BTNCENTER) {
-//hier muss es das account value field sein statt account
-addfunds.amount+=amount;
-// besser return codes
-//return 0;
-accountlist[accountno]=addfunds;
+    //hier muss es das account value field sein statt account
+    addfunds.amount+=amount;
+    if (addfunds.active==true) {
+        accountlist[accountno]=addfunds;
+        TextOut(0,LCD_LINE1,"Updated, balance:");
+        NumOut(0,LCD_LINE2,addfunds.amount);
+    } else {
+    TextOut(0,LCD_LINE1,"Sorry, inactive account");
+    }
 }
 
 }
@@ -195,39 +196,37 @@ if (foArgs.Result == NO_ERR) {
 
 // === UI ===
 task menu() {
-/*
-Left-Right-Select
-
-Update balance
-New Account
-Close account
 
 string option[];
-new array option[]="Update Balance";
-new array option[]="Create account";
-new array option[]="Close account"; 
+option[0]="Update Balance";
+option[1]="Create account";
+option[2]="Close account"; 
 
-for (option as item) {
+bool mstate=true;
+
+while (mstate) {
 Textout(0,LCD_LINE0,item);
 waitButton();
-switch (a)
-case 1: array++
+switch (pressedButton)
+case BTNRIGHT: array++
 	break;
-case 2: array--
+case BTNLEFT: array--
 	break;
-case 3: if (item="Update Balance") {
-	int account=0;
-	getAccountNo(account);
-	additionalFunds(account);
-	} else if (item="Close account") {
-	int account=0;
-	getAccountNo(account);
-	closeAccount(account);
-	} else if (item="Create account") {
+case BTNCENTER: if (item=="Update Balance") {
+	int accountno=0;
+	getAccountNo(accountno);
+	additionalFunds(accountno);
+	} else if (item=="Close account") {
+	int accountno=0;
+	getAccountNo(accountno);
+	closeAccount(accountno);
+	} else if (item=="Create account") {
 	createAccount();
 	}
+    //breakt der hier korrekt?
+    mstate=false;
 	break;
-*/
+
 }
 // ===Main===
 
