@@ -175,16 +175,29 @@ int accountno, pinno, amount;
 //*insert vaporware here*
 
 // === File I/O ===
-
+//copied from NXC Guide & modified
 
 void startfile() {
-//missing
-
+//missing 
+FileOpenType foArgs;
+foArgs.Filename = ACCOUNTS_FILENAME;
+SysFileOpenRead(foArgs); // open the file for reading
+if (foArgs.Result == NO_ERR) {
+// read data from the file using FileHandle
+}
 }
 
 void shutdownfile() {
 //missing
-TextOut(0,LCD_LINE1,"Saved data, close program");
+FileOpenType foArgs;
+foArgs.Filename = ACCOUNTS_FILENAME;
+foArgs.Length = 256; // create with capacity for 256 bytes
+SysFileOpenWrite(foArgs); // create the file
+if (foArgs.Result == NO_ERR) {
+	TextOut(0,LCD_LINE1,"Saved data, close program");
+}
+}
+
 }
 
 // === UI ===
@@ -238,5 +251,4 @@ testperson.lastname="Egli";
 //endless loop
 	//start 3 listener for bluetooth connection AND keyboardlistener
 	// table locking equivalent?
-//task return codes?
 }
