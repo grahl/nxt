@@ -1,5 +1,7 @@
 Function		State
+
 Bank/Mainframe		
+==============
 Bluetooth connection	--
 Create account		WIP
 Close account		WIP
@@ -11,6 +13,7 @@ Account format		WIP
 Menu			--
 
 Bankomat
+==============
 Bluetooth connection	--
 i18n			--
 Watch for activity	--
