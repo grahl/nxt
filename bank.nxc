@@ -8,25 +8,7 @@ Optional: currencies, i18n
 
 byte pressedButton;
 int selectButton;      
-
-task main() {
-SetBrickDataName("Mainframe");
-
-//initiated list of accounts, start at 0
-account accountlist[64]; 
-
-testperson=accontlist[0];
-testperson.accountno="25";
-testperson.amount="1000";
-testperson.pin="1212";
-testperson.lastname="Egli";
-
-//instantiate bank accounts (from file)
-//endless loop
-	//start 3 listener for bluetooth connection AND keyboardlistener
-	// table locking equivalent?
-//task return codes?
-}
+int arraycount=0;      
 
 struct account {
 int accountno;
@@ -35,8 +17,12 @@ string lastname;
 string firstname;
 string title;
 int amount;
+bool active;
 //int dailyout;
-}
+};
+
+//initiated list of accounts, start at 0
+account accountlist[64]; 
 
 
 task menu() {
@@ -46,14 +32,15 @@ Left-Right-Select
 Update balance
 New Account
 Close account
-*/
+
 string option[];
 new array option[]="Update Balance";
 new array option[]="Create account";
-new array option[]="Close account";
+new array option[]="Close account"; 
+
 for (option as item) {
 Textout(0,LCD_LINE0,item);
-a=waitButton();
+waitButton();
 switch (a)
 case 1: array++
 	break;
@@ -71,42 +58,78 @@ case 3: if (item="Update Balance") {
 	createAccount();
 	}
 	break;
+*/
 }
 
 void createAccount() {
 // how to add new array item?
-// account_no=array_no+1?
-//account=unix time "short?" + 3 randd digits
-newaccount.pin=Random(9999);
+arraycount++;
+account newaccount;
+int trypin;
+//really fucking ugly
+while (	trypin[0]==0 || 
+	trypin[0]==5 ||
+	trypin[0]==6 ||
+	trypin[0]==7 ||
+	trypin[0]==8 ||
+	trypin[0]==9 ||
+	trypin[1]==0 || 
+	trypin[1]==5 ||
+	trypin[1]==6 ||
+	trypin[1]==7 ||
+	trypin[1]==8 ||
+	trypin[1]==9 ||
+	trypin[2]==0 || 
+	trypin[2]==5 ||
+	trypin[2]==6 ||
+	trypin[2]==7 ||
+	trypin[2]==8 ||
+	trypin[2]==9 ||
+	trypin[3]==0 || 
+	trypin[3]==5 ||
+	trypin[3]==6 ||
+	trypin[3]==7 ||
+	trypin[3]==8 ||
+	trypin[3]==9 ||
+	trypin[4]==0 || 
+	trypin[4]==5 ||
+	trypin[4]==6 ||
+	trypin[4]==7 ||
+	trypin[4]==8 ||
+	trypin[4]==9  ) { trypin=Random(9999); }
+newaccount.pin = trypin;
 TextOut(0,LCD_LINE1,"Pin number:");
 NumOut(0,LCD_LINE2,newaccount.pin);
-
+accountlist[arraycount]=newaccount;
 }
 
-void closeAccount(int account) {
-if (account(value)>0) {
+void closeAccount(int accountno) {
+account closeme=accountlist[accountno];
+if (closeme.value>0) {
 	TextOut(0,LCD_LINE1,"Still money in account");
 	TextOut(0,LCD_LINE2,"Withdraw it first");
 } else {
 //	"close" array entry
+accountlist[accountno].active=FALSE;
 }
 
 
 }
+
 void additionalFunds(int account) {
 //does not check what is still given
 int amount=100;
-if (pressedButton="LEFT") {
+if (pressedButton=BTNLEFT) {
 amount+=100;
 TextOut(0,LCD_LINE1,"Add funds:");
 NumOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
 }
-if (pressedButton="RIGHT") {
+if (pressedButton=BTNRIGHT) {
 amount -=100;
 TextOut(0,LCD_LINE1,"Add funds:");
 NumOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
 }
-if (pressedButton="CENTER") {
+if (pressedButton=BTNCENTER) {
 //hier muss es das account value field sein statt account
 account+=amount;
 // besser return codes
@@ -115,29 +138,33 @@ account+=amount;
 
 }
 
-void getAccountNo(int &account) {
-while (true){
-	a=waitButton();
-	if (pressedButton="LEFT") {
-		account--;
+void getAccountNo(int &accountno) {
+//remove later
+accountno=3;
+while (true) {
+	waitButton();
+	if (pressedButton==BTNLEFT) {
+		accountno--;
 		TextOut(0,LCD_LINE1,"Account number:");
-		NumOut(0,LCD_LINE2,account);
+		NumOut(0,LCD_LINE2,accountno);
 	}
 	
-	if (pressedButton="LEFT") {
-		account++;
+	if (pressedButton==BTNRIGHT) {
+		accountno++;
 		TextOut(0,LCD_LINE1,"Account number:");
-		NumOut(0,LCD_LINE2,account);
+		NumOut(0,LCD_LINE2,accountno);
 	}
 	
-	if (pressedButton="CENTER") {
-		break; //reicht ein break?
+	if (pressedButton==BTNCENTER) {
+		break; 
+		//reicht ein break?
 	}
 }
 }
 
-//taken from NXTmenu.nxc
-void WaitButton() {                
+// taken from NXTmenu.nxc
+//is it necessary to pass by reference here?
+void waitButton(byte &pressedbutton) {                
 byte wbIndex=BTNRIGHT;
 while (wbIndex <= BTNCENTER)   {                         
 	if (ButtonPressed(wbIndex,false) != 0)
@@ -151,14 +178,36 @@ pressedButton = wbIndex;
 } 
 
 task networkListener() {
-ReceiveRemoteString(queue,true, constring);
+//ReceiveRemoteString(queue,true, constring);
+account request;
 //somehow get account,pin,amount from listener by extracting on X
-if (pin == request.pin && amount < request.amount ) {
+//for now static
+int account, pin, amount;
+/* if (pin == request.pin && amount < request.amount ) {
 	SendResponseBool(queue,true);
 	//wird das array aktualisiert?
 	request.amount-=amount;
 } else {
 	SendResponseBool(queue,false);
 }
+*/
 
+}
+
+
+task main() {
+SetBrickDataName("Mainframe");
+
+
+account testperson=accontlist[0];
+testperson.accountno="25";
+testperson.amount="1000";
+testperson.pin="1212";
+testperson.lastname="Egli";
+
+//instantiate bank accounts (from file)
+//endless loop
+	//start 3 listener for bluetooth connection AND keyboardlistener
+	// table locking equivalent?
+//task return codes?
 }
