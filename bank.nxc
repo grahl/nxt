@@ -46,43 +46,28 @@ pressedButton = wbIndex;
 
 
 void createAccount() {
+//increase the count for arrays for next empty slot
 arraycount++;
 account pending;
-int trypin=1234;
-/* really fucking ugly
-while (	trypin[0]==0 || 
-	trypin[0]==5 ||
-	trypin[0]==6 ||
-	trypin[0]==7 ||
-	trypin[0]==8 ||
-	trypin[0]==9 ||
-	trypin[1]==0 || 
-	trypin[1]==5 ||
-	trypin[1]==6 ||
-	trypin[1]==7 ||
-	trypin[1]==8 ||
-	trypin[1]==9 ||
-	trypin[2]==0 || 
-	trypin[2]==5 ||
-	trypin[2]==6 ||
-	trypin[2]==7 ||
-	trypin[2]==8 ||
-	trypin[2]==9 ||
-	trypin[3]==0 || 
-	trypin[3]==5 ||
-	trypin[3]==6 ||
-	trypin[3]==7 ||
-	trypin[3]==8 ||
-	trypin[3]==9 ||
-	trypin[4]==0 || 
-	trypin[4]==5 ||
-	trypin[4]==6 ||
-	trypin[4]==7 ||
-	trypin[4]==8 ||
-	trypin[4]==9  ) { 
+bool check=false;
+string checkpin;
+int trypin=Random(9999);
+
+// really fucking ugly
+while (!check) {
+
+checkpin=NumToStr(trypin);
+if (checkpin[0]==0 || checkpin[0]==5 || checkpin[0]==6 || checkpin[0]==7 ||	checkpin[0]==8 || checkpin[0]==9 ||
+	checkpin[1]==0 || checkpin[1]==5 || checkpin[1]==6 || checkpin[1]==7 || checkpin[1]==8 || checkpin[1]==9 || 
+    checkpin[2]==0 || checkpin[2]==5 ||	checkpin[2]==6 || checkpin[2]==7 || checkpin[2]==8 || checkpin[2]==9 ||
+	checkpin[3]==0 || checkpin[3]==5 ||	checkpin[3]==6 || checkpin[3]==7 ||	checkpin[3]==8 || checkpin[3]==9 ) { 
 	trypin=Random(9999); 
-	}
-*/
+} else {
+    check=true;
+}
+
+}
+
 pending.pinno = trypin;
 TextOut(0,LCD_LINE1,"Pin number:");
 NumOut(0,LCD_LINE2,pending.pinno);
@@ -186,13 +171,14 @@ if (foArgs.Result == NO_ERR) {
 // read data from the file using FileHandle
 
 }
-
+/*
 for (i in buffer) {
 account tempaccount;
 tempaccount.pin //etc, irate through byte
 accountlist[i]=tempaccount;
-
 }
+*/
+
 
 }
 
