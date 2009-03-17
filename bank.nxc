@@ -175,7 +175,7 @@ int accountno, pinno, amount;
 //*insert vaporware here*
 
 // === File I/O ===
-//copied from NXC Guide & modified
+/* copied from NXC Guide & modified
 
 void startfile() {
 //open file to read
@@ -206,7 +206,7 @@ if (foArgs.Result == NO_ERR) {
 	TextOut(0,LCD_LINE1,"Saved data, close program");
 }
 }
-
+*/
 // === UI ===
 task menu() {
 /*
