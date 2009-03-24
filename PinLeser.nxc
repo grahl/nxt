@@ -1,0 +1,105 @@
+void CheckPin(string input)
+{
+if (input == "1234")
+    {
+    ClearScreen();
+    TextOut(10,LCD_LINE5,"Pin ok");
+    Wait(1000);
+    }
+else
+    {
+    ClearScreen();
+    TextOut(10,LCD_LINE5,"Pin falsch");
+    Wait(1000);
+    }
+}
+
+task main()
+{
+int x = 0;
+int y = 5;
+int i = 0;
+string Stelle1;
+string Stelle2;
+string Stelle3;
+string Stelle4;
+string Pincode;
+int Pin[4];
+
+SetSensorMode(1, IN_MODE_RAW);
+SetSensorType(1, IN_TYPE_SWITCH);
+
+TextOut(1, LCD_LINE1, "bitte Pin eingeben");
+
+while (1<2)
+{
+until (Sensor(S1) < 851);
+
+
+x = Sensor(S1);
+
+if (x > 700 & x < 850)
+   {
+      y =1;
+      PlayTone(200,500);
+      Pin[i] = y;
+      Wait(1000);
+   }
+ else if (x >= 0  & x < 5)
+   {
+      y =2;
+      PlayTone(300,500);
+      Pin[i] = y;
+      Wait(1000);
+   }
+ else if(x > 80 & x < 110)
+   {
+      y =3;
+      PlayTone(400,500);
+      Pin[i] = y;
+      Wait(1000);
+   }
+ else if (x > 450 & x < 550)
+   {
+      y = 4;
+      PlayTone(440,500);
+      Pin[i] = y;
+      Wait(1000);
+   }
+ else if (x > 5 & x < 12)
+   {
+   //break;
+   ClearScreen();
+   NumOut(10,LCD_LINE1,Pin[0]);
+   Wait(500);
+   NumOut(10,LCD_LINE2,Pin[1]);
+   Wait(500);
+   NumOut(10,LCD_LINE3,Pin[2]);
+   Wait(500);
+   NumOut(10,LCD_LINE4,Pin[3]);
+   Wait(500);
+   Stelle1 = NumToStr(Pin[0]);
+   Stelle2 = NumToStr(Pin[1]);
+   Stelle3 = NumToStr(Pin[2]);
+   Stelle4 = NumToStr(Pin[3]);
+   Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4);
+   CheckPin(Pincode);
+   ClearScreen();
+   TextOut(1, LCD_LINE1, "bitte Pin eingeben");
+   Pin[0] = 0;
+   Pin[1] = 0;
+   Pin[2] = 0;
+   Pin[3] = 0;
+   i = -1;
+   }
+ else
+   {
+   ;
+   }
+i = i +1;
+ }
+
+}
+
+
+
