@@ -1,20 +1,6 @@
-void CheckPin(string input)
-{
-if (input == "1234")
-    {
-    ClearScreen();
-    TextOut(10,LCD_LINE5,"Pin ok");
-    Wait(1000);
-    }
-else
-    {
-    ClearScreen();
-    TextOut(10,LCD_LINE5,"Pin falsch");
-    Wait(1000);
-    }
-}
+int pinno=0000;
 
-task main()
+void readPin(int &pinno)
 {
 int x = 0;
 int y = 5;
@@ -43,47 +29,41 @@ if (x > 700 & x < 850)
       y =1;
       PlayTone(200,500);
       Pin[i] = y;
-      Wait(1000);
+      Wait(300);
    }
  else if (x >= 0  & x < 5)
    {
       y =2;
       PlayTone(300,500);
       Pin[i] = y;
-      Wait(1000);
+      Wait(300);
    }
  else if(x > 80 & x < 110)
    {
       y =3;
       PlayTone(400,500);
       Pin[i] = y;
-      Wait(1000);
+      Wait(300);
    }
  else if (x > 450 & x < 550)
    {
       y = 4;
       PlayTone(440,500);
       Pin[i] = y;
-      Wait(1000);
+      Wait(300);
    }
  else if (x > 5 & x < 12)
    {
    //break;
    ClearScreen();
-   NumOut(10,LCD_LINE1,Pin[0]);
-   Wait(500);
-   NumOut(10,LCD_LINE2,Pin[1]);
-   Wait(500);
-   NumOut(10,LCD_LINE3,Pin[2]);
-   Wait(500);
-   NumOut(10,LCD_LINE4,Pin[3]);
-   Wait(500);
    Stelle1 = NumToStr(Pin[0]);
    Stelle2 = NumToStr(Pin[1]);
    Stelle3 = NumToStr(Pin[2]);
    Stelle4 = NumToStr(Pin[3]);
    Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4);
-   CheckPin(Pincode);
+   pinno=StrToNum(Pincode);
+   NumOut(0,LCD_LINE2,pinno);
+   Wait(2000);
    ClearScreen();
    TextOut(1, LCD_LINE1, "bitte Pin eingeben");
    Pin[0] = 0;
@@ -101,5 +81,7 @@ i = i +1;
 
 }
 
-
+task main() {
+readPin(pinno);
+}
 
