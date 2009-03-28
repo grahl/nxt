@@ -195,7 +195,7 @@ if (foArgs.Result == NO_ERR) {
 }
 
 // === UI ===
-task menu() {
+void menu() {
 
 string option[];
 option[0]="Update Balance";
@@ -250,4 +250,5 @@ testperson.lastname="Egli";
 //endless loop
 	//start 3 listener for bluetooth connection AND keyboardlistener
 	// table locking equivalent?
+menu();
 }

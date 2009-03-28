@@ -1,0 +1,26 @@
+task main() {
+int val;
+RotateMotor(OUT_ABC,-40,90);
+SetSensor(S4,SENSOR_LIGHT);
+RotateMotor(OUT_ABC,-40,30);
+val=Sensor(S4);
+NumOut(0,LCD_LINE1,val);
+Wait(500);
+RotateMotor(OUT_ABC,-40,30);
+val=Sensor(S4);
+NumOut(0,LCD_LINE1,val);
+Wait(500);
+RotateMotor(OUT_ABC,-40,30);
+val=Sensor(S4);
+NumOut(0,LCD_LINE1,val);
+Wait(500);
+RotateMotor(OUT_ABC,-40,30);
+val=Sensor(S4);
+NumOut(0,LCD_LINE1,val);
+Off(OUT_ABC);
+Wait(5000);
+RotateMotor(OUT_ABC,70,720);
+Wait(1500);
+Off(OUT_ABC);
+
+}
