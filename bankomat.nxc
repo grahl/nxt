@@ -90,8 +90,9 @@ int val,c1,c2,c3,c4;
 string s1,s2,s3,s4,sum;
 SetSensor(S4,SENSOR_LIGHT);
 val=Sensor(S4);
-while (val < 60 ) {
-TextOut(0,LCD_LINE2,"Please insert card");
+until (val > 60 && val < 100) {
+TextOut(0,LCD_LINE2,"Please insert");
+TextOut(0,LCD_LINE3,"your card");
 Wait(1000);
 }
 //TODO: Remove NumOut when cards work

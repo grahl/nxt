@@ -76,10 +76,14 @@ account closeme=accountlist[accountno];
 if (closeme.amount>0) {
 	TextOut(0,LCD_LINE1,"Still money in account");
 	TextOut(0,LCD_LINE2,"Withdraw it first");
+    Wait(3000);
 } else {
 	closeme.active=FALSE;
 	//needed to pass?
 	accountlist[accountno]=closeme;
+	TextOut(0,LCD_LINE2,"Set inactive");
+    //TODO: VERIFY THAT IT IS CHECKED ON WITHDRAW!
+    Wait(3000);
 }
 
 
@@ -89,6 +93,8 @@ void additionalFunds(int accountno) {
 //does not check what is still given
 account addfunds=accountlist[accountno];
 int amount=100;
+NumOut(0,LCD_LINE2,amount);
+TextOut(0,LCD_LINE1,"Updated, balance:");
 if (pressedButton==BTNLEFT) {
     amount+=100;
     TextOut(0,LCD_LINE1,"Add funds:");
@@ -116,6 +122,8 @@ if (pressedButton==BTNCENTER) {
 void getAccountNo(int &accountno) {
 //remove later
 accountno=3;
+TextOut(0,LCD_LINE1,"Account number:");
+NumOut(0,LCD_LINE2,accountno);
 while (true) {
 	waitButton();
 	if (pressedButton==BTNLEFT) {
@@ -208,10 +216,13 @@ if (i > 2) i=0;
 if (i < 0) i=2;
 
 if (i==0) {
+ClearScreen();
 Textout(0,LCD_LINE1,"Update Balance");
 } else if (i==1) {
+ClearScreen();
 Textout(0,LCD_LINE1,"Create account");
 } else if (i==2) {
+ClearScreen();
 Textout(0,LCD_LINE1,"Close account");
 }
 
@@ -247,7 +258,7 @@ task main() {
 SetBrickDataName("Mainframe");
 
 account testperson=accountlist[0];
-testperson.accountno=25;
+testperson.accountno=3;
 testperson.amount=1000;
 testperson.pinno=1212;
 testperson.lastname="Egli";
@@ -256,5 +267,9 @@ testperson.lastname="Egli";
 //endless loop
 	//start 3 listener for bluetooth connection AND keyboardlistener
 	// table locking equivalent?
-menu();
+bool kill=FALSE;
+while (!kill) {
+    menu();
+}
+
 }
