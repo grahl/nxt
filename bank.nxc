@@ -172,16 +172,18 @@ if (foArgs.Result == NO_ERR) {
 // read data from the file using FileHandle
 
 }
-/*
+
 for (i in buffer) {
 account tempaccount;
 tempaccount.pin //etc, irate through byte
 accountlist[i]=tempaccount;
 }
+
+}
 */
 
 
-}
+
 
 void shutdownfile() {
 //missing

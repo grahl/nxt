@@ -19,11 +19,29 @@ int fifties=10;
 int hundreds=10;
 int pinno=0000;
 int cardno=00;
+int amount;
+
+byte pressedButton;
+int selectButton;  
 
 #define TWENTY 20
 #define FIFTY 50
 #define HUNDRED 100
 
+// taken from NXTmenu.nxc
+//is it necessary to pass by reference here?
+void waitButton() {                         
+byte wbIndex=BTNRIGHT;                      
+while (wbIndex <= BTNCENTER)   {                         
+        if (ButtonPressed(wbIndex,false) != 0)           
+                break;                                   
+                wbIndex++;                               
+        if (wbIndex > BTNCENTER)                         
+                    wbIndex = BTNRIGHT;                   
+}                                                         
+until(!ButtonPressed(wbIndex,FALSE));                     
+pressedButton = wbIndex;                                  
+}
 
 void giveHundred(int number) {
 //sensor move!
@@ -88,7 +106,7 @@ val=Sensor(S4);
 NumOut(0,LCD_LINE1,val);
 Wait(500);
 RotateMotor(OUT_ABC,-40,30);
-c3c3nsor(S4);
+c3=Sensor(S4);
 val=Sensor(S4);
 NumOut(0,LCD_LINE1,val);
 Wait(500);
@@ -110,7 +128,7 @@ sum = StrCat(s1,s2,s3,s4);
 cardno=StrToNum(sum);
 }
 
-void requestFunds(int account,int pin,int amount) {
+string requestFunds(int account,int pin,int amount) {
 string commandstring=NumToStr(account);
 commandstring+="X";
 commandstring+=NumToStr(pin);
@@ -118,6 +136,33 @@ commandstring+="X";
 commandstring+=NumToStr(amount);
 //check btdevicename==bank if possible, if creatable
 //SendRemoteString(connection,queue,commandstring);
+
+//TODO:NOT FUCKING WORKING
+string tempeh="ack";
+return tempeh;
+
+}
+
+void selectAmount(int &amount) {
+int x2;
+SetSensorMode(1, IN_MODE_RAW);
+SetSensorType(1, IN_TYPE_SWITCH);
+
+amount=100;
+TextOut(0,LCD_LINE2,"Withdraw CHF:");
+NumOut(0,LCD_LINE3,amount);
+x2 =Sensor(S1);
+while (x2 < 5 && x2 > 12) {
+    if (x2 > 700 & x2 < 850) {
+    amount+=20;    
+    NumOut(0,LCD_LINE3,amount);
+    } else if (x2 >= 0 && x2 < 5) {
+    amount-=20;    
+    NumOut(0,LCD_LINE3,amount);
+    }
+x2 =Sensor(S1);
+}
+
 
 }
 
@@ -204,8 +249,22 @@ i = i +1;
 task main() {
 SetBrickDataName("Bankomat");
 while (true) {
+ClearScreen();
+//insert graphic
 waiting(cardno);
 readPin(pinno);
+selectAmount(amount);
+
+string nresponse=requestFunds(cardno,pinno,amount);
+if (nresponse=="ack") {
+    distribute(amount,twenties,fifties,hundreds);
+    } else if (nresponse=="pin") {
+    TextOut(0,LCD_LINE2,"Sorry, wrong pin number.");
+    } else if (nresponse=="card") {
+    TextOut(0,LCD_LINE2,"Sorry, wrong pin number.");
+    } else if (nresponse=="funds") {
+    TextOut(0,LCD_LINE2,"Sorry, insufficient funds.");
+    }
 
 }
 }
