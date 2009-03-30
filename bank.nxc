@@ -200,18 +200,21 @@ if (foArgs.Result == NO_ERR) {
 
 void menu() {
 
-string option[];
-option[0]="Update Balance";
-option[1]="Create account";
-option[2]="Close account"; 
-
 bool mstate=true;
 
 int i=0;
 while (mstate) {
 if (i > 2) i=0;
 if (i < 0) i=2;
-Textout(0,LCD_LINE1,option[i]);
+
+if (i==0) {
+Textout(0,LCD_LINE1,"Update Balance");
+} else if (i==1) {
+Textout(0,LCD_LINE1,"Create account");
+} else if (i==2) {
+Textout(0,LCD_LINE1,"Close account");
+}
+
 waitButton();
 switch (pressedButton) {
 case BTNRIGHT: i++;
