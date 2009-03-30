@@ -149,19 +149,32 @@ while (true) {
 
 task networkListener() {
 //ReceiveRemoteString(queue,true, constring);
-account request;
+account person;
 //somehow get account,pin,amount from listener by extracting on X
 //for now static
-int accountno, pinno, amount;
-/* if (pinno == request.pinno && amount < request.amount ) {
-	SendResponseBool(queue,true);
-	//wird das array aktualisiert?
-	request.amount-=amount;
-} else {
-	SendResponseBool(queue,false);
-}
-*/
+string request="03X1234X0050";
+string tc,tp,ta;
+tc=Substr(request,0,2);
+int scard=StrToNum(tc);
+tp=Substr(request,3,4);
+int spin=StrToNum(tp);
+ta=Substr(request,9,4);
+int samount=StrToNum(Substr(ta);
 
+account person=accountlist[scard];
+
+if (spin == person.pinno) {
+    if (samount>= person.value) {
+    request.amount-=samount;
+	SendResponseString(queue,"ack");
+	//wird das array aktualisiert?
+    } else {
+	SendResponseString(queue,"amt");
+    }
+    } else {
+	SendResponseString(queue,"pin");
+	//TODO:possibly count failed pin attempts
+    }
 }
 
 // === Mechanical Operations ===
