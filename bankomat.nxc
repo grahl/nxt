@@ -130,15 +130,31 @@ cardno=StrToNum(sum);
 }
 
 string requestFunds(int account,int pin,int amount) {
+if (StrLen(account)==1) {
+string commandstring="0";
+commandstring+=NumToStr(accout);
+} else {
+string commandstring=NumToStr(account);
+}
+
 string commandstring=NumToStr(account);
 commandstring+="X";
 commandstring+=NumToStr(pin);
 commandstring+="X";
+
+if (amount<100) {
+commandstring+="0";
+}
+if (amount<1000) {
+commandstring+="0";
+}
+
 commandstring+=NumToStr(amount);
 //check btdevicename==bank if possible, if creatable
 //SendRemoteString(connection,queue,commandstring);
 
 //TODO:NOT FUCKING WORKING
+//still needs to make network request and wait for response, look in queue
 string tempeh="ack";
 return tempeh;
 
@@ -262,7 +278,7 @@ if (nresponse=="ack") {
     } else if (nresponse=="pin") {
     TextOut(0,LCD_LINE2,"Sorry, wrong pin number.");
     } else if (nresponse=="card") {
-    TextOut(0,LCD_LINE2,"Sorry, wrong pin number.");
+    TextOut(0,LCD_LINE2,"Sorry, account number not found.");
     } else if (nresponse=="funds") {
     TextOut(0,LCD_LINE2,"Sorry, insufficient funds.");
     }

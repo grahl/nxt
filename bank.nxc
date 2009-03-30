@@ -149,30 +149,31 @@ while (true) {
 
 task networkListener() {
 //ReceiveRemoteString(queue,true, constring);
-account person;
 //somehow get account,pin,amount from listener by extracting on X
 //for now static
 string request="03X1234X0050";
 string tc,tp,ta;
-tc=Substr(request,0,2);
+tc=SubStr(request,0,2);
 int scard=StrToNum(tc);
-tp=Substr(request,3,4);
+tp=SubStr(request,3,4);
 int spin=StrToNum(tp);
-ta=Substr(request,9,4);
-int samount=StrToNum(Substr(ta);
+ta=SubStr(request,9,4);
+int samount=StrToNum(ta);
 
 account person=accountlist[scard];
-
-if (spin == person.pinno) {
-    if (samount>= person.value) {
-    request.amount-=samount;
-	SendResponseString(queue,"ack");
+//typematchfail?!
+int cpin=person.pinno;
+int camt=person.amount;
+if (spin == cpin) {
+    if (samount>= camt) {
+    person.amount-=samount;
+	//SendResponseString(queue,"ack");
 	//wird das array aktualisiert?
     } else {
-	SendResponseString(queue,"amt");
+	//SendResponseString(queue,"amt");
     }
     } else {
-	SendResponseString(queue,"pin");
+	//SendResponseString(queue,"pin");
 	//TODO:possibly count failed pin attempts
     }
 }
