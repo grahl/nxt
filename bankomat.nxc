@@ -4,8 +4,8 @@ start money: 10 each
 wenn struct array nicht funktioniert, 2d array nehmen
 INPUTS:
 1 pin feld
-2 kartensensor einschub
-3 lichtsensor timing feld
+2 
+3 
 4 lichtsensor daten
 OUTPUTS:
 a motor 
@@ -93,7 +93,8 @@ val=Sensor(S4);
 until (val > 60 && val < 100) {
 TextOut(0,LCD_LINE2,"Please insert");
 TextOut(0,LCD_LINE3,"your card");
-Wait(1000);
+Wait(400);
+val=Sensor(S4);
 }
 //TODO: Remove NumOut when cards work
 RotateMotor(OUT_ABC,-40,90);
@@ -120,7 +121,9 @@ Wait(5000);
 RotateMotor(OUT_ABC,70,720);
 Wait(1500);
 Off(OUT_ABC);
-//TODO: MISSING BINARY CONVERSION!!!
+c1 = 2 * 2 * 2 * s1;
+c2 = 2 * 2 * s1;
+c3 = 2 * s1;
 s1 = NumToStr(c1);
 s2 = NumToStr(c2);
 s3 = NumToStr(c3);
@@ -130,14 +133,15 @@ cardno=StrToNum(sum);
 }
 
 string requestFunds(int account,int pin,int amount) {
-if (StrLen(account)==1) {
-string commandstring="0";
-commandstring+=NumToStr(accout);
+string actemp=NumToStr(account);
+string commandstring;
+if (StrLen(actemp)==1) {
+commandstring="0";
+commandstring+=actemp;
 } else {
-string commandstring=NumToStr(account);
+commandstring=actemp;
 }
 
-string commandstring=NumToStr(account);
 commandstring+="X";
 commandstring+=NumToStr(pin);
 commandstring+="X";
@@ -148,8 +152,8 @@ commandstring+="0";
 if (amount<1000) {
 commandstring+="0";
 }
-
 commandstring+=NumToStr(amount);
+
 //check btdevicename==bank if possible, if creatable
 //SendRemoteString(connection,queue,commandstring);
 
@@ -196,8 +200,8 @@ int Pin[4];
 
 SetSensorMode(1, IN_MODE_RAW);
 SetSensorType(1, IN_TYPE_SWITCH);
-
-TextOut(1, LCD_LINE1, "bitte Pin eingeben");
+ClearScreen();
+TextOut(1, LCD_LINE1, "Bitte Pin eingeben");
 
 while (1<2)
 {
