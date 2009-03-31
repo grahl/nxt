@@ -5,7 +5,7 @@ wenn struct array nicht funktioniert, 2d array nehmen
 INPUTS:
 1 pin feld
 2 
-3 
+3 kartenleser start 
 4 lichtsensor daten
 OUTPUTS:
 a motor 
@@ -23,10 +23,6 @@ int amount;
 
 byte pressedButton;
 int selectButton;  
-
-#define TWENTY 20
-#define FIFTY 50
-#define HUNDRED 100
 
 // taken from NXTmenu.nxc
 //is it necessary to pass by reference here?
@@ -57,8 +53,8 @@ void giveTwenty(int number) {
 
 void distribute(int amount,int &twenties,int &fifties,int &hundreds) {
 int a,b,c;
-//using TWENTY etc breaks..wtf?!
-if (amount>( (twenties * 20) + (fifties * 50) + (hundreds * 100))) {
+//unnecessary here? does previous FN break correctly?
+if (amount > ( (twenties * 20) + (fifties * 50) + (hundreds * 100))) {
 	TextOut(0,LCD_LINE1,"Sorry, this machine");
 	TextOut(0,LCD_LINE2,"  is out of funds.");
 } else {
@@ -86,16 +82,19 @@ if (amount>( (twenties * 20) + (fifties * 50) + (hundreds * 100))) {
 }
 
 void waiting(int &cardno) {
-int val,c1,c2,c3,c4;
+int val,c1,c2,c3,c4,touch;
 string s1,s2,s3,s4,sum;
 SetSensor(S4,SENSOR_LIGHT);
-val=Sensor(S4);
-until (val > 60 && val < 100) {
+SetSensor(S3,SENSOR_TOUCH);
+touch=Sensor(S3);
+
+until (touch==TRUE) {
 TextOut(0,LCD_LINE2,"Please insert");
 TextOut(0,LCD_LINE3,"your card");
 Wait(400);
-val=Sensor(S4);
+touch=Sensor(S3);
 }
+
 //TODO: Remove NumOut when cards work
 RotateMotor(OUT_ABC,-40,90);
 c1=Sensor(S4);
@@ -173,17 +172,29 @@ amount=100;
 TextOut(0,LCD_LINE2,"Withdraw CHF:");
 NumOut(0,LCD_LINE3,amount);
 x2 =Sensor(S1);
-while (x2 < 5 && x2 > 12) {
-    if (x2 > 700 & x2 < 850) {
+while ((x2 < 30 && x2 > 34) || (x2 < 19 && x2 > 23)) {
+    if (x2 > 49 && x2 < 54) {
     amount+=20;    
     NumOut(0,LCD_LINE3,amount);
-    } else if (x2 >= 0 && x2 < 5) {
+    } else if (x2 >= 6 && x2 < 11) {
     amount-=20;    
     NumOut(0,LCD_LINE3,amount);
     }
 x2 =Sensor(S1);
 }
 
+while (((20 * twenties) + (50 * fifties) + (100 * hundreds)) < amount) {
+if (amount==0) {
+	TextOut(0,LCD_LINE2,"Sorry, out of funds");
+	Wait(1000);
+	break;
+} else {
+	amount-=10;
+	TextOut(0,LCD_LINE2,"Adjusted to");
+	NumOut(0,LCD_LINE3,amount);
+}
+
+}
 
 }
 
@@ -202,44 +213,34 @@ SetSensorMode(1, IN_MODE_RAW);
 SetSensorType(1, IN_TYPE_SWITCH);
 ClearScreen();
 TextOut(1, LCD_LINE1, "Bitte Pin eingeben");
-
-while (1<2)
-{
-until (Sensor(S1) < 851);
-
-
 x = Sensor(S1);
 
-if (x > 700 & x < 850)
-   {
-      y =1;
-      PlayTone(200,500);
-      Pin[i] = y;
+until ((Sensor(S1) < 24 && Sensor(S1) > 19) || (Sensor(S1) < 35 && Sensor(S1) > 29)) {
+
+i=0;
+
+if (x > 6 & x < 11) {
+      PlayTone(200,200);
+      Pin[i] = 1;
+      Wait(300);
+   } else if (x >= 12  & x < 16) {
+      PlayTone(200,200);
+      Pin[i] = 2;
+      Wait(300);
+   } else if(x > 15 & x < 19) {
+      PlayTone(200,200);
+      Pin[i] = 3;
+      Wait(300);
+   } else if (x > 50 & x < 56) {
+      PlayTone(200,200);
+      Pin[i] = 4;
       Wait(300);
    }
- else if (x >= 0  & x < 5)
-   {
-      y =2;
-      PlayTone(300,500);
-      Pin[i] = y;
-      Wait(300);
-   }
- else if(x > 80 & x < 110)
-   {
-      y =3;
-      PlayTone(400,500);
-      Pin[i] = y;
-      Wait(300);
-   }
- else if (x > 450 & x < 550)
-   {
-      y = 4;
-      PlayTone(440,500);
-      Pin[i] = y;
-      Wait(300);
-   }
- else if (x > 5 & x < 12)
-   {
+x = Sensor(S1);
+i++;
+}
+
+if (x > 30 && x < 35) {
    //break;
    ClearScreen();
    Stelle1 = NumToStr(Pin[0]);
@@ -248,22 +249,14 @@ if (x > 700 & x < 850)
    Stelle4 = NumToStr(Pin[3]);
    Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4);
    pinno=StrToNum(Pincode);
+   TextOut(0,LCD_LINE3,"read success");
    NumOut(0,LCD_LINE2,pinno);
+
    Wait(2000);
    ClearScreen();
-   TextOut(1, LCD_LINE1, "bitte Pin eingeben");
-   Pin[0] = 0;
-   Pin[1] = 0;
-   Pin[2] = 0;
-   Pin[3] = 0;
-   i = -1;
-   }
- else
-   {
-   ;
-   }
-i = i +1;
- }
+   break;
+   } 
+}
 
 }
 
