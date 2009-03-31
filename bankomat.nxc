@@ -210,30 +210,32 @@ SetSensorMode(1, IN_MODE_RAW);
 SetSensorType(1, IN_TYPE_SWITCH);
 ClearScreen();
 TextOut(1, LCD_LINE1, "Bitte Pin eingeben");
-x = Sensor(S1);
 
 until ((Sensor(S1) < 24 && Sensor(S1) > 19) || (Sensor(S1) < 35 && Sensor(S1) > 29)) {
-
+x = Sensor(S1);
 if (x > 6 && x < 11) {
       PlayTone(200,200);
       Pin[i] = 1;
       Wait(300);
-   } else if (x >= 12  && x < 16) {
+	i++;
+   } else if (x > 12  && x < 16) {
       PlayTone(200,200);
       Pin[i] = 2;
-      Wait(300);
+	Wait(300);
+	i++;
    } else if(x > 15 && x < 19) {
       PlayTone(200,200);
       Pin[i] = 3;
       Wait(300);
+	i++;
    } else if (x > 50 && x < 56) {
       PlayTone(200,200);
       Pin[i] = 4;
       Wait(300);
+	i++;
    }
-x = Sensor(S1);
-i++;
 }
+x = Sensor(S1);
 
 if (x > 30 && x < 35) {
    ClearScreen();
@@ -243,9 +245,8 @@ if (x > 30 && x < 35) {
    Stelle4 = NumToStr(Pin[3]);
    Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4);
    pinno=StrToNum(Pincode);
-   TextOut(0,LCD_LINE3,"read success");
-   NumOut(0,LCD_LINE2,pinno);
-
+   TextOut(0,LCD_LINE2,"Read success");
+   // NumOut(0,LCD_LINE3,pinno);
    Wait(2000);
 } 
 
