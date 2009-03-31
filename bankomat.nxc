@@ -116,7 +116,7 @@ c4=Sensor(S4);
 val=Sensor(S4);
 NumOut(0,LCD_LINE1,val);
 Off(OUT_ABC);
-Wait(5000);
+Wait(1500);
 RotateMotor(OUT_ABC,70,720);
 Wait(1500);
 Off(OUT_ABC);
@@ -202,10 +202,7 @@ void readPin(int &pinno) {
 int x = 0;
 int y = 5;
 int i = 0;
-string Stelle1;
-string Stelle2;
-string Stelle3;
-string Stelle4;
+string Stelle1,Stelle2,Stelle3,Stelle4;
 string Pincode;
 int Pin[4];
 
@@ -217,21 +214,19 @@ x = Sensor(S1);
 
 until ((Sensor(S1) < 24 && Sensor(S1) > 19) || (Sensor(S1) < 35 && Sensor(S1) > 29)) {
 
-i=0;
-
-if (x > 6 & x < 11) {
+if (x > 6 && x < 11) {
       PlayTone(200,200);
       Pin[i] = 1;
       Wait(300);
-   } else if (x >= 12  & x < 16) {
+   } else if (x >= 12  && x < 16) {
       PlayTone(200,200);
       Pin[i] = 2;
       Wait(300);
-   } else if(x > 15 & x < 19) {
+   } else if(x > 15 && x < 19) {
       PlayTone(200,200);
       Pin[i] = 3;
       Wait(300);
-   } else if (x > 50 & x < 56) {
+   } else if (x > 50 && x < 56) {
       PlayTone(200,200);
       Pin[i] = 4;
       Wait(300);
@@ -241,7 +236,6 @@ i++;
 }
 
 if (x > 30 && x < 35) {
-   //break;
    ClearScreen();
    Stelle1 = NumToStr(Pin[0]);
    Stelle2 = NumToStr(Pin[1]);
@@ -253,10 +247,8 @@ if (x > 30 && x < 35) {
    NumOut(0,LCD_LINE2,pinno);
 
    Wait(2000);
-   ClearScreen();
-   break;
-   } 
-}
+} 
+
 
 }
 
