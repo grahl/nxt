@@ -191,8 +191,13 @@ FileOpenType foArgs;
 foArgs.Filename = ACCOUNTS_FILENAME;
 SysFileOpenRead(foArgs); // open the file for reading
 if (foArgs.Result == NO_ERR) {
-// read data from the file using FileHandle
-
+/* read data from the file using FileHandle
+for (i=0;i++;i<64) {
+readperson account;
+readperson.name=Readln();
+accountlist[i]=readperson;
+}
+*/
 }
 
 for (i in buffer) {
