@@ -151,6 +151,8 @@ s4 = NumToStr(c4);
 s5 = NumToStr(c5);
 sum = StrCat(s1,s2,s3,s4,s5);
 cardno=StrToNum(sum);
+NumOut(0,LCD_LINE2,cardno);
+Wait(2000);
 }
 
 string requestFunds(int account,int pin,int amount) {
@@ -295,12 +297,9 @@ while (true) {
 ClearScreen();
 //insert graphic
 
-//waiting(cardno);
+waiting(cardno);
 readPin(pinno);
 selectAmount(amount);
-cardno=3;
-//pinno=1234;
-//amount=100;
 string nresponse=requestFunds(cardno,pinno,amount);
 TextOut(0,LCD_LINE1,nresponse);
 Wait(500);
