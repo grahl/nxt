@@ -5,7 +5,7 @@ Optional: currencies, i18n
 
 #define ACCOUNTS_FILENAME "konten.txt"
 #define CURRENCY="sFr"
-
+int netcount=1;
 byte pressedButton;
 int selectButton;      
 int arraycount=5;      
@@ -148,11 +148,21 @@ while (true) {
 // === Network Communication ===
 
 task networkListener() {
+while(true) {
 //ReceiveRemoteString(queue,true, constring);
 //somehow get account,pin,amount from listener by extracting on X
 //for now static
-string request="03X1234X0050";
-string tc,tp,ta;
+int connection=netcount;
+NumOut(0,LCD_LINE2,connection);
+Wait(1000);
+string tc,tp,ta,request;
+if (!BluetoothStatus(connection) == NO_ERR) {
+TextOut(0,LCD_LINE1,"fail!!");
+Wait(1000);
+}
+ReceiveRemoteString(1,true,request);
+TextOut(0,LCD_LINE3,request);
+Wait(1000);
 tc=SubStr(request,0,2);
 int scard=StrToNum(tc);
 tp=SubStr(request,3,4);
@@ -168,14 +178,17 @@ if (spin == cpin) {
     if (samount>= camt) {
     person.amount-=samount;
 	//SendResponseString(queue,"ack");
+	SendRemoteString(connection,7,"ack");
 	//wird das array aktualisiert?
     } else {
-	//SendResponseString(queue,"amt");
+	//SendRemoteString(connection,7,"amt");
     }
     } else {
 	//SendResponseString(queue,"pin");
+	SendRemoteString(connection,7,"pin");
 	//TODO:possibly count failed pin attempts
     }
+}
 }
 
 // === Mechanical Operations ===
@@ -183,7 +196,7 @@ if (spin == cpin) {
 //*insert vaporware here*
 
 // === File I/O ===
-/* copied from NXC Guide & modified
+// copied from NXC Guide & modified
 
 void startfile() {
 //open file to read
@@ -191,23 +204,14 @@ FileOpenType foArgs;
 foArgs.Filename = ACCOUNTS_FILENAME;
 SysFileOpenRead(foArgs); // open the file for reading
 if (foArgs.Result == NO_ERR) {
-/* read data from the file using FileHandle
-for (i=0;i++;i<64) {
-readperson account;
-readperson.name=Readln();
+// read data from the file using FileHandle
+for (int i=0;i<64;i++) {
+account readperson;
+ReadLn(foArgs,readperson.pinno);
 accountlist[i]=readperson;
 }
-*/
 }
-
-for (i in buffer) {
-account tempaccount;
-tempaccount.pin //etc, irate through byte
-accountlist[i]=tempaccount;
 }
-
-}
-*/
 
 
 
@@ -219,6 +223,15 @@ foArgs.Filename = ACCOUNTS_FILENAME;
 foArgs.Length = 256; // create with capacity for 256 bytes
 SysFileOpenWrite(foArgs); // create the file
 if (foArgs.Result == NO_ERR) {
+// read data from the file using FileHandle
+for (int i=0;i<64;i++) {
+account writeperson;
+accountlist[i]=writeperson;
+WriteLn(foArgs,writeperson.accountno);
+WriteLn(foArgs,writeperson.pinno);
+WriteLn(foArgs,writeperson.amount);
+}
+
 	TextOut(0,LCD_LINE1,"Saved data, close program");
 }
 }
@@ -286,14 +299,18 @@ testperson.accountno=3;
 testperson.amount=1000;
 testperson.pinno=1212;
 testperson.lastname="Egli";
-
+start networkListener;
+//start networkListener;
+//start networkListener;
 //instantiate bank accounts (from file)
 //endless loop
 	//start 3 listener for bluetooth connection AND keyboardlistener
 	// table locking equivalent?
+
 bool kill=FALSE;
+/* temporary
 while (!kill) {
     menu();
 }
-
+*/
 }
