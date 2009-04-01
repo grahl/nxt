@@ -150,17 +150,19 @@ commandstring+="0";
 }
 commandstring+=NumToStr(amount);
 //check btdevicename==bank if possible, if creatable
-TextOut(0,LCD_LINE3,commandstring);
-Wait(1000);
+TextOut(0,LCD_LINE2,commandstring);
 while(!BluetoothStatus(0)==NO_ERR) {
 	TextOut(0,LCD_LINE1,"Connecting...");
 	Wait(1000);
 	//add cancel here
 }
 SendResponseString(1,commandstring);
-Wait(500);
 string tempeh;
+Wait(1500);
 ReceiveRemoteString(7,true,tempeh);
+
+TextOut(0,LCD_LINE3,tempeh);
+Wait(500);
 return tempeh;
 
 }
@@ -280,6 +282,7 @@ pinno=1234;
 amount=100;
 string nresponse=requestFunds(cardno,pinno,amount);
 TextOut(0,LCD_LINE1,nresponse);
+Wait(500);
 if (nresponse=="ack") {
     distribute(amount,twenties,fifties,hundreds);
     PlayTone(500,200);

@@ -155,8 +155,6 @@ if (!BluetoothStatus(connection) == NO_ERR) {
 Wait(500);
 } 
 ReceiveRemoteString(1,true,request);
-//TextOut(0,LCD_LINE3,request);
-Wait(1000);
 tc=SubStr(request,0,2);
 int scard=StrToNum(tc);
 if (scard!=0) {
@@ -186,14 +184,12 @@ if (spin == person.pinno) {
     	person.amount-=samount;
 	NumOut(50,LCD_LINE6,person.amount);
 	SendRemoteString(connection,7,"ack");
-	//wird das array aktualisiert?
 	accountlist[scard]=person;
     } else {
 	SendRemoteString(connection,7,"funds");
     }
 } else {
 	SendRemoteString(connection,7,"pin");
-	//TODO:possibly count failed pin attempts
     }
 Wait(1000);
 }
