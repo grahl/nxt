@@ -39,16 +39,9 @@ until(!ButtonPressed(wbIndex,FALSE));
 pressedButton = wbIndex;                                  
 }
 
-void giveHundred(int number) {
+void giveNote(int value,int count) {
 //sensor move!
-}
-
-void giveFifty(int number) {
-//sensor move!
-}
-
-void giveTwenty(int number) {
-//sensor move!
+//if (value==50)  RotateMotor(SchlittenMotor, -powerSchlitten, 2450);
 }
 
 void distribute(int amount,int &twenties,int &fifties,int &hundreds) {
@@ -62,13 +55,13 @@ if (amount > ( (twenties * 20) + (fifties * 50) + (hundreds * 100))) {
 	//checkt nicht den fall was passiert wenn nur ein 50 und dann 50 weiter
 	//können nicht mit 20ern ausgegeben werden
 	a=amount / hundreds;
-	giveHundred(a);
+	giveNote(100,a);
 	amount-= a * hundreds;
 	b=amount / fifties;
-	giveFifty(b);
+	giveNote(50,b);
 	amount-= b * fifties;
 	c=amount / twenties;
-	giveTwenty(c);
+	giveTen(20,c);
 
 	if (amount>0) {
 		TextOut(0,LCD_LINE1,"CANNOT HAPPEN");
@@ -172,16 +165,24 @@ amount=100;
 TextOut(0,LCD_LINE2,"Withdraw CHF:");
 NumOut(0,LCD_LINE3,amount);
 x2 =Sensor(S1);
-while ((x2 < 30 && x2 > 34) || (x2 < 19 && x2 > 23)) {
+until((Sensor(S1) < 30 && Sensor(S1) > 34) || (Sensor(S1) < 19 && Sensor(S1) > 23)) {
     if (x2 > 49 && x2 < 54) {
-    amount+=20;    
+    amount+=20;   
     NumOut(0,LCD_LINE3,amount);
+    Wait(300);
     } else if (x2 >= 6 && x2 < 11) {
     amount-=20;    
     NumOut(0,LCD_LINE3,amount);
+    Wait(300);
     }
 x2 =Sensor(S1);
+Wait(300);
 }
+
+TextOut(0,LCD_LINE2,"You selected:");
+NumOut(0,LCD_LINE3,amount);
+Wait(1000);
+
 
 while (((20 * twenties) + (50 * fifties) + (100 * hundreds)) < amount) {
 if (amount==0) {
@@ -261,7 +262,6 @@ ClearScreen();
 waiting(cardno);
 readPin(pinno);
 selectAmount(amount);
-
 string nresponse=requestFunds(cardno,pinno,amount);
 if (nresponse=="ack") {
     distribute(amount,twenties,fifties,hundreds);
@@ -272,6 +272,8 @@ if (nresponse=="ack") {
     } else if (nresponse=="funds") {
     TextOut(0,LCD_LINE2,"Sorry, insufficient funds.");
     }
+TextOut(0,LCD_LINE2,"Reboot");
+Wait(1000);
 
 }
 }

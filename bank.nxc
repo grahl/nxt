@@ -231,8 +231,8 @@ bool mstate=true;
 
 int i=0;
 while (mstate) {
-if (i > 2) i=0;
-if (i < 0) i=2;
+if (i > 3) i=0;
+if (i < 0) i=3;
 
 if (i==0) {
 ClearScreen();
@@ -243,6 +243,9 @@ Textout(0,LCD_LINE1,"Create account");
 } else if (i==2) {
 ClearScreen();
 Textout(0,LCD_LINE1,"Close account");
+} else if (i==3) {
+ClearScreen();
+Textout(0,LCD_LINE1,"Shutdown");
 }
 
 waitButton();
@@ -261,10 +264,12 @@ case BTNCENTER: if (i==0) {
 	closeAccount(accountno);
 	} else if (i==1) {
 	createAccount();
+	} else if (i==3) {
+	shutdownfile();
+	mstate=false;
 	}
-    //breakt der hier korrekt?
-    mstate=false;
 	break;
+
     }
 
 }
