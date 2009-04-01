@@ -149,46 +149,58 @@ while (true) {
 
 task networkListener() {
 while(true) {
-//ReceiveRemoteString(queue,true, constring);
-//somehow get account,pin,amount from listener by extracting on X
-//for now static
-int connection=netcount;
-NumOut(0,LCD_LINE2,connection);
-Wait(1000);
+int connection=1;
 string tc,tp,ta,request;
 if (!BluetoothStatus(connection) == NO_ERR) {
-TextOut(0,LCD_LINE1,"fail!!");
-Wait(1000);
-}
+Wait(500);
+} 
 ReceiveRemoteString(1,true,request);
-TextOut(0,LCD_LINE3,request);
+//TextOut(0,LCD_LINE3,request);
 Wait(1000);
 tc=SubStr(request,0,2);
 int scard=StrToNum(tc);
+if (scard!=0) {
+TextOut(0,LCD_LINE2,"Konto:");
+NumOut(50,LCD_LINE2,scard);
 tp=SubStr(request,3,4);
 int spin=StrToNum(tp);
+TextOut(0,LCD_LINE3,"Pin:");
+NumOut(50,LCD_LINE3,spin);
 ta=SubStr(request,9,4);
 int samount=StrToNum(ta);
+TextOut(0,LCD_LINE4,"Amt:");
+NumOut(50,LCD_LINE4,samount);
 
-account person=accountlist[scard];
-//typematchfail?!
-int cpin=person.pinno;
-int camt=person.amount;
-if (spin == cpin) {
-    if (samount>= camt) {
-    person.amount-=samount;
-	//SendResponseString(queue,"ack");
+account person;
+person=accountlist[scard];
+TextOut(0,LCD_LINE5,"DB P:");
+NumOut(50,LCD_LINE5,person.pinno);
+TextOut(0,LCD_LINE6,"DB A:");
+NumOut(50,LCD_LINE6,person.amount);
+
+if (spin == person.pinno) {
+    	PlayTone(200,100);
+	Wait(200);
+    if (samount <= person.amount) {
+    	PlayTone(300,100);
+    	person.amount-=samount;
+	NumOut(50,LCD_LINE6,person.amount);
 	SendRemoteString(connection,7,"ack");
 	//wird das array aktualisiert?
+	accountlist[scard]=person;
     } else {
-	//SendRemoteString(connection,7,"amt");
+	SendRemoteString(connection,7,"funds");
     }
-    } else {
-	//SendResponseString(queue,"pin");
+} else {
 	SendRemoteString(connection,7,"pin");
 	//TODO:possibly count failed pin attempts
     }
+Wait(1000);
 }
+
+}
+
+
 }
 
 // === Mechanical Operations ===
@@ -294,11 +306,12 @@ case BTNCENTER: if (i==0) {
 task main() {
 SetBrickDataName("Mainframe");
 
-account testperson=accountlist[0];
+account testperson=accountlist[3];
 testperson.accountno=3;
-testperson.amount=1000;
-testperson.pinno=1212;
+testperson.amount=300;
+testperson.pinno=1234;
 testperson.lastname="Egli";
+accountlist[3]=testperson;
 start networkListener;
 //start networkListener;
 //start networkListener;
