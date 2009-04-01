@@ -75,8 +75,8 @@ if (amount > ( (twenties * 20) + (fifties * 50) + (hundreds * 100))) {
 }
 
 void waiting(int &cardno) {
-int val,c1,c2,c3,c4,touch;
-string s1,s2,s3,s4,sum;
+int val,c1,c2,c3,c4,c5,touch;
+string s1,s2,s3,s4,s5,sum;
 SetSensor(S4,SENSOR_LIGHT);
 SetSensor(S3,SENSOR_TOUCH);
 touch=Sensor(S3);
@@ -89,38 +89,42 @@ touch=Sensor(S3);
 }
 
 //TODO: Remove NumOut when cards work
-RotateMotor(OUT_ABC,-40,90);
+RotateMotor(OUT_A,-40,90);
 c1=Sensor(S4);
 val=Sensor(S4);
 NumOut(0,LCD_LINE1,val);
 Wait(500);
-RotateMotor(OUT_ABC,-40,30);
+RotateMotor(OUT_A,-40,30);
 c2=Sensor(S4);
 val=Sensor(S4);
 NumOut(0,LCD_LINE1,val);
 Wait(500);
-RotateMotor(OUT_ABC,-40,30);
+RotateMotor(OUT_A,-40,30);
 c3=Sensor(S4);
 val=Sensor(S4);
 NumOut(0,LCD_LINE1,val);
 Wait(500);
-RotateMotor(OUT_ABC,-40,30);
+RotateMotor(OUT_A,-40,30);
 c4=Sensor(S4);
 val=Sensor(S4);
 NumOut(0,LCD_LINE1,val);
-Off(OUT_ABC);
+Wait(500);
+RotateMotor(OUT_A,-40,30);
+c5=Sensor(S4);
+val=Sensor(S4);
+NumOut(0,LCD_LINE1,val);
+Off(OUT_A);
 Wait(1500);
-RotateMotor(OUT_ABC,70,720);
-Wait(1500);
-Off(OUT_ABC);
-c1 = 2 * 2 * 2 * s1;
-c2 = 2 * 2 * s1;
-c3 = 2 * s1;
+c1 = 2 * 2 * 2 * 2 * s1;
+c2 = 2 * 2 * 2 * s1;
+c3 = 2 * 2 * s1;
+c4 = 2 * s1;
 s1 = NumToStr(c1);
 s2 = NumToStr(c2);
 s3 = NumToStr(c3);
 s4 = NumToStr(c4);
-sum = StrCat(s1,s2,s3,s4);
+s5 = NumToStr(c5);
+sum = StrCat(s1,s2,s3,s4,s5);
 cardno=StrToNum(sum);
 }
 
@@ -287,6 +291,18 @@ if (nresponse=="ack") {
     TextOut(0,LCD_LINE2,"Sorry, insufficient funds.");
     } 
 Wait(1000);
+ClearScreen();
+if (nresponse=="kill")	{
+RotateMotor(OUT_A,-100,720);
+TextOut(0,LCD_LINE1,"Wrong pin, the");
+TextOut(0,LCD_LINE2,"card is ours!!!");
+Wait(1500);
+//Off(OUT_A);
+} else {
+RotateMotor(OUT_A,70,720);
+//Wait(1500);
+//Off(OUT_A);
+} 
 ClearScreen();
 TextOut(0,LCD_LINE2,"Reboot");
 Wait(4000);
