@@ -99,6 +99,13 @@ if (amount > ( (twenties * 20) + (fifties * 50) + (hundreds * 100))) {
 	}
 }
 
+int bin(int given) {
+int result;
+if (given > 20 && given < 30) result=0;
+if (given > 40 && given < 55) result=1;
+return result;
+}
+
 void waiting(int &cardno) {
 int val,c1,c2,c3,c4,c5,touch;
 string s1,s2,s3,s4,s5,sum;
@@ -115,43 +122,33 @@ touch=Sensor(S3);
 
 //TODO: Remove NumOut when cards work
 RotateMotor(OUT_A,-40,90);
-c1=Sensor(S4);
-val=Sensor(S4);
-NumOut(0,LCD_LINE1,val);
+c1=bin(Sensor(S4));
+NumOut(0,LCD_LINE1,c1);
 Wait(500);
-RotateMotor(OUT_A,-40,30);
-c2=Sensor(S4);
+RotateMotor(OUT_A,-40,40);
+c2=bin(Sensor(S4));
 val=Sensor(S4);
-NumOut(0,LCD_LINE1,val);
+NumOut(8,LCD_LINE1,c2);
 Wait(500);
-RotateMotor(OUT_A,-40,30);
-c3=Sensor(S4);
-val=Sensor(S4);
-NumOut(0,LCD_LINE1,val);
+RotateMotor(OUT_A,-40,40);
+c3=bin(Sensor(S4));
+NumOut(16,LCD_LINE1,c3);
 Wait(500);
-RotateMotor(OUT_A,-40,30);
-c4=Sensor(S4);
-val=Sensor(S4);
-NumOut(0,LCD_LINE1,val);
+RotateMotor(OUT_A,-40,40);
+c4=bin(Sensor(S4));
+NumOut(24,LCD_LINE1,c4);
 Wait(500);
-RotateMotor(OUT_A,-40,30);
-c5=Sensor(S4);
-val=Sensor(S4);
-NumOut(0,LCD_LINE1,val);
+RotateMotor(OUT_A,-40,40);
+c5=bin(Sensor(S4));
+NumOut(32,LCD_LINE1,c5);
 Off(OUT_A);
 Wait(1500);
-c1 = 2 * 2 * 2 * 2 * s1;
-c2 = 2 * 2 * 2 * s1;
-c3 = 2 * 2 * s1;
-c4 = 2 * s1;
-s1 = NumToStr(c1);
-s2 = NumToStr(c2);
-s3 = NumToStr(c3);
-s4 = NumToStr(c4);
-s5 = NumToStr(c5);
-sum = StrCat(s1,s2,s3,s4,s5);
-cardno=StrToNum(sum);
-NumOut(0,LCD_LINE2,cardno);
+c1 = 2 * 2 * 2 * 2 * c1;
+c2 = 2 * 2 * 2 * c2;
+c3 = 2 * 2 * c3;
+c4 = 2 * c4;
+cardno=c1 + c2 + c3 + c4 + c5;
+NumOut(0,LCD_LINE6,cardno);
 Wait(2000);
 }
 
