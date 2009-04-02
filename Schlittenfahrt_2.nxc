@@ -1,0 +1,72 @@
+#define SchlittenMotor OUT_B
+#define SchiebeMotor OUT_C
+#define StartTouch S2
+int powerSchlitten =75; //ersetze OnFwd mit OnRev und umgekehrt
+int powerSchieber =50;
+int betrag;
+int Geldbetrag = 250;
+
+void giveNote()
+{
+  Wait(1000);
+  OnFwd(SchiebeMotor, -powerSchieber);
+  Wait(300);
+  Off(SchiebeMotor);
+  Wait(1000);
+  OnRev(SchiebeMotor, -powerSchieber);
+  Wait(300);
+  Off(SchiebeMotor);
+
+}
+
+void goHundred()
+{
+  //Fahre in Ausgangsposition
+  OnFwd(SchlittenMotor, -powerSchlitten);
+  until (Sensor(StartTouch) == 1);
+  Off(SchlittenMotor);
+
+  // Fahre zum 100er Magazin. =Ausgangsposition (Keine Schlittenbewegung)
+}
+
+void goTwenty()
+{
+  // Fahre zum 20er Magazin. =Ausgangsposition (Keine Schlittenbewegung)
+  RotateMotor(SchlittenMotor, powerSchlitten, 800);
+
+}
+
+void goTen()
+{
+  // Fahre zum 20er Magazin. =Ausgangsposition (Keine Schlittenbewegung)
+  RotateMotor(SchlittenMotor, powerSchlitten, 800);
+}
+
+// Grosse Scheine zuerst
+task main()
+{
+  SetSensor(StartTouch, SENSOR_TOUCH);
+  betrag = Geldbetrag;
+  goHundred();
+  until(betrag < 100)
+  {
+   giveNote();
+   betrag = betrag - 100;
+  }
+   goTwenty();
+   until(betrag < 20)
+  {
+   giveNote();
+   betrag = betrag -20;
+  }
+   goTen();
+   until(betrag == 0)
+  {
+   giveNote();
+   betrag = betrag -10;
+  }
+  goHundred();
+}
+
+
+

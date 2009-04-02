@@ -1,0 +1,17 @@
+#define SchlittenMotor OUT_B
+#define SchiebeMotor OUT_C
+int powerSchieber =50;
+
+task main()
+{
+Wait(1000);
+  OnFwd(SchiebeMotor, powerSchieber);
+  Wait(1200);
+  Off(SchiebeMotor);
+  Wait(1000);
+  OnRev(SchiebeMotor, powerSchieber);
+  Wait(1200);
+  Off(SchiebeMotor);
+}
+
+

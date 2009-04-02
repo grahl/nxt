@@ -1,0 +1,71 @@
+#define SchlittenMotor OUT_A
+#define SchiebeMotor OUT_B
+#define StartTouch S3
+int powerSchlitten =-75; //ersetze OnFwd mit OnRev und umgekehrt
+int powerSchieber =75;
+
+void giveHundred()
+{
+  //Fahre in Ausgangsposition
+  OnFwd(SchlittenMotor, powerSchlitten);
+  until (Sensor(StartTouch) == 1);
+  Off(SchlittenMotor);
+
+  // Fahre zum 100er Magazin. =Ausgangsposition (Keine Schlittenbewegung)
+  // Stosse Schein aus
+  OnFwd(SchiebeMotor, powerSchieber);
+  Wait(1000);
+  OnRev(SchiebeMotor, powerSchieber);
+  Wait(1010);
+  Off(SchiebeMotor);
+
+}
+
+void giveTwenty()
+{
+  //Fahre in Ausgangsposition
+  OnFwd(SchlittenMotor, powerSchlitten);
+  until (Sensor(StartTouch) == 1);
+  Off(SchlittenMotor);
+
+  // Fahre zum 20er Magazin. =Ausgangsposition (Keine Schlittenbewegung)
+  RotateMotor(SchlittenMotor, -powerSchlitten, 1480);
+
+  // Stosse Schein aus
+  OnFwd(SchiebeMotor, powerSchieber);
+  Wait(1000);
+  OnRev(SchiebeMotor, powerSchieber);
+  Wait(1010);
+  Off(SchiebeMotor);
+
+}
+
+void giveTen()
+{
+  //Fahre in Ausgangsposition
+  OnFwd(SchlittenMotor, powerSchlitten);
+  until (Sensor(StartTouch) == 1);
+  Off(SchlittenMotor);
+
+  // Fahre zum 20er Magazin. =Ausgangsposition (Keine Schlittenbewegung)
+  RotateMotor(SchlittenMotor, -powerSchlitten, 2450);
+
+  // Stosse Schein aus
+  OnFwd(SchiebeMotor, powerSchieber);
+  Wait(1000);
+  OnRev(SchiebeMotor, powerSchieber);
+  Wait(1010);
+  Off(SchiebeMotor);
+
+}
+
+task main()
+{
+  SetSensor(StartTouch, SENSOR_TOUCH);
+  giveHundred();
+  giveTwenty();
+  giveTen();
+}
+
+
+
