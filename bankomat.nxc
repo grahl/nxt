@@ -126,19 +126,17 @@ if (readlang > 49 && readlang < 54) {
 	if (lang==0) lang=2; else lang--;   
 }
 
+ClearScreen();
 
 if (lang==2) {
-ClearScreen();
 TextOut(0,LCD_LINE2,"SVP introduisez");
 TextOut(0,LCD_LINE3,"la carte");
 TextOut(0,LCD_LINE5," << Francaise >>");
 } else if (lang==1) {
-ClearScreen();
 TextOut(0,LCD_LINE2,"Bitte Karte");
 TextOut(0,LCD_LINE3,"einstecken");
 TextOut(10,LCD_LINE5,"<< Deutsch >>");
 } else {
-ClearScreen();
 TextOut(0,LCD_LINE2,"Please insert");
 TextOut(0,LCD_LINE3,"your card");
 TextOut(10,LCD_LINE5,"<< English >>");
@@ -206,7 +204,7 @@ if (amount<1000) {
 commandstring+="0";
 }
 commandstring+=NumToStr(amount);
-ClearScreen();
+//ClearScreen();
 if (lang==2) { 
 TextOut(0,LCD_LINE1,commandstring);
 TextOut(0,LCD_LINE4,"Attendez SVP"); 
@@ -323,7 +321,7 @@ if (lang==2) {
 TextOut(0,LCD_LINE2,"SVP entrez vous PIN:");
 }
 else if (lang==1) {
-TextOut(0,LCD_LINE1,"Bitte Pin:");
+TextOut(0,LCD_LINE1,"Bitte PIN");
 TextOut(0,LCD_LINE2,"eingeben:");
 }
 else {
@@ -414,6 +412,7 @@ if (nresponse=="ack") {
 	if (lang==2) { TextOut(0,LCD_LINE2,"FEHLT"); }
 	else if (lang==1) { TextOut(0,LCD_LINE1,""); }
 	else { TextOut(0,LCD_LINE2,"Insufficient funds.");}
+	}
 Wait(1000);
 ClearScreen();
 if (nresponse=="kill")	{
@@ -446,6 +445,7 @@ TextOut(0,LCD_LINE3,"nice day!");
 }
 RotateMotor(OUT_A,70,720);
 } 
+
 ClearScreen();
 if (lang==2) { 
 TextOut(0,LCD_LINE2,"Attendez SVP..."); 
@@ -463,3 +463,4 @@ stopnow=FALSE;
 }
 
 }
+
