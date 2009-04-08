@@ -18,7 +18,7 @@ string firstname;
 string title;
 int amount;
 bool active;
-//int dailyout;
+int wrongpin;
 };
 
 //initiated list of accounts, start at 0
@@ -189,7 +189,12 @@ if (spin == person.pinno) {
 	SendRemoteString(connection,7,"funds");
     }
 } else {
-	SendRemoteString(connection,7,"pin");
+	person.wrongpin++;
+	accountlist[scard]=person;
+	if (person.wrongpin>=3) { 
+	SendRemoteString(connection,7,"kill"); 	
+	} else {
+	SendRemoteString(connection,7,"pin"); }
     }
 Wait(1000);
 }
@@ -198,10 +203,6 @@ Wait(1000);
 
 
 }
-
-// === Mechanical Operations ===
-
-//*insert vaporware here*
 
 // === File I/O ===
 // copied from NXC Guide & modified
@@ -220,8 +221,6 @@ accountlist[i]=readperson;
 }
 }
 }
-
-
 
 
 void shutdownfile() {
