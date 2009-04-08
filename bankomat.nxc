@@ -473,9 +473,9 @@ TextOut(0,LCD_LINE1,"Merci bcp!");
 TextOut(0,LCD_LINE2,"Bonjours");
 TextOut(0,LCD_LINE3,"journee!");
 } else if (lang==1) {
-TextOut(10,LCD_LINE1,"Vielen Dank! Wir");
+TextOut(0,LCD_LINE1,"Vielen Dank! Wir");
 TextOut(0,LCD_LINE2,"wuenschen einen");
-TextOut(10,LCD_LINE3,"schoenen Tag!");
+TextOut(0,LCD_LINE3,"schoenen Tag!");
 } else {
 TextOut(0,LCD_LINE1,"Thank you!");
 TextOut(0,LCD_LINE2,"Have a");
