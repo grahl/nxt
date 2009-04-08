@@ -261,7 +261,7 @@ TextOut(0,LCD_LINE6,"avec OK");
 } else if (lang==1) { 
 TextOut(0,LCD_LINE2,"Abheben sFr:"); 
 TextOut(0,LCD_LINE5,"Mit OK");
-TextOut(0,LCD_LINE6,"bestätigen");
+TextOut(0,LCD_LINE6,"bestaetigen");
 } else { 
 TextOut(0,LCD_LINE2,"Withdraw CHF:"); 
 TextOut(0,LCD_LINE6,"Confirm with OK");
@@ -344,7 +344,7 @@ else if (lang==1) {
 TextOut(0,LCD_LINE1,"Bitte PIN");
 TextOut(0,LCD_LINE2,"eingeben:");
 TextOut(0,LCD_LINE5,"Mit OK");
-TextOut(0,LCD_LINE6,"bestätigen");
+TextOut(0,LCD_LINE6,"bestaetigen");
 }
 else {
 TextOut(0,LCD_LINE2,"Please enter PIN number:");
