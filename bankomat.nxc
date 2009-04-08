@@ -44,11 +44,11 @@ pressedButton = wbIndex;
 void giveNote(int count) {
 while (count>0) {
 	OnFwd(OUT_C, 50);
-	Wait(1160);
+	Wait(1200);
 	Off(OUT_C);
 	Wait(300);
 	OnRev(OUT_C, 50);
-	Wait(1160);
+	Wait(1200);
 	Off(OUT_C);
 	count--;
 }
@@ -206,24 +206,42 @@ if (amount<1000) {
 commandstring+="0";
 }
 commandstring+=NumToStr(amount);
-//check btdevicename==bank if possible, if creatable
-//TextOut(0,LCD_LINE,commandstring);
 ClearScreen();
-if (lang==2) { TextOut(0,LCD_LINE4,"Attendez SVP"); }
-else if (lang==1) { TextOut(10,LCD_LINE4,"Bitte warten"); }
-else { TextOut(10,LCD_LINE4,"Please wait"); }
+if (lang==2) { 
+TextOut(0,LCD_LINE1,commandstring);
+TextOut(0,LCD_LINE4,"Attendez SVP"); 
+} else if (lang==1) { 
+TextOut(10,LCD_LINE4,"Bitte warten"); 
+} else { 
+TextOut(10,LCD_LINE4,"Please wait"); 
+}
+
 while(!BluetoothStatus(0)==NO_ERR) {
 	TextOut(0,LCD_LINE1,"Connecting...");
 	Wait(1000);
 	//add cancel here
 }
-SendResponseString(1,commandstring);
 string tempeh;
-Wait(1500);
-ReceiveRemoteString(7,true,tempeh);
 
-//TextOut(0,LCD_LINE3,tempeh);
-//Wait(500);
+/* not working
+string tempeh="leer";
+SetSensorMode(1, IN_MODE_RAW);
+SetSensorType(1, IN_TYPE_SWITCH);
+int xcan=Sensor(S1);
+while (tempeh=="leer" && (!(xcan > 19 && xcan < 23))) {
+SendResponseString(1,commandstring);
+Wait(1500);
+ReceiveRemoteString(7,true,tempeh); 
+xcan=Sensor(S1);
+}
+*/
+
+SendResponseString(1,commandstring);
+Wait(1500);
+ReceiveRemoteString(7,true,tempeh); 
+
+TextOut(0,LCD_LINE3,tempeh);
+Wait(500);
 return tempeh;
 
 }
@@ -256,9 +274,13 @@ if (x2 > 19 && x2 < 23) {
 stopnow=TRUE;
 } else {
 ClearScreen();
-if (lang==2) { TextOut(0,LCD_LINE2,"Vouz avez choisi:"); }
-else if (lang==1) { TextOut(0,LCD_LINE2,"Sie waehlten:"); }
-else { TextOut(0,LCD_LINE2,"You selected:"); }
+if (lang==2) { 
+TextOut(0,LCD_LINE2,"Vouz avez choisi:"); 
+} else if (lang==1) { 
+TextOut(0,LCD_LINE2,"Sie waehlten:"); 
+} else { 
+TextOut(0,LCD_LINE2,"You selected:"); 
+}
 NumOut(0,LCD_LINE3,amount);
 Wait(1000);
 }
@@ -370,7 +392,7 @@ readPin(pinno,lang);
 if (!stopnow) selectAmount(amount,lang);
 string nresponse;
 if (!stopnow) nresponse=requestFunds(cardno,pinno,amount,lang); 
-//TextOut(0,LCD_LINE1,nresponse);
+TextOut(0,LCD_LINE1,nresponse);
 Wait(500);
 ClearScreen();
 if (nresponse=="ack") {
@@ -378,9 +400,12 @@ if (nresponse=="ack") {
     PlayTone(500,200);
 
     } else if (nresponse=="pin") {
-    	if (lang==2) {TextOut(0,LCD_LINE2,"FEHLT");} else if (lang==1) {
-	TextOut(0,LCD_LINE1,"Falsche PIN Nummer.");}
-	else {TextOut(0,LCD_LINE2,"Sorry, wrong PIN.");}
+    	if (lang==2) {
+	TextOut(0,LCD_LINE2,"FEHLT");
+	} else if (lang==1) {
+	TextOut(0,LCD_LINE1,"Falsche PIN Nummer.");
+	} else {TextOut(0,LCD_LINE2,"Sorry, wrong PIN.");
+	}
     } else if (nresponse=="card") {
     	if (lang==2) { TextOut(0,LCD_LINE2,"FEHLT");
 	} else if (lang==1) { TextOut(0,LCD_LINE1,"Ungueltiges Konto"); }
@@ -389,7 +414,6 @@ if (nresponse=="ack") {
 	if (lang==2) { TextOut(0,LCD_LINE2,"FEHLT"); }
 	else if (lang==1) { TextOut(0,LCD_LINE1,""); }
 	else { TextOut(0,LCD_LINE2,"Insufficient funds.");}
-    } 
 Wait(1000);
 ClearScreen();
 if (nresponse=="kill")	{
@@ -423,13 +447,19 @@ TextOut(0,LCD_LINE3,"nice day!");
 RotateMotor(OUT_A,70,720);
 } 
 ClearScreen();
-if (lang==2) { TextOut(0,LCD_LINE2,"Attendez SVP..."); }
-else if (lang==1) { TextOut(0,LCD_LINE1,"Bitte warten..."); }
-else { TextOut(0,LCD_LINE2,"Please wait..."); }
+if (lang==2) { 
+TextOut(0,LCD_LINE2,"Attendez SVP..."); 
+} else if (lang==1) { 
+TextOut(0,LCD_LINE1,"Bitte warten..."); 
+} else { 
+TextOut(0,LCD_LINE2,"Please wait..."); 
+}
 
 Wait(1500);
+cardno=0;
+amount=0;
+pinno=0;
+stopnow=FALSE;
+}
 
 }
-}
-
-

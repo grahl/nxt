@@ -158,6 +158,7 @@ ReceiveRemoteString(1,true,request);
 tc=SubStr(request,0,2);
 int scard=StrToNum(tc);
 if (scard!=0) {
+ClearScreen();
 TextOut(0,LCD_LINE2,"Konto:");
 NumOut(50,LCD_LINE2,scard);
 tp=SubStr(request,3,4);
@@ -301,6 +302,8 @@ case BTNCENTER: if (i==0) {
 task main() {
 SetBrickDataName("Mainframe");
 
+//instantiate bank accounts (from file)
+
 account testperson=accountlist[3];
 testperson.accountno=3;
 testperson.amount=300;
@@ -310,13 +313,8 @@ accountlist[3]=testperson;
 start networkListener;
 //start networkListener;
 //start networkListener;
-//instantiate bank accounts (from file)
-//endless loop
-	//start 3 listener for bluetooth connection AND keyboardlistener
-	// table locking equivalent?
-
+/*
 bool kill=FALSE;
-/* temporary
 while (!kill) {
     menu();
 }
