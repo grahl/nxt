@@ -4,13 +4,13 @@ start money: 10 each
 wenn struct array nicht funktioniert, 2d array nehmen
 INPUTS:
 1 pin feld
-2 
+2 stoppposition auswurf 
 3 kartenleser start 
 4 lichtsensor daten
 OUTPUTS:
-a motor 
-b
-c
+a motor kartenleser
+b motor schiene auswurf
+c motor auswurf einzelne note
 
 */
 
@@ -268,7 +268,7 @@ ClearScreen();
 while (((20 * tens) + (50 * fifties) + (100 * hundreds)) < amount) {
 if (amount==0) {
 	if (lang==2) { TextOut(0,LCD_LINE2,"FEHLT"); }
-	else if (lang==1) { TextOut(0,LCD_LINE1,"FEHLT"); }
+	else if (lang==1) { TextOut(0,LCD_LINE1,"Automat leer."); }
 	else { TextOut(0,LCD_LINE2,"Sorry, out of funds:"); }
 	stopnow=TRUE;
 	Wait(1000);
@@ -293,7 +293,7 @@ int i = 0;
 string Stelle1,Stelle2,Stelle3,Stelle4;
 string Pincode;
 int Pin[4];
-
+int posstar=0;
 SetSensorMode(1, IN_MODE_RAW);
 SetSensorType(1, IN_TYPE_SWITCH);
 ClearScreen();
@@ -301,7 +301,8 @@ if (lang==2) {
 TextOut(0,LCD_LINE2,"SVP entrez vous PIN:");
 }
 else if (lang==1) {
-TextOut(0,LCD_LINE1,"Bitte Pin eingeben:");
+TextOut(0,LCD_LINE1,"Bitte Pin:");
+TextOut(0,LCD_LINE2,"eingeben:");
 }
 else {
 TextOut(0,LCD_LINE2,"Please enter PIN number:");
@@ -311,21 +312,29 @@ until ((Sensor(S1) < 24 && Sensor(S1) > 19) || (Sensor(S1) < 35 && Sensor(S1) > 
 x = Sensor(S1);
 if (x > 6 && x < 11) {
       PlayTone(200,200);
+      TextOut(posstar,LCD_LINE3,"*");
+      posstar+=5;
       Pin[i] = 1;
       Wait(300);
 	i++;
    } else if (x > 12  && x < 16) {
       PlayTone(200,200);
+      TextOut(posstar,LCD_LINE3,"*");
+      posstar+=5;
       Pin[i] = 2;
 	Wait(300);
 	i++;
    } else if(x > 15 && x < 19) {
       PlayTone(200,200);
+      TextOut(posstar,LCD_LINE3,"*");
+      posstar+=5;
       Pin[i] = 3;
       Wait(300);
 	i++;
    } else if (x > 50 && x < 56) {
       PlayTone(200,200);
+      TextOut(posstar,LCD_LINE3,"*");
+      posstar+=5;
       Pin[i] = 4;
       Wait(300);
 	i++;
@@ -342,7 +351,7 @@ if (x > 30 && x < 35) {
    pinno=StrToNum(Pincode);
 //   TextOut(0,LCD_LINE2,"Read success");
    // NumOut(0,LCD_LINE3,pinno);
-//   Wait(2000);
+   Wait(1000);
 } else if (x > 19 && x < 23) {
 stopnow=TRUE;
 } 
@@ -403,8 +412,8 @@ TextOut(0,LCD_LINE1,"Merci!");
 TextOut(0,LCD_LINE2,"FEHLT");
 TextOut(0,LCD_LINE3,"FEHLT");
 } else if (lang==1) {
-TextOut(10,LCD_LINE1,"Vielen Dank!");
-TextOut(0,LCD_LINE2,"Wir wuenschen einen");
+TextOut(10,LCD_LINE1,"Vielen Dank! Wir");
+TextOut(0,LCD_LINE2,"wuenschen einen");
 TextOut(10,LCD_LINE3,"schoenen Tag!");
 } else {
 TextOut(0,LCD_LINE1,"Thank you!");
