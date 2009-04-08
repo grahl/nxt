@@ -74,21 +74,23 @@ if (amount > ( (tens * 10) + (fifties * 50) + (hundreds * 100))) {
 	hundreds=hundreds - a;
 	giveNote(a);
 	amount-= a * 100;
-
-	RotateMotor(OUT_B, -50, 800);
+	if (amount>0) {
+	RotateMotor(OUT_B, -50, 850);
 	b=amount / 50;
 	while (b > fifties) b--;
 	fifties=fifties - b;
 	giveNote(b);
 	amount-= b * 50;
-
+	}
+	if (amount>0) {
+	
 	RotateMotor(OUT_B, -50, 800);
 	c=amount / 10;
 	while (c > tens) c--;
 	tens=tens - c;	
 	giveNote(c);
 	amount-= c * 10;
-
+	}
 	if (amount>0) {
 		TextOut(0,LCD_LINE1,"CANNOT HAPPEN");
 		PlayTone(440,1000); 
@@ -183,7 +185,7 @@ stopnow=TRUE;
 Wait(500);
 }
 
-string requestFunds(int account,int pin,int amount, int lang) {
+string requestFunds(int account,int pin,int amount, int lang, int mailbox) {
 string actemp=NumToStr(account);
 string commandstring;
 if (StrLen(actemp)==1) {
@@ -227,16 +229,16 @@ SetSensorMode(1, IN_MODE_RAW);
 SetSensorType(1, IN_TYPE_SWITCH);
 int xcan=Sensor(S1);
 while (tempeh=="leer" && (!(xcan > 19 && xcan < 23))) {
-SendResponseString(1,commandstring);
+SendResponseString(mailbox,commandstring);
 Wait(1500);
 ReceiveRemoteString(7,true,tempeh); 
 xcan=Sensor(S1);
 }
 */
 
-SendResponseString(1,commandstring);
-Wait(1500);
-ReceiveRemoteString(7,true,tempeh); 
+SendResponseString(mailbox,commandstring);
+Wait(500);
+until (ReceiveRemoteString(7,true,tempeh)==NO_ERR); 
 
 TextOut(0,LCD_LINE3,tempeh);
 Wait(500);
@@ -260,9 +262,11 @@ x2 =Sensor(S1);
 until((x2 > 30 && x2 < 34) || (x2 > 19 && x2 < 23)) {
     if (x2 > 49 && x2 < 54) {
     if (amount<500) amount+=10;   
+    TextOut(0,LCD_LINE3,"    ");
     NumOut(0,LCD_LINE3,amount);
     } else if (x2 >= 6 && x2 < 11) {
-    amount-=10;    
+    if (amount>10) amount-=10;   
+    TextOut(0,LCD_LINE3,"    ");
     NumOut(0,LCD_LINE3,amount);
     }
 Wait(200);
@@ -381,6 +385,28 @@ stopnow=TRUE;
 
 task main() {
 SetBrickDataName("Bankomat");
+
+int mailbox=1;
+bool selectc;
+while (!selectc) {
+TextOut(0,LCD_LINE1, "Channel:");
+NumOut(50,LCD_LINE1, mailbox);
+waitButton();
+switch (pressedButton) {
+case BTNRIGHT: 
+	mailbox++;
+	break;
+case BTNLEFT: 
+	mailbox--;
+	break;
+case BTNCENTER:
+	selectc=TRUE;
+	break;
+}
+
+}
+
+
 while (true) {
 ClearScreen();
 //insert graphic
@@ -389,31 +415,35 @@ waiting(cardno,lang);
 readPin(pinno,lang);
 if (!stopnow) selectAmount(amount,lang);
 string nresponse;
-if (!stopnow) nresponse=requestFunds(cardno,pinno,amount,lang); 
+if (!stopnow) nresponse=requestFunds(cardno,pinno,amount,lang,mailbox); 
 TextOut(0,LCD_LINE1,nresponse);
 Wait(500);
 ClearScreen();
 if (nresponse=="ack") {
     distribute(amount,tens,fifties,hundreds);
     PlayTone(500,200);
-
     } else if (nresponse=="pin") {
+    	PlayTone(100,200);
     	if (lang==2) {
 	TextOut(0,LCD_LINE2,"FEHLT");
 	} else if (lang==1) {
 	TextOut(0,LCD_LINE1,"Falsche PIN Nummer.");
-	} else {TextOut(0,LCD_LINE2,"Sorry, wrong PIN.");
+	} else {
+	TextOut(0,LCD_LINE2,"Sorry, wrong PIN.");
 	}
     } else if (nresponse=="card") {
     	if (lang==2) { TextOut(0,LCD_LINE2,"FEHLT");
 	} else if (lang==1) { TextOut(0,LCD_LINE1,"Ungueltiges Konto"); }
 	else { TextOut(0,LCD_LINE2,"Account not found"); }
-	} else if (nresponse=="funds") {
-	if (lang==2) { TextOut(0,LCD_LINE2,"FEHLT"); }
-	else if (lang==1) { TextOut(0,LCD_LINE1,""); }
-	else { TextOut(0,LCD_LINE2,"Insufficient funds.");}
+    } else if (nresponse=="funds") {
+	if (lang==2) { 
+	TextOut(0,LCD_LINE2,"FEHLT"); 
+	} else if (lang==1) { 
+	TextOut(0,LCD_LINE1,""); 
+	} else { TextOut(0,LCD_LINE2,"Insufficient funds.");
 	}
-Wait(1000);
+	}
+Wait(2000);
 ClearScreen();
 if (nresponse=="kill")	{
 RotateMotor(OUT_A,-100,720);
