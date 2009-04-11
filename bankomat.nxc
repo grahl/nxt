@@ -4,8 +4,8 @@ start money: 10 each
 wenn struct array nicht funktioniert, 2d array nehmen
 INPUTS:
 1 pin feld
-2 stoppposition auswurf 
-3 kartenleser start 
+2 stoppposition auswurf
+3 kartenleser start
 4 lichtsensor daten
 OUTPUTS:
 a motor kartenleser
@@ -22,23 +22,23 @@ int cardno=00;
 int amount;
 int lang=1;
 byte pressedButton;
-int selectButton;  
+int selectButton;
 
 bool stopnow=FALSE;
 
 // taken from NXTmenu.nxc
 //is it necessary to pass by reference here?
-void waitButton() {                         
-byte wbIndex=BTNRIGHT;                      
-while (wbIndex <= BTNCENTER)   {                         
-        if (ButtonPressed(wbIndex,false) != 0)           
-                break;                                   
-                wbIndex++;                               
-        if (wbIndex > BTNCENTER)                         
-                    wbIndex = BTNRIGHT;                   
-}                                                         
-until(!ButtonPressed(wbIndex,FALSE));                     
-pressedButton = wbIndex;                                  
+void waitButton() {
+byte wbIndex=BTNRIGHT;
+while (wbIndex <= BTNCENTER)   {
+        if (ButtonPressed(wbIndex,false) != 0)
+                break;
+                wbIndex++;
+        if (wbIndex > BTNCENTER)
+                    wbIndex = BTNRIGHT;
+}
+until(!ButtonPressed(wbIndex,FALSE));
+pressedButton = wbIndex;
 }
 
 void giveNote(int count) {
@@ -65,7 +65,7 @@ if (amount > ( (tens * 10) + (fifties * 50) + (hundreds * 100))) {
 	SetSensor(S2,SENSOR_TOUCH);
 	until (Sensor(S2) == 1);
 	Off(OUT_B);
-	
+
 
 	//checkt nicht den fall was passiert wenn nur ein 50 und dann 50 weiter
 	//können nicht mit 20ern ausgegeben werden
@@ -86,13 +86,13 @@ if (amount > ( (tens * 10) + (fifties * 50) + (hundreds * 100))) {
 	    RotateMotor(OUT_B, -50, 780);
     	c=amount / 10;
     	while (c > tens) c--;
-    	tens=tens - c;	
+    	tens=tens - c;
     	giveNote(c);
     	amount-= c * 10;
 	}
 	if (amount>0) {
 		TextOut(0,LCD_LINE1,"CANNOT HAPPEN");
-		PlayTone(100,1000); 
+		PlayTone(100,1000);
 		Wait(1000);
 	}
 	else {
@@ -114,16 +114,16 @@ string s1,s2,s3,s4,s5,sum;
 SetSensor(S4,SENSOR_LIGHT);
 SetSensor(S3,SENSOR_TOUCH);
 touch=Sensor(S3);
-int readlang; 
+int readlang;
 SetSensorMode(1, IN_MODE_RAW);
 SetSensorType(1, IN_TYPE_SWITCH);
 
 
 until (touch==TRUE) {
     if (readlang > 49 && readlang < 54) {
-	    if (lang==2) lang=0; else lang++;   
+	    if (lang==2) lang=0; else lang++;
     } else if (readlang >= 6 && readlang < 11) {
-	    if (lang==0) lang=2; else lang--;   
+	    if (lang==0) lang=2; else lang--;
     }
 
     ClearScreen();
@@ -206,13 +206,13 @@ if (amount<1000) {
 }
 commandstring+=NumToStr(amount);
 //ClearScreen();
-if (lang==2) { 
+if (lang==2) {
     TextOut(0,LCD_LINE1,commandstring);
-    TextOut(0,LCD_LINE4,"Attendez SVP"); 
-} else if (lang==1) { 
-    TextOut(10,LCD_LINE4,"Bitte warten"); 
-} else { 
-    TextOut(10,LCD_LINE4,"Please wait"); 
+    TextOut(0,LCD_LINE4,"Attendez SVP");
+} else if (lang==1) {
+    TextOut(10,LCD_LINE4,"Bitte warten");
+} else {
+    TextOut(10,LCD_LINE4,"Please wait");
 }
 
 while(!BluetoothStatus(0)==NO_ERR) {
@@ -230,14 +230,14 @@ int xcan=Sensor(S1);
 while (tempeh=="leer" && (!(xcan > 19 && xcan < 23))) {
     SendResponseString(mailbox,commandstring);
     Wait(1500);
-    ReceiveRemoteString(7,true,tempeh); 
+    ReceiveRemoteString(7,true,tempeh);
     xcan=Sensor(S1);
 }
 */
 
 SendResponseString(mailbox,commandstring);
 Wait(500);
-until (ReceiveRemoteString(7,true,tempeh)==NO_ERR); 
+until (ReceiveRemoteString(7,true,tempeh)==NO_ERR);
 
 TextOut(0,LCD_LINE3,tempeh);
 Wait(500);
@@ -253,16 +253,16 @@ SetSensorType(1, IN_TYPE_SWITCH);
 amount=100;
 ClearScreen();
 
-if (lang==2) { 
-    TextOut(0,LCD_LINE2,"Retirez CHF:"); 
+if (lang==2) {
+    TextOut(0,LCD_LINE2,"Retirez CHF:");
     TextOut(0,LCD_LINE5,"Confirmez");
     TextOut(0,LCD_LINE6,"avec OK");
-} else if (lang==1) { 
-    TextOut(0,LCD_LINE2,"Abheben sFr:"); 
+} else if (lang==1) {
+    TextOut(0,LCD_LINE2,"Abheben sFr:");
     TextOut(0,LCD_LINE5,"Mit OK");
     TextOut(0,LCD_LINE6,"bestaetigen");
-} else { 
-    TextOut(0,LCD_LINE2,"Withdraw CHF:"); 
+} else {
+    TextOut(0,LCD_LINE2,"Withdraw CHF:");
     TextOut(0,LCD_LINE6,"Confirm with OK");
 }
 
@@ -272,12 +272,12 @@ x2 =Sensor(S1);
 until((x2 > 30 && x2 < 34) || (x2 > 19 && x2 < 23)) {
     if (x2 > 49 && x2 < 54) {
         PlayTone(300,20);
-        if (amount<500) amount+=10;   
+        if (amount<500) amount+=10;
         TextOut(0,LCD_LINE3,"    ");
         NumOut(0,LCD_LINE3,amount);
     } else if (x2 >= 6 && x2 < 11) {
         PlayTone(300,200);
-        if (amount>10) amount-=10;   
+        if (amount>10) amount-=10;
         TextOut(0,LCD_LINE3,"    ");
         NumOut(0,LCD_LINE3,amount);
     }
@@ -290,12 +290,12 @@ if (x2 > 19 && x2 < 23) {
 } else {
     PlayTone(450,100);
     ClearScreen();
-    if (lang==2) { 
-        TextOut(0,LCD_LINE2,"Vouz avez choisi:"); 
-    } else if (lang==1) { 
-        TextOut(0,LCD_LINE2,"Sie waehlten:"); 
-    } else { 
-        TextOut(0,LCD_LINE2,"You selected:"); 
+    if (lang==2) {
+        TextOut(0,LCD_LINE2,"Vouz avez choisi:");
+    } else if (lang==1) {
+        TextOut(0,LCD_LINE2,"Sie waehlten:");
+    } else {
+        TextOut(0,LCD_LINE2,"You selected:");
     }
     NumOut(0,LCD_LINE3,amount);
     Wait(1000);
@@ -305,26 +305,26 @@ ClearScreen();
 
 while (((20 * tens) + (50 * fifties) + (100 * hundreds)) < amount) {
     if (amount==0) {
-    	if (lang==2) { 
-            TextOut(0,LCD_LINE2,"Automat est vide"); 
-        } else if (lang==1) { 
-            TextOut(0,LCD_LINE1,"Bankomat leer."); 
-        } else { 
-            TextOut(0,LCD_LINE2,"Sorry, out of funds:"); 
+    	if (lang==2) {
+            TextOut(0,LCD_LINE2,"Automat est vide");
+        } else if (lang==1) {
+            TextOut(0,LCD_LINE1,"Bankomat leer.");
+        } else {
+            TextOut(0,LCD_LINE2,"Sorry, out of funds:");
         }
     	stopnow=TRUE;
     	Wait(1000);
     } else {
 	    amount-=10;
-    	if (lang==2) { 
-            TextOut(0,LCD_LINE2,"Corrige par"); 
+    	if (lang==2) {
+            TextOut(0,LCD_LINE2,"Corrige par");
         }
-    	else if (lang==1) { 
-            TextOut(0,LCD_LINE1,"Angepasst an"); 
+    	else if (lang==1) {
+            TextOut(0,LCD_LINE1,"Angepasst an");
         }
-    	else { 
-            TextOut(0,LCD_LINE2,"Adjusted to"); 
-        } 
+    	else {
+            TextOut(0,LCD_LINE2,"Adjusted to");
+        }
     	NumOut(0,LCD_LINE3,amount);
 	    Wait(1000);
     }
@@ -405,7 +405,7 @@ if (x > 30 && x < 35) {
 } else if (x > 19 && x < 23) {
     PlayTone(100,100);
     stopnow=TRUE;
-} 
+}
 
 
 }
@@ -420,10 +420,10 @@ while (!selectc) {
     NumOut(50,LCD_LINE1, mailbox);
     waitButton();
     switch (pressedButton) {
-        case BTNRIGHT: 
+        case BTNRIGHT:
         	mailbox++;
         	break;
-        case BTNLEFT: 
+        case BTNLEFT:
         	mailbox--;
         	break;
         case BTNCENTER:
@@ -442,7 +442,7 @@ waiting(cardno,lang,stopnow);
 readPin(pinno,lang, stopnow);
 if (!stopnow) selectAmount(amount,lang, stopnow);
 string nresponse;
-if (!stopnow) nresponse=requestFunds(cardno,pinno,amount,lang,mailbox); 
+if (!stopnow) nresponse=requestFunds(cardno,pinno,amount,lang,mailbox);
 TextOut(0,LCD_LINE1,nresponse);
 Wait(500);
 ClearScreen();
@@ -461,25 +461,25 @@ if (nresponse=="ack") {
 	}
     PlayTone(100,200);
 } else if (nresponse=="card") {
-        if (lang==2) { 
+        if (lang==2) {
     	    TextOut(0,LCD_LINE2,"Compte invalide");
-	    } else if (lang==1) { 
-        	TextOut(0,LCD_LINE1,"Ungueltiges Konto"); 
-    	} else { 
-        	TextOut(0,LCD_LINE2,"Account not found"); 
+	    } else if (lang==1) {
+        	TextOut(0,LCD_LINE1,"Ungueltiges Konto");
+    	} else {
+        	TextOut(0,LCD_LINE2,"Account not found");
 	    }
     PlayTone(100,200);
 } else if (nresponse=="funds") {
-    if (lang==2) { 
-	    TextOut(0,LCD_LINE2,"Montant"); 
-    	TextOut(0,LCD_LINE3,"insuffisiante"); 
-	} else if (lang==1) { 
-	    TextOut(0,LCD_LINE2,"Kontostand"); 
-    	TextOut(0,LCD_LINE3,"nicht ausreichend"); 
+    if (lang==2) {
+	    TextOut(0,LCD_LINE2,"Montant");
+    	TextOut(0,LCD_LINE3,"insuffisiante");
+	} else if (lang==1) {
+	    TextOut(0,LCD_LINE2,"Kontostand");
+    	TextOut(0,LCD_LINE3,"nicht ausreichend");
 	} else {
 	    TextOut(0,LCD_LINE2,"Insufficient funds.");
     	TextOut(0,LCD_LINE3,"funds.");
-	} 
+	}
     PlayTone(100,200);
 }
 
@@ -520,15 +520,15 @@ ClearScreen();
         TextOut(0,LCD_LINE3,"nice day!");
     }
     RotateMotor(OUT_A,70,720);
-} 
+}
 
 ClearScreen();
-if (lang==2) { 
-    TextOut(0,LCD_LINE2,"Attendez SVP..."); 
-} else if (lang==1) { 
-    TextOut(0,LCD_LINE1,"Bitte warten..."); 
-} else { 
-    TextOut(0,LCD_LINE2,"Please wait..."); 
+if (lang==2) {
+    TextOut(0,LCD_LINE2,"Attendez SVP...");
+} else if (lang==1) {
+    TextOut(0,LCD_LINE1,"Bitte warten...");
+} else {
+    TextOut(0,LCD_LINE2,"Please wait...");
 }
 
 Wait(1500);
