@@ -359,7 +359,8 @@ if (lang==2) {
     TextOut(0,LCD_LINE6,"Confirm with OK");
 }
 
-until ((Sensor(S1) < 24 && Sensor(S1) > 19) || (Sensor(S1) < 35 && Sensor(S1) > 29)) {
+until ((Sensor(S1) < 24 && Sensor(S1) > 19) ||
+       (Sensor(S1) < 35 && Sensor(S1) > 29)) {
     x = Sensor(S1);
     if (x > 6 && x < 11) {
         PlayTone(300,100);
