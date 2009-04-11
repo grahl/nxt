@@ -1,14 +1,14 @@
 /*
 Watch out for buffer overflows!!!
-Optional: currencies, i18n 
+Optional: currencies, i18n
 */
 
 #define ACCOUNTS_FILENAME "konten.txt"
 #define CURRENCY="sFr"
 int netcount=1;
 byte pressedButton;
-int selectButton;      
-int arraycount=5;      
+int selectButton;
+int arraycount=5;
 
 struct account {
 int accountno;
@@ -22,25 +22,25 @@ int wrongpin;
 };
 
 //initiated list of accounts, start at 0
-account accountlist[64]; 
+account accountlist[64];
 
 
 // === Functions & Operations ===
 
 // taken from NXTmenu.nxc
 //is it necessary to pass by reference here?
-void waitButton() {                
+void waitButton() {
 byte wbIndex=BTNRIGHT;
-while (wbIndex <= BTNCENTER)   {                         
+while (wbIndex <= BTNCENTER)   {
 	if (ButtonPressed(wbIndex,false) != 0)
-      		break;                                
-        	wbIndex++;                            
-	if (wbIndex > BTNCENTER)              
-		    wbIndex = BTNRIGHT;                   
-}                                     
-until(!ButtonPressed(wbIndex,FALSE));   
-pressedButton = wbIndex;                
-} 
+      		break;
+        	wbIndex++;
+	if (wbIndex > BTNCENTER)
+		    wbIndex = BTNRIGHT;
+}
+until(!ButtonPressed(wbIndex,FALSE));
+pressedButton = wbIndex;
+}
 
 void createAccount() {
 //increase the count for arrays for next empty slot
@@ -55,10 +55,10 @@ while (!check) {
 
 checkpin=NumToStr(trypin);
 if (checkpin[0]==0 || checkpin[0]==5 || checkpin[0]==6 || checkpin[0]==7 ||	checkpin[0]==8 || checkpin[0]==9 ||
-	checkpin[1]==0 || checkpin[1]==5 || checkpin[1]==6 || checkpin[1]==7 || checkpin[1]==8 || checkpin[1]==9 || 
+	checkpin[1]==0 || checkpin[1]==5 || checkpin[1]==6 || checkpin[1]==7 || checkpin[1]==8 || checkpin[1]==9 ||
     checkpin[2]==0 || checkpin[2]==5 ||	checkpin[2]==6 || checkpin[2]==7 || checkpin[2]==8 || checkpin[2]==9 ||
-	checkpin[3]==0 || checkpin[3]==5 ||	checkpin[3]==6 || checkpin[3]==7 ||	checkpin[3]==8 || checkpin[3]==9 ) { 
-	trypin=Random(9999); 
+	checkpin[3]==0 || checkpin[3]==5 ||	checkpin[3]==6 || checkpin[3]==7 ||	checkpin[3]==8 || checkpin[3]==9 ) {
+	trypin=Random(9999);
 } else {
     check=true;
 }
@@ -131,15 +131,15 @@ while (true) {
 		TextOut(0,LCD_LINE1,"Account number:");
 		NumOut(0,LCD_LINE2,accountno);
 	}
-	
+
 	if (pressedButton==BTNRIGHT) {
 		accountno++;
 		TextOut(0,LCD_LINE1,"Account number:");
 		NumOut(0,LCD_LINE2,accountno);
 	}
-	
+
 	if (pressedButton==BTNCENTER) {
-		break; 
+		break;
 		//reicht ein break?
 	}
 }
@@ -152,9 +152,9 @@ while(true) {
 int connection;
 string tc,tp,ta,requesta,requestb,requestc,request;
 
-until ((ReceiveRemoteString(1,true,requesta) == NO_ERR) || 
-       (ReceiveRemoteString(2,true,requestb) == NO_ERR) || 
-       (ReceiveRemoteString(3,true,requestc) == NO_ERR)); 
+until ((ReceiveRemoteString(1,true,requesta) == NO_ERR) ||
+       (ReceiveRemoteString(2,true,requestb) == NO_ERR) ||
+       (ReceiveRemoteString(3,true,requestc) == NO_ERR));
 
 
 if (StrLen(requesta) > 10) {
@@ -209,19 +209,19 @@ if (spin == person.pinno) {
 } else {
 	person.wrongpin++;
 	accountlist[scard]=person;
-	if (person.wrongpin>=3) { 
-	    SendRemoteString(connection,7,"kill"); 	
+	if (person.wrongpin>=3) {
+	    SendRemoteString(connection,7,"kill");
 	    TextOut(0,LCD_LINE6,"pinkill");
 	    Wait(1000);
 	} else {
-	    SendRemoteString(connection,7,"pin"); 
+	    SendRemoteString(connection,7,"pin");
 	    TextOut(0,LCD_LINE6,"pin");
 	    Wait(1000);
 	}
 
     }
 Wait(1000);
-} 
+}
 requesta="a";
 requestb="a";
 requestc="a";
@@ -303,7 +303,7 @@ case BTNRIGHT: i++;
 	break;
 case BTNLEFT: i--;
 	break;
-case BTNCENTER: 
+case BTNCENTER:
     if (i==0) {
 	    int accountno=0;
     	getAccountNo(accountno);
