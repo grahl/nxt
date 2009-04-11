@@ -43,14 +43,14 @@ pressedButton = wbIndex;
 
 void giveNote(int count) {
 while (count>0) {
-	OnFwd(OUT_C, 50);
-	Wait(1120);
-	Off(OUT_C);
-	Wait(300);
-	OnRev(OUT_C, 50);
-	Wait(1120);
-	Off(OUT_C);
-	count--;
+    OnFwd(OUT_C, 50);
+    Wait(1120);
+    Off(OUT_C);
+    Wait(300);
+    OnRev(OUT_C, 50);
+    Wait(1120);
+    Off(OUT_C);
+    count--;
 }
 }
 
@@ -58,47 +58,47 @@ void distribute(int amount,int &tens,int &fifties,int &hundreds) {
 int a,b,c;
 //unnecessary here? does previous FN break correctly?
 if (amount > ( (tens * 10) + (fifties * 50) + (hundreds * 100))) {
-	TextOut(0,LCD_LINE1,"Sorry, this machine");
-	TextOut(0,LCD_LINE2,"  is out of funds.");
+    TextOut(0,LCD_LINE1,"Sorry, this machine");
+    TextOut(0,LCD_LINE2,"  is out of funds.");
 } else {
-	OnFwd(OUT_B, 50);
-	SetSensor(S2,SENSOR_TOUCH);
-	until (Sensor(S2) == 1);
-	Off(OUT_B);
+    OnFwd(OUT_B, 50);
+    SetSensor(S2,SENSOR_TOUCH);
+    until (Sensor(S2) == 1);
+    Off(OUT_B);
 
 
-	//checkt nicht den fall was passiert wenn nur ein 50 und dann 50 weiter
-	//können nicht mit 20ern ausgegeben werden
-	a=amount / 100;
-	while (a > hundreds) a--;
-	hundreds=hundreds - a;
-	giveNote(a);
-	amount-= a * 100;
-	if (amount>0) {
-	    RotateMotor(OUT_B, -50, 780);
-    	b=amount / 50;
-	    while (b > fifties) b--;
-	    fifties=fifties - b;
-    	giveNote(b);
-    	amount-= b * 50;
-	}
-	if (amount>0) {
-	    RotateMotor(OUT_B, -50, 780);
-    	c=amount / 10;
-    	while (c > tens) c--;
-    	tens=tens - c;
-    	giveNote(c);
-    	amount-= c * 10;
-	}
-	if (amount>0) {
-		TextOut(0,LCD_LINE1,"CANNOT HAPPEN");
-		PlayTone(100,1000);
-		Wait(1000);
-	}
-	else {
-	    //TODO: what here?
-	}
-	}
+    //checkt nicht den fall was passiert wenn nur ein 50 und dann 50 weiter
+    //können nicht mit 20ern ausgegeben werden
+    a=amount / 100;
+    while (a > hundreds) a--;
+    hundreds=hundreds - a;
+    giveNote(a);
+    amount-= a * 100;
+    if (amount>0) {
+        RotateMotor(OUT_B, -50, 780);
+        b=amount / 50;
+        while (b > fifties) b--;
+        fifties=fifties - b;
+        giveNote(b);
+        amount-= b * 50;
+    }
+    if (amount>0) {
+        RotateMotor(OUT_B, -50, 780);
+        c=amount / 10;
+        while (c > tens) c--;
+        tens=tens - c;
+        giveNote(c);
+        amount-= c * 10;
+    }
+    if (amount>0) {
+        TextOut(0,LCD_LINE1,"CANNOT HAPPEN");
+        PlayTone(100,1000);
+        Wait(1000);
+    }
+    else {
+        //TODO: what here?
+    }
+    }
 }
 
 int bin(int given) {
@@ -121,9 +121,9 @@ SetSensorType(1, IN_TYPE_SWITCH);
 
 until (touch==TRUE) {
     if (readlang > 49 && readlang < 54) {
-	    if (lang==2) lang=0; else lang++;
+        if (lang==2) lang=0; else lang++;
     } else if (readlang >= 6 && readlang < 11) {
-	    if (lang==0) lang=2; else lang--;
+        if (lang==0) lang=2; else lang--;
     }
 
     ClearScreen();
@@ -216,9 +216,9 @@ if (lang==2) {
 }
 
 while(!BluetoothStatus(0)==NO_ERR) {
-	TextOut(0,LCD_LINE1,"Connecting...");
-	Wait(1000);
-	//add cancel here
+    TextOut(0,LCD_LINE1,"Connecting...");
+    Wait(1000);
+    //add cancel here
 }
 string tempeh;
 
@@ -281,9 +281,10 @@ until((x2 > 30 && x2 < 34) || (x2 > 19 && x2 < 23)) {
         TextOut(0,LCD_LINE3,"    ");
         NumOut(0,LCD_LINE3,amount);
     }
-Wait(200);
-x2 =Sensor(S1);
+    Wait(200);
+    x2 =Sensor(S1);
 }
+
 if (x2 > 19 && x2 < 23) {
     PlayTone(100,100);
     stopnow=TRUE;
@@ -305,28 +306,28 @@ ClearScreen();
 
 while (((20 * tens) + (50 * fifties) + (100 * hundreds)) < amount) {
     if (amount==0) {
-    	if (lang==2) {
+        if (lang==2) {
             TextOut(0,LCD_LINE2,"Automat est vide");
         } else if (lang==1) {
             TextOut(0,LCD_LINE1,"Bankomat leer.");
         } else {
             TextOut(0,LCD_LINE2,"Sorry, out of funds:");
         }
-    	stopnow=TRUE;
-    	Wait(1000);
+        stopnow=TRUE;
+        Wait(1000);
     } else {
-	    amount-=10;
-    	if (lang==2) {
+        amount-=10;
+        if (lang==2) {
             TextOut(0,LCD_LINE2,"Corrige par");
         }
-    	else if (lang==1) {
+        else if (lang==1) {
             TextOut(0,LCD_LINE1,"Angepasst an");
         }
-    	else {
+        else {
             TextOut(0,LCD_LINE2,"Adjusted to");
         }
-    	NumOut(0,LCD_LINE3,amount);
-	    Wait(1000);
+        NumOut(0,LCD_LINE3,amount);
+        Wait(1000);
     }
 
 }
@@ -366,28 +367,28 @@ until ((Sensor(S1) < 24 && Sensor(S1) > 19) || (Sensor(S1) < 35 && Sensor(S1) > 
         posstar+=5;
         Pin[i] = 1;
         Wait(300);
-	    i++;
+        i++;
     } else if (x > 12  && x < 16) {
         PlayTone(300,100);
         TextOut(posstar,LCD_LINE3,"*");
         posstar+=5;
         Pin[i] = 2;
-	    Wait(300);
-	    i++;
+        Wait(300);
+        i++;
     } else if(x > 15 && x < 19) {
         PlayTone(300,100);
         TextOut(posstar,LCD_LINE3,"*");
         posstar+=5;
         Pin[i] = 3;
         Wait(300);
-	    i++;
+        i++;
     } else if (x > 50 && x < 56) {
         PlayTone(300,100);
         TextOut(posstar,LCD_LINE3,"*");
         posstar+=5;
         Pin[i] = 4;
         Wait(300);
-	    i++;
+        i++;
    }
 }
 
@@ -421,14 +422,14 @@ while (!selectc) {
     waitButton();
     switch (pressedButton) {
         case BTNRIGHT:
-        	mailbox++;
-        	break;
+            mailbox++;
+            break;
         case BTNLEFT:
-        	mailbox--;
-        	break;
+            mailbox--;
+            break;
         case BTNCENTER:
-        	selectc=TRUE;
-        	break;
+            selectc=TRUE;
+            break;
     }
 
 }
@@ -453,50 +454,50 @@ if (nresponse=="ack") {
 } else if (nresponse=="pin") {
     PlayTone(100,200);
     if (lang==2) {
-	    TextOut(0,LCD_LINE2,"Faux PIN");
-	} else if (lang==1) {
-    	TextOut(0,LCD_LINE1,"Falsche PIN");
-	} else {
-    	TextOut(0,LCD_LINE2,"Sorry, wrong PIN.");
-	}
+        TextOut(0,LCD_LINE2,"Faux PIN");
+    } else if (lang==1) {
+        TextOut(0,LCD_LINE1,"Falsche PIN");
+    } else {
+        TextOut(0,LCD_LINE2,"Sorry, wrong PIN.");
+    }
     PlayTone(100,200);
 } else if (nresponse=="card") {
         if (lang==2) {
-    	    TextOut(0,LCD_LINE2,"Compte invalide");
-	    } else if (lang==1) {
-        	TextOut(0,LCD_LINE1,"Ungueltiges Konto");
-    	} else {
-        	TextOut(0,LCD_LINE2,"Account not found");
-	    }
+            TextOut(0,LCD_LINE2,"Compte invalide");
+        } else if (lang==1) {
+            TextOut(0,LCD_LINE1,"Ungueltiges Konto");
+        } else {
+            TextOut(0,LCD_LINE2,"Account not found");
+        }
     PlayTone(100,200);
 } else if (nresponse=="funds") {
     if (lang==2) {
-	    TextOut(0,LCD_LINE2,"Montant");
-    	TextOut(0,LCD_LINE3,"insuffisiante");
-	} else if (lang==1) {
-	    TextOut(0,LCD_LINE2,"Kontostand");
-    	TextOut(0,LCD_LINE3,"nicht ausreichend");
-	} else {
-	    TextOut(0,LCD_LINE2,"Insufficient funds.");
-    	TextOut(0,LCD_LINE3,"funds.");
-	}
+        TextOut(0,LCD_LINE2,"Montant");
+        TextOut(0,LCD_LINE3,"insuffisiante");
+    } else if (lang==1) {
+        TextOut(0,LCD_LINE2,"Kontostand");
+        TextOut(0,LCD_LINE3,"nicht ausreichend");
+    } else {
+        TextOut(0,LCD_LINE2,"Insufficient funds.");
+        TextOut(0,LCD_LINE3,"funds.");
+    }
     PlayTone(100,200);
 }
 
 Wait(4000);
 ClearScreen();
 
-if (nresponse=="kill")	{
+if (nresponse=="kill")  {
     RotateMotor(OUT_A,-100,720);
     if (lang==2) {
-    	TextOut(0,LCD_LINE1,"Pin invalide,");
-    	TextOut(0,LCD_LINE2,"carte est gardee");
+        TextOut(0,LCD_LINE1,"Pin invalide,");
+        TextOut(0,LCD_LINE2,"carte est gardee");
     } else if (lang==1) {
-    	TextOut(0,LCD_LINE1,"Falsche PIN,");
-    	TextOut(0,LCD_LINE2,"Karte einbehalten.");
+        TextOut(0,LCD_LINE1,"Falsche PIN,");
+        TextOut(0,LCD_LINE2,"Karte einbehalten.");
     } else {
-    	TextOut(0,LCD_LINE1,"Wrong PIN, we");
-    	TextOut(0,LCD_LINE2,"keep your card.");
+        TextOut(0,LCD_LINE1,"Wrong PIN, we");
+        TextOut(0,LCD_LINE2,"keep your card.");
     }
     PlayTone(100,200);
     Wait(1000);
