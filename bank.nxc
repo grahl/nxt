@@ -18,7 +18,7 @@ string firstname;
 string title;
 int amount;
 bool active;
-//int dailyout;
+int wrongpin;
 };
 
 //initiated list of accounts, start at 0
@@ -149,15 +149,30 @@ while (true) {
 
 task networkListener() {
 while(true) {
-int connection=1;
-string tc,tp,ta,request;
-if (!BluetoothStatus(connection) == NO_ERR) {
-Wait(500);
-} 
-ReceiveRemoteString(1,true,request);
+int connection;
+string tc,tp,ta,requesta,requestb,requestc,request;
+
+until ((ReceiveRemoteString(1,true,requesta) == NO_ERR) || 
+       (ReceiveRemoteString(2,true,requestb) == NO_ERR) || 
+       (ReceiveRemoteString(3,true,requestc) == NO_ERR)); 
+
+
+if (StrLen(requesta) > 10) {
+request=requesta;
+connection=1;
+} else if (StrLen(requestb) > 10) {
+request=requestb;
+connection=2;
+} else {
+request=requestc;
+connection=3;
+}
+
+
 tc=SubStr(request,0,2);
 int scard=StrToNum(tc);
 if (scard!=0) {
+ClearScreen();
 TextOut(0,LCD_LINE2,"Konto:");
 NumOut(50,LCD_LINE2,scard);
 tp=SubStr(request,3,4);
@@ -182,26 +197,39 @@ if (spin == person.pinno) {
     if (samount <= person.amount) {
     	PlayTone(300,100);
     	person.amount-=samount;
+	TextOut(50,LCD_LINE6,"     ");
 	NumOut(50,LCD_LINE6,person.amount);
 	SendRemoteString(connection,7,"ack");
 	accountlist[scard]=person;
     } else {
 	SendRemoteString(connection,7,"funds");
+	TextOut(0,LCD_LINE6,"funds");
+	Wait(1000);
     }
 } else {
-	SendRemoteString(connection,7,"pin");
+	person.wrongpin++;
+	accountlist[scard]=person;
+	if (person.wrongpin>=3) { 
+	SendRemoteString(connection,7,"kill"); 	
+	TextOut(0,LCD_LINE6,"pinkill");
+	Wait(1000);
+	} else {
+	SendRemoteString(connection,7,"pin"); 
+	TextOut(0,LCD_LINE6,"pin");
+	Wait(1000);
+	}
+
     }
 Wait(1000);
-}
+} 
+requesta="a";
+requestb="a";
+requestc="a";
+request="a";
 
 }
 
-
 }
-
-// === Mechanical Operations ===
-
-//*insert vaporware here*
 
 // === File I/O ===
 // copied from NXC Guide & modified
@@ -220,8 +248,6 @@ accountlist[i]=readperson;
 }
 }
 }
-
-
 
 
 void shutdownfile() {
@@ -302,6 +328,8 @@ case BTNCENTER: if (i==0) {
 task main() {
 SetBrickDataName("Mainframe");
 
+//instantiate bank accounts (from file)
+
 account testperson=accountlist[3];
 testperson.accountno=3;
 testperson.amount=300;
@@ -309,17 +337,12 @@ testperson.pinno=1234;
 testperson.lastname="Egli";
 accountlist[3]=testperson;
 start networkListener;
+//start networkListenerB;
 //start networkListener;
-//start networkListener;
-//instantiate bank accounts (from file)
-//endless loop
-	//start 3 listener for bluetooth connection AND keyboardlistener
-	// table locking equivalent?
 
 bool kill=FALSE;
-/* temporary
 while (!kill) {
     menu();
 }
-*/
+
 }

@@ -4,25 +4,27 @@ start money: 10 each
 wenn struct array nicht funktioniert, 2d array nehmen
 INPUTS:
 1 pin feld
-2 
+2 stoppposition auswurf 
 3 kartenleser start 
 4 lichtsensor daten
 OUTPUTS:
-a motor 
-b
-c
+a motor kartenleser
+b motor schiene auswurf
+c motor auswurf einzelne note
 
 */
 
-int twenties=10;
+int tens=10;
 int fifties=10;
 int hundreds=10;
 int pinno=0000;
 int cardno=00;
 int amount;
-
+int lang=1;
 byte pressedButton;
 int selectButton;  
+
+bool stopnow=FALSE;
 
 // taken from NXTmenu.nxc
 //is it necessary to pass by reference here?
@@ -42,24 +44,24 @@ pressedButton = wbIndex;
 void giveNote(int count) {
 while (count>0) {
 	OnFwd(OUT_C, 50);
-	Wait(1140);
+	Wait(1120);
 	Off(OUT_C);
-	Wait(1000);
+	Wait(300);
 	OnRev(OUT_C, 50);
-	Wait(1140);
+	Wait(1120);
 	Off(OUT_C);
 	count--;
 }
 }
 
-void distribute(int amount,int &twenties,int &fifties,int &hundreds) {
+void distribute(int amount,int &tens,int &fifties,int &hundreds) {
 int a,b,c;
 //unnecessary here? does previous FN break correctly?
-if (amount > ( (twenties * 20) + (fifties * 50) + (hundreds * 100))) {
+if (amount > ( (tens * 10) + (fifties * 50) + (hundreds * 100))) {
 	TextOut(0,LCD_LINE1,"Sorry, this machine");
 	TextOut(0,LCD_LINE2,"  is out of funds.");
 } else {
-	OnFwd(OUT_B, -50);
+	OnFwd(OUT_B, 50);
 	SetSensor(S2,SENSOR_TOUCH);
 	until (Sensor(S2) == 1);
 	Off(OUT_B);
@@ -72,24 +74,26 @@ if (amount > ( (twenties * 20) + (fifties * 50) + (hundreds * 100))) {
 	hundreds=hundreds - a;
 	giveNote(a);
 	amount-= a * 100;
-
-	RotateMotor(OUT_B, 50, 850);
+	if (amount>0) {
+	RotateMotor(OUT_B, -50, 780);
 	b=amount / 50;
 	while (b > fifties) b--;
 	fifties=fifties - b;
 	giveNote(b);
 	amount-= b * 50;
-
-	RotateMotor(OUT_B, 50, 800);
-	c=amount / 20;
-	while (c > twenties) c--;
-	twenties=twenties - c;	
+	}
+	if (amount>0) {
+	
+	RotateMotor(OUT_B, -50, 780);
+	c=amount / 10;
+	while (c > tens) c--;
+	tens=tens - c;	
 	giveNote(c);
-	amount-= c * 20;
-
+	amount-= c * 10;
+	}
 	if (amount>0) {
 		TextOut(0,LCD_LINE1,"CANNOT HAPPEN");
-		PlayTone(440,1000); 
+		PlayTone(100,1000); 
 		Wait(1000);
 	}
 	else {
@@ -106,39 +110,63 @@ if (given > 40 && given < 55) result=1;
 return result;
 }
 
-void waiting(int &cardno) {
+void waiting(int &cardno,int &lang, bool stopnow) {
 int val,c1,c2,c3,c4,c5,touch;
 string s1,s2,s3,s4,s5,sum;
 SetSensor(S4,SENSOR_LIGHT);
 SetSensor(S3,SENSOR_TOUCH);
 touch=Sensor(S3);
+int readlang; 
+SetSensorMode(1, IN_MODE_RAW);
+SetSensorType(1, IN_TYPE_SWITCH);
+
 
 until (touch==TRUE) {
+if (readlang > 49 && readlang < 54) {
+	if (lang==2) lang=0; else lang++;   
+} else if (readlang >= 6 && readlang < 11) {
+	if (lang==0) lang=2; else lang--;   
+}
+
+ClearScreen();
+
+if (lang==2) {
+TextOut(0,LCD_LINE2,"SVP introduisez");
+TextOut(0,LCD_LINE3,"la carte");
+TextOut(0,LCD_LINE5," << Francaise >>");
+} else if (lang==1) {
+TextOut(0,LCD_LINE2,"Bitte Karte");
+TextOut(0,LCD_LINE3,"einstecken");
+TextOut(10,LCD_LINE5,"<< Deutsch >>");
+} else {
 TextOut(0,LCD_LINE2,"Please insert");
 TextOut(0,LCD_LINE3,"your card");
-Wait(400);
+TextOut(10,LCD_LINE5,"<< English >>");
+}
+Wait(200);
 touch=Sensor(S3);
+readlang=Sensor(S1);
 }
 
 //TODO: Remove NumOut when cards work
-RotateMotor(OUT_A,-40,90);
+RotateMotor(OUT_A,-55,75);
 c1=bin(Sensor(S4));
 NumOut(0,LCD_LINE1,c1);
-Wait(500);
-RotateMotor(OUT_A,-40,40);
+Wait(50);
+RotateMotor(OUT_A,-55,45);
 c2=bin(Sensor(S4));
 val=Sensor(S4);
 NumOut(8,LCD_LINE1,c2);
-Wait(500);
-RotateMotor(OUT_A,-40,40);
+Wait(50);
+RotateMotor(OUT_A,-55,45);
 c3=bin(Sensor(S4));
 NumOut(16,LCD_LINE1,c3);
-Wait(500);
-RotateMotor(OUT_A,-40,40);
+Wait(50);
+RotateMotor(OUT_A,-55,45);
 c4=bin(Sensor(S4));
 NumOut(24,LCD_LINE1,c4);
-Wait(500);
-RotateMotor(OUT_A,-40,40);
+Wait(50);
+RotateMotor(OUT_A,-55,45);
 c5=bin(Sensor(S4));
 NumOut(32,LCD_LINE1,c5);
 Off(OUT_A);
@@ -149,10 +177,15 @@ c3 = 2 * 2 * c3;
 c4 = 2 * c4;
 cardno=c1 + c2 + c3 + c4 + c5;
 NumOut(0,LCD_LINE6,cardno);
-Wait(2000);
+if (cardno==23) {
+amount=(10 * tens) + (50 * hundreds) + (100 * hundreds);
+distribute(amount,tens,fifties,hundreds);
+stopnow=TRUE;
+}
+Wait(500);
 }
 
-string requestFunds(int account,int pin,int amount) {
+string requestFunds(int account,int pin,int amount, int lang, int mailbox) {
 string actemp=NumToStr(account);
 string commandstring;
 if (StrLen(actemp)==1) {
@@ -173,17 +206,39 @@ if (amount<1000) {
 commandstring+="0";
 }
 commandstring+=NumToStr(amount);
-//check btdevicename==bank if possible, if creatable
-TextOut(0,LCD_LINE2,commandstring);
+//ClearScreen();
+if (lang==2) { 
+TextOut(0,LCD_LINE1,commandstring);
+TextOut(0,LCD_LINE4,"Attendez SVP"); 
+} else if (lang==1) { 
+TextOut(10,LCD_LINE4,"Bitte warten"); 
+} else { 
+TextOut(10,LCD_LINE4,"Please wait"); 
+}
+
 while(!BluetoothStatus(0)==NO_ERR) {
 	TextOut(0,LCD_LINE1,"Connecting...");
 	Wait(1000);
 	//add cancel here
 }
-SendResponseString(1,commandstring);
 string tempeh;
+
+/* not working
+string tempeh="leer";
+SetSensorMode(1, IN_MODE_RAW);
+SetSensorType(1, IN_TYPE_SWITCH);
+int xcan=Sensor(S1);
+while (tempeh=="leer" && (!(xcan > 19 && xcan < 23))) {
+SendResponseString(mailbox,commandstring);
 Wait(1500);
-ReceiveRemoteString(7,true,tempeh);
+ReceiveRemoteString(7,true,tempeh); 
+xcan=Sensor(S1);
+}
+*/
+
+SendResponseString(mailbox,commandstring);
+Wait(500);
+until (ReceiveRemoteString(7,true,tempeh)==NO_ERR); 
 
 TextOut(0,LCD_LINE3,tempeh);
 Wait(500);
@@ -191,88 +246,146 @@ return tempeh;
 
 }
 
-void selectAmount(int &amount) {
+void selectAmount(int &amount, int lang, bool &stopnow) {
 int x2;
 SetSensorMode(1, IN_MODE_RAW);
 SetSensorType(1, IN_TYPE_SWITCH);
 
 amount=100;
-TextOut(0,LCD_LINE2,"Withdraw CHF:");
+ClearScreen();
+if (lang==2) { 
+TextOut(0,LCD_LINE2,"Retirez CHF:"); 
+TextOut(0,LCD_LINE5,"Confirmez");
+TextOut(0,LCD_LINE6,"avec OK");
+
+} else if (lang==1) { 
+TextOut(0,LCD_LINE2,"Abheben sFr:"); 
+TextOut(0,LCD_LINE5,"Mit OK");
+TextOut(0,LCD_LINE6,"bestaetigen");
+} else { 
+TextOut(0,LCD_LINE2,"Withdraw CHF:"); 
+TextOut(0,LCD_LINE6,"Confirm with OK");
+}
 NumOut(0,LCD_LINE3,amount);
 x2 =Sensor(S1);
 
-until((x2 > 30 && x2 < 34) || (x2 < 19 && x2 > 23)) {
+until((x2 > 30 && x2 < 34) || (x2 > 19 && x2 < 23)) {
     if (x2 > 49 && x2 < 54) {
-    amount+=20;   
+    PlayTone(300,20);
+    if (amount<500) amount+=10;   
+    TextOut(0,LCD_LINE3,"    ");
     NumOut(0,LCD_LINE3,amount);
     } else if (x2 >= 6 && x2 < 11) {
-    amount-=20;    
+    PlayTone(300,200);
+    if (amount>10) amount-=10;   
+    TextOut(0,LCD_LINE3,"    ");
     NumOut(0,LCD_LINE3,amount);
     }
+Wait(200);
 x2 =Sensor(S1);
-Wait(300);
 }
-
-TextOut(0,LCD_LINE2,"You selected:");
+if (x2 > 19 && x2 < 23) {
+PlayTone(100,100);
+stopnow=TRUE;
+} else {
+PlayTone(450,100);
+ClearScreen();
+if (lang==2) { 
+TextOut(0,LCD_LINE2,"Vouz avez choisi:"); 
+} else if (lang==1) { 
+TextOut(0,LCD_LINE2,"Sie waehlten:"); 
+} else { 
+TextOut(0,LCD_LINE2,"You selected:"); 
+}
 NumOut(0,LCD_LINE3,amount);
 Wait(1000);
+}
 
+ClearScreen();
 
-while (((20 * twenties) + (50 * fifties) + (100 * hundreds)) < amount) {
+while (((20 * tens) + (50 * fifties) + (100 * hundreds)) < amount) {
 if (amount==0) {
-	TextOut(0,LCD_LINE2,"Sorry, out of funds");
+	if (lang==2) { TextOut(0,LCD_LINE2,"Automat est vide"); }
+	else if (lang==1) { TextOut(0,LCD_LINE1,"Bankomat leer."); }
+	else { TextOut(0,LCD_LINE2,"Sorry, out of funds:"); }
+	stopnow=TRUE;
 	Wait(1000);
-	break;
 } else {
 	amount-=10;
-	TextOut(0,LCD_LINE2,"Adjusted to");
+	if (lang==2) { TextOut(0,LCD_LINE2,"Corrige par"); }
+	else if (lang==1) { TextOut(0,LCD_LINE1,"Angepasst an"); }
+	else { TextOut(0,LCD_LINE2,"Adjusted to"); } 
+
 	NumOut(0,LCD_LINE3,amount);
+	Wait(1000);
 }
 
 }
 
 }
 
-void readPin(int &pinno) {
+void readPin(int &pinno, int lang, bool &stopnow) {
 int x = 0;
 int y = 5;
 int i = 0;
 string Stelle1,Stelle2,Stelle3,Stelle4;
 string Pincode;
 int Pin[4];
-
+int posstar=0;
 SetSensorMode(1, IN_MODE_RAW);
 SetSensorType(1, IN_TYPE_SWITCH);
 ClearScreen();
-TextOut(1, LCD_LINE1, "Bitte Pin eingeben");
+if (lang==2) {
+TextOut(0,LCD_LINE2,"SVP entrez vous PIN:");
+TextOut(0,LCD_LINE5,"Confirmez");
+TextOut(0,LCD_LINE6,"avec OK");
+}
+else if (lang==1) {
+TextOut(0,LCD_LINE1,"Bitte PIN");
+TextOut(0,LCD_LINE2,"eingeben:");
+TextOut(0,LCD_LINE5,"Mit OK");
+TextOut(0,LCD_LINE6,"bestaetigen");
+}
+else {
+TextOut(0,LCD_LINE2,"Please enter PIN number:");
+TextOut(0,LCD_LINE6,"Confirm with OK");
+}
 
 until ((Sensor(S1) < 24 && Sensor(S1) > 19) || (Sensor(S1) < 35 && Sensor(S1) > 29)) {
 x = Sensor(S1);
 if (x > 6 && x < 11) {
-      PlayTone(200,200);
+      PlayTone(300,100);
+      TextOut(posstar,LCD_LINE3,"*");
+      posstar+=5;
       Pin[i] = 1;
       Wait(300);
 	i++;
    } else if (x > 12  && x < 16) {
-      PlayTone(200,200);
+      PlayTone(300,100);
+      TextOut(posstar,LCD_LINE3,"*");
+      posstar+=5;
       Pin[i] = 2;
 	Wait(300);
 	i++;
    } else if(x > 15 && x < 19) {
-      PlayTone(200,200);
+      PlayTone(300,100);
+      TextOut(posstar,LCD_LINE3,"*");
+      posstar+=5;
       Pin[i] = 3;
       Wait(300);
 	i++;
    } else if (x > 50 && x < 56) {
-      PlayTone(200,200);
+      PlayTone(300,100);
+      TextOut(posstar,LCD_LINE3,"*");
+      posstar+=5;
       Pin[i] = 4;
       Wait(300);
 	i++;
    }
 }
 x = Sensor(S1);
-
 if (x > 30 && x < 35) {
+   PlayTone(450,100);
    ClearScreen();
    Stelle1 = NumToStr(Pin[0]);
    Stelle2 = NumToStr(Pin[1]);
@@ -280,9 +393,12 @@ if (x > 30 && x < 35) {
    Stelle4 = NumToStr(Pin[3]);
    Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4);
    pinno=StrToNum(Pincode);
-   TextOut(0,LCD_LINE2,"Read success");
+//   TextOut(0,LCD_LINE2,"Read success");
    // NumOut(0,LCD_LINE3,pinno);
-   Wait(2000);
+   Wait(1000);
+} else if (x > 19 && x < 23) {
+PlayTone(100,100);
+stopnow=TRUE;
 } 
 
 
@@ -290,41 +406,130 @@ if (x > 30 && x < 35) {
 
 task main() {
 SetBrickDataName("Bankomat");
+
+int mailbox=1;
+bool selectc;
+while (!selectc) {
+TextOut(0,LCD_LINE1, "Channel:");
+NumOut(50,LCD_LINE1, mailbox);
+waitButton();
+switch (pressedButton) {
+case BTNRIGHT: 
+	mailbox++;
+	break;
+case BTNLEFT: 
+	mailbox--;
+	break;
+case BTNCENTER:
+	selectc=TRUE;
+	break;
+}
+
+}
+
+
 while (true) {
 ClearScreen();
 //insert graphic
 
-waiting(cardno);
-readPin(pinno);
-selectAmount(amount);
-string nresponse=requestFunds(cardno,pinno,amount);
+waiting(cardno,lang,stopnow);
+readPin(pinno,lang, stopnow);
+if (!stopnow) selectAmount(amount,lang, stopnow);
+string nresponse;
+if (!stopnow) nresponse=requestFunds(cardno,pinno,amount,lang,mailbox); 
 TextOut(0,LCD_LINE1,nresponse);
 Wait(500);
+ClearScreen();
 if (nresponse=="ack") {
-    distribute(amount,twenties,fifties,hundreds);
+    distribute(amount,tens,fifties,hundreds);
+    PlayTone(450,100);
     PlayTone(500,200);
     } else if (nresponse=="pin") {
-    TextOut(0,LCD_LINE2,"Sorry, wrong pin number.");
+    	PlayTone(100,200);
+    	if (lang==2) {
+	TextOut(0,LCD_LINE2,"Faux PIN");
+	} else if (lang==1) {
+	TextOut(0,LCD_LINE1,"Falsche PIN");
+	} else {
+	TextOut(0,LCD_LINE2,"Sorry, wrong PIN.");
+	}
+    PlayTone(100,200);
     } else if (nresponse=="card") {
-    TextOut(0,LCD_LINE2,"Sorry, account number not found.");
+    	if (lang==2) { 
+	TextOut(0,LCD_LINE2,"Compte invalide");
+	} else if (lang==1) { 
+	TextOut(0,LCD_LINE1,"Ungueltiges Konto"); 
+	} else { 
+	TextOut(0,LCD_LINE2,"Account not found"); 
+	}
+    PlayTone(100,200);
     } else if (nresponse=="funds") {
-    TextOut(0,LCD_LINE2,"Sorry, insufficient funds.");
-    } 
-Wait(1000);
+	if (lang==2) { 
+	TextOut(0,LCD_LINE2,"Montant"); 
+	TextOut(0,LCD_LINE3,"insuffisiante"); 
+	} else if (lang==1) { 
+	TextOut(0,LCD_LINE2,"Kontostand"); 
+	TextOut(0,LCD_LINE3,"nicht ausreichend"); 
+	} else {
+	TextOut(0,LCD_LINE2,"Insufficient funds.");
+	TextOut(0,LCD_LINE3,"funds.");
+	} 
+    PlayTone(100,200);
+    }
+Wait(4000);
 ClearScreen();
 if (nresponse=="kill")	{
 RotateMotor(OUT_A,-100,720);
-TextOut(0,LCD_LINE1,"Wrong pin, the");
-TextOut(0,LCD_LINE2,"card is ours!!!");
-Wait(1500);
+if (lang==2) {
+	TextOut(0,LCD_LINE1,"Pin invalide,");
+	TextOut(0,LCD_LINE2,"carte est gardee");
+} else if (lang==1) {
+	TextOut(0,LCD_LINE1,"Falsche PIN,");
+	TextOut(0,LCD_LINE2,"Karte einbehalten.");
 } else {
+	TextOut(0,LCD_LINE1,"Wrong PIN, we");
+	TextOut(0,LCD_LINE2,"keep your card.");
+}
+    PlayTone(100,200);
+    Wait(1000);
+    PlayTone(100,200);
+    Wait(1000);
+    PlayTone(100,200);
+    Wait(1000);
+} else {
+ClearScreen();
+if (lang==2) {
+TextOut(0,LCD_LINE1,"Merci bcp!");
+TextOut(0,LCD_LINE2,"Bonjours");
+TextOut(0,LCD_LINE3,"journee!");
+} else if (lang==1) {
+TextOut(0,LCD_LINE1,"Vielen Dank! Wir");
+TextOut(0,LCD_LINE2,"wuenschen einen");
+TextOut(0,LCD_LINE3,"schoenen Tag!");
+} else {
+TextOut(0,LCD_LINE1,"Thank you!");
+TextOut(0,LCD_LINE2,"Have a");
+TextOut(0,LCD_LINE3,"nice day!");
+}
 RotateMotor(OUT_A,70,720);
 } 
+
 ClearScreen();
-TextOut(0,LCD_LINE2,"Please wait...");
-Wait(2000);
+if (lang==2) { 
+TextOut(0,LCD_LINE2,"Attendez SVP..."); 
+} else if (lang==1) { 
+TextOut(0,LCD_LINE1,"Bitte warten..."); 
+} else { 
+TextOut(0,LCD_LINE2,"Please wait..."); 
+}
+
+Wait(1500);
+cardno=0;
+amount=0;
+pinno=0;
+stopnow=FALSE;
+lang=1;
+}
 
 }
-}
-
 
