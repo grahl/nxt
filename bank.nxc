@@ -158,14 +158,14 @@ until ((ReceiveRemoteString(1,true,requesta) == NO_ERR) ||
 
 
 if (StrLen(requesta) > 10) {
-request=requesta;
-connection=1;
+    request=requesta;
+    connection=1;
 } else if (StrLen(requestb) > 10) {
-request=requestb;
-connection=2;
+    request=requestb;
+    connection=2;
 } else {
-request=requestc;
-connection=3;
+    request=requestc;
+    connection=3;
 }
 
 
@@ -192,31 +192,31 @@ TextOut(0,LCD_LINE6,"DB A:");
 NumOut(50,LCD_LINE6,person.amount);
 
 if (spin == person.pinno) {
-    	PlayTone(200,100);
+    PlayTone(200,100);
 	Wait(200);
     if (samount <= person.amount) {
-    	PlayTone(300,100);
+        PlayTone(300,100);
     	person.amount-=samount;
-	TextOut(50,LCD_LINE6,"     ");
-	NumOut(50,LCD_LINE6,person.amount);
-	SendRemoteString(connection,7,"ack");
-	accountlist[scard]=person;
+    	TextOut(50,LCD_LINE6,"     ");
+	    NumOut(50,LCD_LINE6,person.amount);
+    	SendRemoteString(connection,7,"ack");
+    	accountlist[scard]=person;
     } else {
-	SendRemoteString(connection,7,"funds");
-	TextOut(0,LCD_LINE6,"funds");
-	Wait(1000);
+	    SendRemoteString(connection,7,"funds");
+	    TextOut(0,LCD_LINE6,"funds");
+	    Wait(1000);
     }
 } else {
 	person.wrongpin++;
 	accountlist[scard]=person;
 	if (person.wrongpin>=3) { 
-	SendRemoteString(connection,7,"kill"); 	
-	TextOut(0,LCD_LINE6,"pinkill");
-	Wait(1000);
+	    SendRemoteString(connection,7,"kill"); 	
+	    TextOut(0,LCD_LINE6,"pinkill");
+	    Wait(1000);
 	} else {
-	SendRemoteString(connection,7,"pin"); 
-	TextOut(0,LCD_LINE6,"pin");
-	Wait(1000);
+	    SendRemoteString(connection,7,"pin"); 
+	    TextOut(0,LCD_LINE6,"pin");
+	    Wait(1000);
 	}
 
     }
@@ -239,14 +239,16 @@ void startfile() {
 FileOpenType foArgs;
 foArgs.Filename = ACCOUNTS_FILENAME;
 SysFileOpenRead(foArgs); // open the file for reading
+
 if (foArgs.Result == NO_ERR) {
-// read data from the file using FileHandle
-for (int i=0;i<64;i++) {
-account readperson;
-ReadLn(foArgs,readperson.pinno);
-accountlist[i]=readperson;
+    // read data from the file using FileHandle
+    for (int i=0;i<64;i++) {
+        account readperson;
+        ReadLn(foArgs,readperson.pinno);
+        accountlist[i]=readperson;
+    }
 }
-}
+
 }
 
 
@@ -257,17 +259,17 @@ foArgs.Filename = ACCOUNTS_FILENAME;
 foArgs.Length = 256; // create with capacity for 256 bytes
 SysFileOpenWrite(foArgs); // create the file
 if (foArgs.Result == NO_ERR) {
-// read data from the file using FileHandle
-for (int i=0;i<64;i++) {
-account writeperson;
-accountlist[i]=writeperson;
-WriteLn(foArgs,writeperson.accountno);
-WriteLn(foArgs,writeperson.pinno);
-WriteLn(foArgs,writeperson.amount);
-}
-
+    // read data from the file using FileHandle
+    for (int i=0;i<64;i++) {
+        account writeperson;
+    accountlist[i]=writeperson;
+    WriteLn(foArgs,writeperson.accountno);
+    WriteLn(foArgs,writeperson.pinno);
+    WriteLn(foArgs,writeperson.amount);
+    }
 	TextOut(0,LCD_LINE1,"Saved data, close program");
 }
+
 }
 
 // === UI ===
@@ -282,17 +284,17 @@ if (i > 3) i=0;
 if (i < 0) i=3;
 
 if (i==0) {
-ClearScreen();
-Textout(0,LCD_LINE1,"Update Balance");
+    ClearScreen();
+    Textout(0,LCD_LINE1,"Update Balance");
 } else if (i==1) {
-ClearScreen();
-Textout(0,LCD_LINE1,"Create account");
+    ClearScreen();
+    Textout(0,LCD_LINE1,"Create account");
 } else if (i==2) {
-ClearScreen();
-Textout(0,LCD_LINE1,"Close account");
+    ClearScreen();
+    Textout(0,LCD_LINE1,"Close account");
 } else if (i==3) {
-ClearScreen();
-Textout(0,LCD_LINE1,"Shutdown");
+    ClearScreen();
+    Textout(0,LCD_LINE1,"Shutdown");
 }
 
 waitButton();
@@ -301,23 +303,24 @@ case BTNRIGHT: i++;
 	break;
 case BTNLEFT: i--;
 	break;
-case BTNCENTER: if (i==0) {
-	int accountno=0;
-	getAccountNo(accountno);
-	additionalFunds(accountno);
+case BTNCENTER: 
+    if (i==0) {
+	    int accountno=0;
+    	getAccountNo(accountno);
+	    additionalFunds(accountno);
 	} else if (i==2) {
-	int accountno=0;
-	getAccountNo(accountno);
-	closeAccount(accountno);
+	    int accountno=0;
+    	getAccountNo(accountno);
+	    closeAccount(accountno);
 	} else if (i==1) {
-	createAccount();
+    	createAccount();
 	} else if (i==3) {
-	shutdownfile();
-	mstate=false;
+	    shutdownfile();
+    	mstate=false;
 	}
 	break;
 
-    }
+}
 
 }
 
