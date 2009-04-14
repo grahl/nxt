@@ -1,14 +1,14 @@
 /*
 Watch out for buffer overflows!!!
-Optional: currencies, i18n 
+Optional: currencies, i18n
 */
 
 #define ACCOUNTS_FILENAME "konten.txt"
 #define CURRENCY="sFr"
 int netcount=1;
 byte pressedButton;
-int selectButton;      
-int arraycount=5;      
+int selectButton;
+int arraycount=5;
 
 struct account {
 int accountno;
@@ -22,25 +22,25 @@ int wrongpin;
 };
 
 //initiated list of accounts, start at 0
-account accountlist[64]; 
+account accountlist[64];
 
 
 // === Functions & Operations ===
 
 // taken from NXTmenu.nxc
 //is it necessary to pass by reference here?
-void waitButton() {                
+void waitButton() {
 byte wbIndex=BTNRIGHT;
-while (wbIndex <= BTNCENTER)   {                         
-	if (ButtonPressed(wbIndex,false) != 0)
-      		break;                                
-        	wbIndex++;                            
-	if (wbIndex > BTNCENTER)              
-		    wbIndex = BTNRIGHT;                   
-}                                     
-until(!ButtonPressed(wbIndex,FALSE));   
-pressedButton = wbIndex;                
-} 
+while (wbIndex <= BTNCENTER)   {
+    if (ButtonPressed(wbIndex,false) != 0)
+            break;
+            wbIndex++;
+    if (wbIndex > BTNCENTER)
+            wbIndex = BTNRIGHT;
+}
+until(!ButtonPressed(wbIndex,FALSE));
+pressedButton = wbIndex;
+}
 
 void createAccount() {
 //increase the count for arrays for next empty slot
@@ -54,11 +54,11 @@ int trypin=Random(9999);
 while (!check) {
 
 checkpin=NumToStr(trypin);
-if (checkpin[0]==0 || checkpin[0]==5 || checkpin[0]==6 || checkpin[0]==7 ||	checkpin[0]==8 || checkpin[0]==9 ||
-	checkpin[1]==0 || checkpin[1]==5 || checkpin[1]==6 || checkpin[1]==7 || checkpin[1]==8 || checkpin[1]==9 || 
-    checkpin[2]==0 || checkpin[2]==5 ||	checkpin[2]==6 || checkpin[2]==7 || checkpin[2]==8 || checkpin[2]==9 ||
-	checkpin[3]==0 || checkpin[3]==5 ||	checkpin[3]==6 || checkpin[3]==7 ||	checkpin[3]==8 || checkpin[3]==9 ) { 
-	trypin=Random(9999); 
+if (checkpin[0]==0 || checkpin[0]==5 || checkpin[0]==6 || checkpin[0]==7 || checkpin[0]==8 || checkpin[0]==9 ||
+    checkpin[1]==0 || checkpin[1]==5 || checkpin[1]==6 || checkpin[1]==7 || checkpin[1]==8 || checkpin[1]==9 ||
+    checkpin[2]==0 || checkpin[2]==5 || checkpin[2]==6 || checkpin[2]==7 || checkpin[2]==8 || checkpin[2]==9 ||
+    checkpin[3]==0 || checkpin[3]==5 || checkpin[3]==6 || checkpin[3]==7 || checkpin[3]==8 || checkpin[3]==9 ) {
+    trypin=Random(9999);
 } else {
     check=true;
 }
@@ -74,14 +74,14 @@ accountlist[arraycount]=pending;
 void closeAccount(int accountno) {
 account closeme=accountlist[accountno];
 if (closeme.amount>0) {
-	TextOut(0,LCD_LINE1,"Still money in account");
-	TextOut(0,LCD_LINE2,"Withdraw it first");
+    TextOut(0,LCD_LINE1,"Still money in account");
+    TextOut(0,LCD_LINE2,"Withdraw it first");
     Wait(3000);
 } else {
-	closeme.active=FALSE;
-	//needed to pass?
-	accountlist[accountno]=closeme;
-	TextOut(0,LCD_LINE2,"Set inactive");
+    closeme.active=FALSE;
+    //needed to pass?
+    accountlist[accountno]=closeme;
+    TextOut(0,LCD_LINE2,"Set inactive");
     //TODO: VERIFY THAT IT IS CHECKED ON WITHDRAW!
     Wait(3000);
 }
@@ -125,23 +125,23 @@ accountno=3;
 TextOut(0,LCD_LINE1,"Account number:");
 NumOut(0,LCD_LINE2,accountno);
 while (true) {
-	waitButton();
-	if (pressedButton==BTNLEFT) {
-		accountno--;
-		TextOut(0,LCD_LINE1,"Account number:");
-		NumOut(0,LCD_LINE2,accountno);
-	}
-	
-	if (pressedButton==BTNRIGHT) {
-		accountno++;
-		TextOut(0,LCD_LINE1,"Account number:");
-		NumOut(0,LCD_LINE2,accountno);
-	}
-	
-	if (pressedButton==BTNCENTER) {
-		break; 
-		//reicht ein break?
-	}
+    waitButton();
+    if (pressedButton==BTNLEFT) {
+        accountno--;
+        TextOut(0,LCD_LINE1,"Account number:");
+        NumOut(0,LCD_LINE2,accountno);
+    }
+
+    if (pressedButton==BTNRIGHT) {
+        accountno++;
+        TextOut(0,LCD_LINE1,"Account number:");
+        NumOut(0,LCD_LINE2,accountno);
+    }
+
+    if (pressedButton==BTNCENTER) {
+        break;
+        //reicht ein break?
+    }
 }
 }
 
@@ -152,20 +152,20 @@ while(true) {
 int connection;
 string tc,tp,ta,requesta,requestb,requestc,request;
 
-until ((ReceiveRemoteString(1,true,requesta) == NO_ERR) || 
-       (ReceiveRemoteString(2,true,requestb) == NO_ERR) || 
-       (ReceiveRemoteString(3,true,requestc) == NO_ERR)); 
+until ((ReceiveRemoteString(1,true,requesta) == NO_ERR) ||
+       (ReceiveRemoteString(2,true,requestb) == NO_ERR) ||
+       (ReceiveRemoteString(3,true,requestc) == NO_ERR));
 
 
 if (StrLen(requesta) > 10) {
-request=requesta;
-connection=1;
+    request=requesta;
+    connection=1;
 } else if (StrLen(requestb) > 10) {
-request=requestb;
-connection=2;
+    request=requestb;
+    connection=2;
 } else {
-request=requestc;
-connection=3;
+    request=requestc;
+    connection=3;
 }
 
 
@@ -192,36 +192,36 @@ TextOut(0,LCD_LINE6,"DB A:");
 NumOut(50,LCD_LINE6,person.amount);
 
 if (spin == person.pinno) {
-    	PlayTone(200,100);
-	Wait(200);
+    PlayTone(200,100);
+    Wait(200);
     if (samount <= person.amount) {
-    	PlayTone(300,100);
-    	person.amount-=samount;
-	TextOut(50,LCD_LINE6,"     ");
-	NumOut(50,LCD_LINE6,person.amount);
-	SendRemoteString(connection,7,"ack");
-	accountlist[scard]=person;
+        PlayTone(300,100);
+        person.amount-=samount;
+        TextOut(50,LCD_LINE6,"     ");
+        NumOut(50,LCD_LINE6,person.amount);
+        SendRemoteString(connection,7,"ack");
+        accountlist[scard]=person;
     } else {
-	SendRemoteString(connection,7,"funds");
-	TextOut(0,LCD_LINE6,"funds");
-	Wait(1000);
+        SendRemoteString(connection,7,"funds");
+        TextOut(0,LCD_LINE6,"funds");
+        Wait(1000);
     }
 } else {
-	person.wrongpin++;
-	accountlist[scard]=person;
-	if (person.wrongpin>=3) { 
-	SendRemoteString(connection,7,"kill"); 	
-	TextOut(0,LCD_LINE6,"pinkill");
-	Wait(1000);
-	} else {
-	SendRemoteString(connection,7,"pin"); 
-	TextOut(0,LCD_LINE6,"pin");
-	Wait(1000);
-	}
+    person.wrongpin++;
+    accountlist[scard]=person;
+    if (person.wrongpin>=3) {
+        SendRemoteString(connection,7,"kill");
+        TextOut(0,LCD_LINE6,"pinkill");
+        Wait(1000);
+    } else {
+        SendRemoteString(connection,7,"pin");
+        TextOut(0,LCD_LINE6,"pin");
+        Wait(1000);
+    }
 
     }
 Wait(1000);
-} 
+}
 requesta="a";
 requestb="a";
 requestc="a";
@@ -239,14 +239,16 @@ void startfile() {
 FileOpenType foArgs;
 foArgs.Filename = ACCOUNTS_FILENAME;
 SysFileOpenRead(foArgs); // open the file for reading
+
 if (foArgs.Result == NO_ERR) {
-// read data from the file using FileHandle
-for (int i=0;i<64;i++) {
-account readperson;
-ReadLn(foArgs,readperson.pinno);
-accountlist[i]=readperson;
+    // read data from the file using FileHandle
+    for (int i=0;i<64;i++) {
+        account readperson;
+        ReadLn(foArgs,readperson.pinno);
+        accountlist[i]=readperson;
+    }
 }
-}
+
 }
 
 
@@ -257,17 +259,17 @@ foArgs.Filename = ACCOUNTS_FILENAME;
 foArgs.Length = 256; // create with capacity for 256 bytes
 SysFileOpenWrite(foArgs); // create the file
 if (foArgs.Result == NO_ERR) {
-// read data from the file using FileHandle
-for (int i=0;i<64;i++) {
-account writeperson;
-accountlist[i]=writeperson;
-WriteLn(foArgs,writeperson.accountno);
-WriteLn(foArgs,writeperson.pinno);
-WriteLn(foArgs,writeperson.amount);
+    // read data from the file using FileHandle
+    for (int i=0;i<64;i++) {
+        account writeperson;
+    accountlist[i]=writeperson;
+    WriteLn(foArgs,writeperson.accountno);
+    WriteLn(foArgs,writeperson.pinno);
+    WriteLn(foArgs,writeperson.amount);
+    }
+    TextOut(0,LCD_LINE1,"Saved data, close program");
 }
 
-	TextOut(0,LCD_LINE1,"Saved data, close program");
-}
 }
 
 // === UI ===
@@ -282,42 +284,43 @@ if (i > 3) i=0;
 if (i < 0) i=3;
 
 if (i==0) {
-ClearScreen();
-Textout(0,LCD_LINE1,"Update Balance");
+    ClearScreen();
+    Textout(0,LCD_LINE1,"Update Balance");
 } else if (i==1) {
-ClearScreen();
-Textout(0,LCD_LINE1,"Create account");
+    ClearScreen();
+    Textout(0,LCD_LINE1,"Create account");
 } else if (i==2) {
-ClearScreen();
-Textout(0,LCD_LINE1,"Close account");
+    ClearScreen();
+    Textout(0,LCD_LINE1,"Close account");
 } else if (i==3) {
-ClearScreen();
-Textout(0,LCD_LINE1,"Shutdown");
+    ClearScreen();
+    Textout(0,LCD_LINE1,"Shutdown");
 }
 
 waitButton();
 switch (pressedButton) {
 case BTNRIGHT: i++;
-	break;
+    break;
 case BTNLEFT: i--;
-	break;
-case BTNCENTER: if (i==0) {
-	int accountno=0;
-	getAccountNo(accountno);
-	additionalFunds(accountno);
-	} else if (i==2) {
-	int accountno=0;
-	getAccountNo(accountno);
-	closeAccount(accountno);
-	} else if (i==1) {
-	createAccount();
-	} else if (i==3) {
-	shutdownfile();
-	mstate=false;
-	}
-	break;
-
+    break;
+case BTNCENTER:
+    if (i==0) {
+        int accountno=0;
+        getAccountNo(accountno);
+        additionalFunds(accountno);
+    } else if (i==2) {
+        int accountno=0;
+        getAccountNo(accountno);
+        closeAccount(accountno);
+    } else if (i==1) {
+        createAccount();
+    } else if (i==3) {
+        shutdownfile();
+        mstate=false;
     }
+    break;
+
+}
 
 }
 
