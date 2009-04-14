@@ -110,7 +110,7 @@ if (given > 40 && given < 55) result=1;
 return result;
 }
 
-void waiting(int &cardno,int &lang, bool stopnow) {
+void readCard(int &cardno,int &lang, bool stopnow) {
 int val,c1,c2,c3,c4,c5,touch;
 string s1,s2,s3,s4,s5,sum;
 SetSensor(S4,SENSOR_LIGHT);
@@ -432,7 +432,7 @@ while (true) {
 ClearScreen();
 //insert graphic
 
-waiting(cardno,lang,stopnow);
+readCard(cardno,lang,stopnow);
 readPin(pinno,lang, stopnow);
 if (!stopnow) selectAmount(amount,lang, stopnow);
 string nresponse;
