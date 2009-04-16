@@ -60,34 +60,28 @@ return accountno;
 }
 
 
+string limitnumber() {
+int check=Random(9);
+while (check < 1 || check > 4) {
+    check=Random(9);
+}
+return NumToStr(check);
+}
+
 void createAccount() {
 int accountno=getAccountNo();
 account pending;
-bool check=TRUE;
-string checkpin;
-int trypin=Random(9999);
+string a=limitnumber();
+string b=limitnumber();
+string c=limitnumber();
+string d=limitnumber();
 
-// really ugly
-while (check) {
-
-    checkpin=NumToStr(trypin);
-    if (checkpin[0]==0 || checkpin[0]==5 || checkpin[0]==6 || checkpin[0]==7 || checkpin[0]==8 || checkpin[0]==9 ||
-    checkpin[1]==0 || checkpin[1]==5 || checkpin[1]==6 || checkpin[1]==7 || checkpin[1]==8 || checkpin[1]==9 ||
-    checkpin[2]==0 || checkpin[2]==5 || checkpin[2]==6 || checkpin[2]==7 || checkpin[2]==8 || checkpin[2]==9 ||
-    checkpin[3]==0 || checkpin[3]==5 || checkpin[3]==6 || checkpin[3]==7 || checkpin[3]==8 || checkpin[3]==9 ) {
-        trypin=Random(9999);
-        NumOut(0,LCD_LINE3,trypin);
-    } else {
-        check=FALSE;
-    }
-
-}
-
-pending.pinno = trypin;
+string trypin=a+b+c+d;
+pending.pinno = StrToNum(trypin);
 TextOut(0,LCD_LINE1,"Pin number:");
 NumOut(0,LCD_LINE2,pending.pinno);
 accountlist[accountno]=pending;
-Wait(1000);
+Wait(3000);
 }
 
 void closeAccount() {
@@ -106,7 +100,6 @@ if (temp > 0) {
     TextOut(0,LCD_LINE2,"Set inactive");
     Wait(3000);
 }
-
 
 }
 
@@ -273,7 +266,7 @@ if (foArgs.Result == NO_ERR) {
         TextOut(0,LCD_LINE1,"Load:");
         NumOut(30,LCD_LINE1,readperson.accountno);
         NumOut(50,LCD_LINE1,readperson.amount);
-        Wait(250);
+        Wait(50);
     }
 } else {
     TextOut(0,LCD_LINE1,"Cannot open file");
@@ -291,7 +284,7 @@ foArgs.Length = 256; // create with capacity for 256 bytes
 SysFileOpenWrite(foArgs); // create the file
 if (foArgs.Result == NO_ERR) {
 
-    for (int i=0;i<64;i++) {
+    for (int i=0;i<32;i++) {
         account writeperson=accountlist[i];
         WriteLn(foArgs,writeperson.accountno);
         WriteLn(foArgs,writeperson.pinno);
