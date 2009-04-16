@@ -246,22 +246,23 @@ while(true) {
 
 void startfile() {
 
-FileOpenType foArgs;
-foArgs.Filename = ACCOUNTS_FILENAME;
-SysFileOpenRead(foArgs); // open the file for reading
+FileOpenType handle;
+int fsize;
 
-if (foArgs.Result == NO_ERR) {
+OpenFileRead(ACCOUNTS_FILENAME,fsize,handle); // open the file for reading
+
+if (handle.Result == NO_ERR) {
 
     for (int i=0;i<32;i++) {
         account readperson;
-        ReadLn(foArgs,readperson.accountno);
-        ReadLn(foArgs,readperson.pinno);
-        ReadLn(foArgs,readperson.lastname);
-        ReadLn(foArgs,readperson.firstname);
-        ReadLn(foArgs,readperson.title);
-        ReadLn(foArgs,readperson.amount);
-        ReadLn(foArgs,readperson.inactive);
-        ReadLn(foArgs,readperson.wrongpin);
+        ReadLn(handle,readperson.accountno);
+        ReadLn(handle,readperson.pinno);
+        ReadLn(handle,readperson.lastname);
+        ReadLn(handle,readperson.firstname);
+        ReadLn(handle,readperson.title);
+        ReadLn(handle,readperson.amount);
+        ReadLn(handle,readperson.inactive);
+        ReadLn(handle,readperson.wrongpin);
         accountlist[i]=readperson;
         TextOut(0,LCD_LINE1,"Load:");
         NumOut(30,LCD_LINE1,readperson.accountno);
@@ -272,35 +273,38 @@ if (foArgs.Result == NO_ERR) {
     TextOut(0,LCD_LINE1,"Cannot open file");
 
 }
+CloseFile(handle);
 Wait(2000);
 
 }
 
 void shutdownfile() {
-//missing
-FileOpenType foArgs;
-foArgs.Filename = ACCOUNTS_FILENAME;
-foArgs.Length = 256; // create with capacity for 256 bytes
-SysFileOpenWrite(foArgs); // create the file
-if (foArgs.Result == NO_ERR) {
+
+FileOpenType handle;
+DeleteFile(ACCOUNTS_FILENAME);
+CreateFile(ACCOUNTS_FILENAME,1024,handle); // open the file for reading
+
+if (handle.Result == NO_ERR) {
 
     for (int i=0;i<32;i++) {
         account writeperson=accountlist[i];
-        WriteLn(foArgs,writeperson.accountno);
-        WriteLn(foArgs,writeperson.pinno);
-        WriteLn(foArgs,writeperson.lastname);
-        WriteLn(foArgs,writeperson.firstname);
-        WriteLn(foArgs,writeperson.title);
-        WriteLn(foArgs,writeperson.amount);
-        WriteLn(foArgs,writeperson.inactive);
-        WriteLn(foArgs,writeperson.wrongpin);
+        WriteLn(handle,writeperson.accountno);
+        WriteLn(handle,writeperson.pinno);
+        WriteLn(handle,writeperson.lastname);
+        WriteLn(handle,writeperson.firstname);
+        WriteLn(handle,writeperson.title);
+        WriteLn(handle,writeperson.amount);
+        WriteLn(handle,writeperson.inactive);
+        WriteLn(handle,writeperson.wrongpin);
+        TextOut(0,LCD_LINE1,"Saving:");
+        NumOut(40,LCD_LINE1,writeperson.accountno);
     }
     TextOut(0,LCD_LINE1,"Saved data, close program");
 } else {
     TextOut(0,LCD_LINE1,"Cannot open file");
-    Wait(2000);
-
 }
+CloseFile(handle);
+Wait(2000);
 
 }
 
