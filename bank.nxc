@@ -248,30 +248,40 @@ void startfile() {
 
 FileOpenType handle;
 int fsize;
+bool eof = false;
+string buf;
 
 OpenFileRead(ACCOUNTS_FILENAME,fsize,handle); // open the file for reading
 
 if (handle.Result == NO_ERR) {
-
-    for (int i=0;i<32;i++) {
+//from NXC Tutorial
+    until (eof == TRUE) {
         account readperson;
-        ReadLn(handle,readperson.accountno);
-        ReadLn(handle,readperson.pinno);
-        ReadLn(handle,readperson.lastname);
-        ReadLn(handle,readperson.firstname);
-        ReadLn(handle,readperson.title);
-        ReadLn(handle,readperson.amount);
-        ReadLn(handle,readperson.inactive);
-        ReadLn(handle,readperson.wrongpin);
-        accountlist[i]=readperson;
+        ReadLnString(handle,buf);
+        readperson.accountno=StrToNum(buf);
+        ReadLnString(handle,buf);
+        readperson.pinno=StrToNum(buf);
+     //   ReadLnString(handle,readperson.lastname);
+     //   ReadLnString(handle,readperson.firstname);
+     //   ReadLnString(handle,readperson.title);
+
+        readperson.amount=StrToNum(buf);
+        //ReadLn(handle,readperson.inactive);
+        ReadLnString(handle,buf);
+        readperson.wrongpin=StrToNum(buf);
+
+        accountlist[readperson.accountno]=readperson;
+        if(ReadLnString(handle,buf) != NO_ERR) eof = true;
         TextOut(0,LCD_LINE1,"Load:");
-        NumOut(30,LCD_LINE1,readperson.accountno);
+        int tp=readperson.accountno;
+        if (tp != 0) {
+        NumOut(30,LCD_LINE1,tp);
         NumOut(50,LCD_LINE1,readperson.amount);
-        Wait(50);
+        Wait(500);
+        }
     }
 } else {
     TextOut(0,LCD_LINE1,"Cannot open file");
-
 }
 CloseFile(handle);
 Wait(2000);
@@ -281,23 +291,42 @@ Wait(2000);
 void shutdownfile() {
 
 FileOpenType handle;
+int bwritten;
+string a;
+int z,t;
 DeleteFile(ACCOUNTS_FILENAME);
-CreateFile(ACCOUNTS_FILENAME,1024,handle); // open the file for reading
+CreateFile(ACCOUNTS_FILENAME,16384,handle);
+
 
 if (handle.Result == NO_ERR) {
 
     for (int i=0;i<32;i++) {
         account writeperson=accountlist[i];
-        WriteLn(handle,writeperson.accountno);
-        WriteLn(handle,writeperson.pinno);
-        WriteLn(handle,writeperson.lastname);
-        WriteLn(handle,writeperson.firstname);
-        WriteLn(handle,writeperson.title);
-        WriteLn(handle,writeperson.amount);
-        WriteLn(handle,writeperson.inactive);
-        WriteLn(handle,writeperson.wrongpin);
-        TextOut(0,LCD_LINE1,"Saving:");
-        NumOut(40,LCD_LINE1,writeperson.accountno);
+        t=writeperson.pinno;
+        if (t != 0) {
+            z=writeperson.accountno;
+            a=NumToStr(z);
+            WriteLnString(handle,a,bwritten);
+            z=writeperson.pinno;
+            a=NumToStr(z);
+            WriteLnString(handle,a,bwritten);
+      //      WriteLnString(handle,writeperson.lastname,bwritten);
+      //      WriteLnString(handle,writeperson.firstname,bwritten);
+      //      WriteLnString(handle,writeperson.title,bwritten);
+            z=writeperson.amount;
+            a=NumToStr(z);
+            WriteLnString(handle,a,bwritten);
+            //WriteLnString(handle,writeperson.inactive,bwritten);
+            z=writeperson.wrongpin;
+            a=NumToStr(z);
+            WriteLnString(handle,a,bwritten);
+            WriteLnString(handle,"spacer",bwritten);
+            TextOut(0,LCD_LINE1,"Saving:");
+            NumOut(40,LCD_LINE1,writeperson.accountno);
+            a="";
+            z=0;
+        }
+        t=0;
     }
     TextOut(0,LCD_LINE1,"Saved data, close program");
 } else {
@@ -358,7 +387,7 @@ while (mstate) {
 // ===Main===
 
 task main() {
-SetBrickDataName("Mainframe");
+SetBrickDataName("HEMITO");
 startfile();
 //instantiate bank accounts (from file)
 account testpersonb;
