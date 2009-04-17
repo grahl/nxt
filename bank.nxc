@@ -295,7 +295,7 @@ int bwritten;
 string a;
 int z,t;
 DeleteFile(ACCOUNTS_FILENAME);
-CreateFile(ACCOUNTS_FILENAME,16384,handle);
+CreateFile(ACCOUNTS_FILENAME,2048,handle);
 
 
 if (handle.Result == NO_ERR) {
