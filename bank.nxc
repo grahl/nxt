@@ -249,7 +249,7 @@ void startfile() {
 FileOpenType handle;
 int fsize;
 bool eof = false;
-string buf;
+string buf,tu;
 
 OpenFileRead(ACCOUNTS_FILENAME,fsize,handle); // open the file for reading
 
@@ -258,17 +258,22 @@ if (handle.Result == NO_ERR) {
     until (eof == TRUE) {
         account readperson;
         ReadLnString(handle,buf);
-        readperson.accountno=StrToNum(buf);
+        tu=StrToNum(buf);
+        readperson.accountno=tu;
         ReadLnString(handle,buf);
-        readperson.pinno=StrToNum(buf);
+        tu=StrToNum(buf);
+        readperson.pinno=tu;
      //   ReadLnString(handle,readperson.lastname);
      //   ReadLnString(handle,readperson.firstname);
      //   ReadLnString(handle,readperson.title);
 
-        readperson.amount=StrToNum(buf);
+        ReadLnString(handle,buf);
+        tu=StrToNum(buf);
+        readperson.amount=tu;
         //ReadLn(handle,readperson.inactive);
         ReadLnString(handle,buf);
-        readperson.wrongpin=StrToNum(buf);
+        tu=StrToNum(buf);
+        readperson.wrongpin=tu;
 
         accountlist[readperson.accountno]=readperson;
         if(ReadLnString(handle,buf) != NO_ERR) eof = true;
