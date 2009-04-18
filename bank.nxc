@@ -1,5 +1,5 @@
-#define ACCOUNTS_FILENAME "konten.txt"
-
+#define ACCOUNTS_FILENAME "konten3.txt"
+#define CLEARLINE(L) TextOut(0,L,"             ");
 byte pressedButton;
 int selectButton;
 int arraycount=5;
@@ -16,6 +16,7 @@ int wrongpin;
 };
 
 account accountlist[32];
+bool finish=FALSE;
 
 // === Functions & Operations ===
 
@@ -124,7 +125,6 @@ while (addstate) {
         break;
 
         case BTNCENTER:
-        //hier muss es das account value field sein statt account
         ClearScreen();
         if (addfunds.inactive==FALSE) {
             addfunds.amount+=amount;
@@ -246,109 +246,115 @@ while(true) {
 
 void startfile() {
 
-FileOpenType handle;
-int fsize;
+byte handle;
+int fsize,accheck;
 bool eof = false;
-string buf,tu;
+string buf,a;
 
-OpenFileRead(ACCOUNTS_FILENAME,fsize,handle); // open the file for reading
-
-if (handle.Result == NO_ERR) {
+if (OpenFileRead(ACCOUNTS_FILENAME,fsize,handle) == NO_ERR) {
 //from NXC Tutorial
     until (eof == TRUE) {
         account readperson;
-        ReadLnString(handle,buf);
-        tu=StrToNum(buf);
-        readperson.accountno=tu;
-        ReadLnString(handle,buf);
-        tu=StrToNum(buf);
-        readperson.pinno=tu;
-     //   ReadLnString(handle,readperson.lastname);
-     //   ReadLnString(handle,readperson.firstname);
-     //   ReadLnString(handle,readperson.title);
+        ReadLnString(handle,a);
+        readperson.accountno=StrToNum(a);
+        ReadLnString(handle,a);
+        readperson.pinno=StrToNum(a);
+        ReadLnString(handle,readperson.lastname);
+        ReadLnString(handle,readperson.firstname);
+        ReadLnString(handle,readperson.title);
+        ReadLnString(handle,a);
+        readperson.amount=StrToNum(a);
+        ReadLnString(handle,a);
+        readperson.inactive=StrToNum(a);
+        ReadLnString(handle,a);
+        readperson.wrongpin=StrToNum(a);
 
-        ReadLnString(handle,buf);
-        tu=StrToNum(buf);
-        readperson.amount=tu;
-        //ReadLn(handle,readperson.inactive);
-        ReadLnString(handle,buf);
-        tu=StrToNum(buf);
-        readperson.wrongpin=tu;
-
-        accountlist[readperson.accountno]=readperson;
         if(ReadLnString(handle,buf) != NO_ERR) eof = true;
         TextOut(0,LCD_LINE1,"Load:");
-        int tp=readperson.accountno;
-        if (tp != 0) {
-        NumOut(30,LCD_LINE1,tp);
+        accheck=readperson.accountno;
+        if (accheck != 0) {
+        NumOut(30,LCD_LINE1,accheck);
+        NumOut(50,LCD_LINE1,readperson.amount);
+        accountlist[readperson.accountno]=readperson;
+        Wait(500);
+        CLEARLINE(1);
         NumOut(50,LCD_LINE1,readperson.amount);
         Wait(500);
         }
     }
+if (CloseFile(handle) != NO_ERR);
+TextOut(0,LCD_LINE1,"Loose handle!");
+
 } else {
     TextOut(0,LCD_LINE1,"Cannot open file");
 }
-CloseFile(handle);
 Wait(2000);
-
 }
 
 void shutdownfile() {
 
-FileOpenType handle;
+byte handle;
 int bwritten;
 string a;
-int z,t;
-DeleteFile(ACCOUNTS_FILENAME);
-CreateFile(ACCOUNTS_FILENAME,2048,handle);
-
-
-if (handle.Result == NO_ERR) {
-
-    for (int i=0;i<32;i++) {
+int w,x,y,z;
+if (DeleteFile(ACCOUNTS_FILENAME) != NO_ERR) {
+TextOut(0,LCD_LINE6,"Not deleted");
+Wait(1000);
+}
+if (CreateFile(ACCOUNTS_FILENAME,256,handle) == NO_ERR) {
+//wieso hier kleiner 31 nicht 32?
+    for (int i=0;i<31;i++) {
         account writeperson=accountlist[i];
-        t=writeperson.pinno;
-        if (t != 0) {
-            z=writeperson.accountno;
-            a=NumToStr(z);
+        x=writeperson.pinno;
+        if (x != 0) {
+            a=NumToStr(writeperson.accountno);
             WriteLnString(handle,a,bwritten);
-            z=writeperson.pinno;
-            a=NumToStr(z);
+            a=NumToStr(writeperson.pinno);
             WriteLnString(handle,a,bwritten);
-      //      WriteLnString(handle,writeperson.lastname,bwritten);
-      //      WriteLnString(handle,writeperson.firstname,bwritten);
-      //      WriteLnString(handle,writeperson.title,bwritten);
-            z=writeperson.amount;
-            a=NumToStr(z);
+            WriteLnString(handle,writeperson.lastname,bwritten);
+            WriteLnString(handle,writeperson.firstname,bwritten);
+            WriteLnString(handle,writeperson.title,bwritten);
+            a=NumToStr(writeperson.amount);
             WriteLnString(handle,a,bwritten);
-            //WriteLnString(handle,writeperson.inactive,bwritten);
-            z=writeperson.wrongpin;
-            a=NumToStr(z);
+            a=NumToStr(writeperson.inactive);
             WriteLnString(handle,a,bwritten);
+            a=NumToStr(writeperson.wrongpin);
+            WriteLnString(handle,a,bwritten);
+            ClearScreen();
             WriteLnString(handle,"spacer",bwritten);
             TextOut(0,LCD_LINE1,"Saving:");
             NumOut(40,LCD_LINE1,writeperson.accountno);
-            a="";
-            z=0;
+            NumOut(0,LCD_LINE2,writeperson.pinno);
+            NumOut(0,LCD_LINE3,writeperson.amount);
+            NumOut(0,LCD_LINE4,writeperson.wrongpin);
+            Wait(1000);
         }
-        t=0;
+        x=0;
     }
-    TextOut(0,LCD_LINE1,"Saved data, close program");
+    TextOut(0,LCD_LINE1,"Saved data");
+    if (CloseFile(handle) == NO_ERR) {
+    }
+    else {
+    TextOut(0,LCD_LINE2,"Loose handle!");
+    PlayTone(500,100);
+    }
 } else {
     TextOut(0,LCD_LINE1,"Cannot open file");
+    PlayTone(500,100);
 }
-CloseFile(handle);
-Wait(2000);
 
+TextOut(0,LCD_LINE4,"DONE");
+Wait(1000);
 }
 
 // === UI ===
 
 void menu() {
 
-bool mstate=true;
+bool mstate=TRUE;
 int i=0;
 int accountno=0;
+
 while (mstate) {
     if (i > 3) i=0;
     if (i < 0) i=3;
@@ -380,8 +386,8 @@ while (mstate) {
         } else if (i==1) {
             createAccount();
         } else if (i==3) {
-            shutdownfile();
             mstate=false;
+            shutdownfile();
         }
         break;
     }
@@ -394,7 +400,9 @@ while (mstate) {
 task main() {
 SetBrickDataName("HEMITO");
 startfile();
-//instantiate bank accounts (from file)
+
+/* remove later these accounts
+
 account testpersonb;
 testpersonb.accountno=4;
 testpersonb.amount=0;
@@ -410,11 +418,10 @@ testperson.pinno=1234;
 testperson.inactive=FALSE;
 testperson.lastname="Egli";
 accountlist[3]=testperson;
-start networkListener;
+*/
 
-bool kill=FALSE;
-while (!kill) {
-    menu();
-}
+start networkListener;
+menu();
+StopAllTasks();
 
 }
