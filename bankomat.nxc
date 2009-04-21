@@ -324,9 +324,9 @@ void readPin(int &pinno, int lang, bool &stopnow) {
 int x = 0;
 int y = 5;
 int i = 0;
-string Stelle1,Stelle2,Stelle3,Stelle4;
+string Stelle1,Stelle2,Stelle3,Stelle4,Stelle5,Stelle6;
 string Pincode;
-int Pin[4];
+int Pin[6];
 int posstar=0;
 SetSensorMode(1, IN_MODE_RAW);
 SetSensorType(1, IN_TYPE_SWITCH);
@@ -387,7 +387,17 @@ if (x > 30 && x < 35) {
     Stelle2 = NumToStr(Pin[1]);
     Stelle3 = NumToStr(Pin[2]);
     Stelle4 = NumToStr(Pin[3]);
+    if (Pin[4] > 0) {
+    Stelle5 = NumToStr(Pin[4]);
+        if (Pin[5] > 0) {
+            Stelle6 = NumToStr(Pin[5]);
+            Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4,Stelle5,Stelle6);
+        } else {
+            Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4,Stelle5);
+        }
+    } else {
     Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4);
+    }
     pinno=StrToNum(Pincode);
     Wait(1000);
 } else if (x > 19 && x < 23) {

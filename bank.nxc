@@ -1,14 +1,8 @@
-/*
-Watch out for buffer overflows!!!
-Optional: currencies, i18n
-*/
-
 #define ACCOUNTS_FILENAME "konten.txt"
-#define CURRENCY="sFr"
-int netcount=1;
+#define CLEARLINE(L) TextOut(0,L,"                ");
 byte pressedButton;
 int selectButton;
-int arraycount=5;
+int accounts=32;
 
 struct account {
 int accountno;
@@ -17,13 +11,12 @@ string lastname;
 string firstname;
 string title;
 int amount;
-bool active;
+bool inactive;
 int wrongpin;
 };
 
-//initiated list of accounts, start at 0
-account accountlist[64];
-
+account accountlist[accounts];
+bool finish=FALSE;
 
 // === Functions & Operations ===
 
@@ -42,296 +35,403 @@ until(!ButtonPressed(wbIndex,FALSE));
 pressedButton = wbIndex;
 }
 
+int getAccountNo() {
+bool accstate=TRUE;
+int accountno=3;
+
+while (accstate) {
+    TextOut(0,LCD_LINE1,"Account number:");
+    NumOut(0,LCD_LINE2,accountno);
+    waitButton();
+    switch (pressedButton) {
+        case BTNLEFT:
+            accountno--;
+            break;
+        case BTNRIGHT:
+            accountno++;
+            break;
+        case BTNCENTER:
+            accstate=FALSE;
+            break;
+    }
+}
+
+return accountno;
+
+}
+
+
+string limitnumber() {
+int check=Random(9);
+while (check < 1 || check > 4) {
+    check=Random(9);
+}
+return NumToStr(check);
+}
+
 void createAccount() {
-//increase the count for arrays for next empty slot
-arraycount++;
+int accountno=getAccountNo();
 account pending;
-bool check=false;
-string checkpin;
-int trypin=Random(9999);
+string a=limitnumber();
+string b=limitnumber();
+string c=limitnumber();
+string d=limitnumber();
 
-// really fucking ugly
-while (!check) {
+string trypin=a+b+c+d;
+pending.accountno = accountno;
+pending.pinno = StrToNum(trypin);
+pending.wrongpin = 0;
+ClearScreen();
+TextOut(0,LCD_LINE1,"Create account:");
+NumOut(0,LCD_LINE2,accountno);
+TextOut(0,LCD_LINE4,"Arrow: abort");
+TextOut(0,LCD_LINE5,"Orange: continue");
+    waitButton();
+    switch (pressedButton) {
+    case BTNLEFT:
+        TextOut(0,LCD_LINE6,"aborted");
+        break; 
+    case BTNRIGHT:
+        TextOut(0,LCD_LINE6,"aborted");
+        break; 
+    case BTNCENTER:
+        ClearScreen();
+        TextOut(0,LCD_LINE1,"ACCOUNT:");
+        NumOut(50,LCD_LINE1,accountno);
+        TextOut(0,LCD_LINE2,"PIN:");
+        NumOut(50,LCD_LINE2,pending.pinno);
+        accountlist[accountno]=pending;
+        break; 
+    }
+Wait(3000);
 
-checkpin=NumToStr(trypin);
-if (checkpin[0]==0 || checkpin[0]==5 || checkpin[0]==6 || checkpin[0]==7 || checkpin[0]==8 || checkpin[0]==9 ||
-    checkpin[1]==0 || checkpin[1]==5 || checkpin[1]==6 || checkpin[1]==7 || checkpin[1]==8 || checkpin[1]==9 ||
-    checkpin[2]==0 || checkpin[2]==5 || checkpin[2]==6 || checkpin[2]==7 || checkpin[2]==8 || checkpin[2]==9 ||
-    checkpin[3]==0 || checkpin[3]==5 || checkpin[3]==6 || checkpin[3]==7 || checkpin[3]==8 || checkpin[3]==9 ) {
-    trypin=Random(9999);
-} else {
-    check=true;
 }
 
-}
-
-pending.pinno = trypin;
-TextOut(0,LCD_LINE1,"Pin number:");
-NumOut(0,LCD_LINE2,pending.pinno);
-accountlist[arraycount]=pending;
-}
-
-void closeAccount(int accountno) {
+void closeAccount() {
+int accountno=getAccountNo();
 account closeme=accountlist[accountno];
-if (closeme.amount>0) {
-    TextOut(0,LCD_LINE1,"Still money in account");
-    TextOut(0,LCD_LINE2,"Withdraw it first");
+int temp=closeme.amount;
+if (temp > 0) {
+    ClearScreen();
+    TextOut(0,LCD_LINE1,"Still money in");
+    TextOut(0,LCD_LINE2,"account withdraw");
+    TextOut(0,LCD_LINE2,"it first");
+    NumOut(0,LCD_LINE3,closeme.amount);
     Wait(3000);
 } else {
-    closeme.active=FALSE;
-    //needed to pass?
-    accountlist[accountno]=closeme;
-    TextOut(0,LCD_LINE2,"Set inactive");
-    //TODO: VERIFY THAT IT IS CHECKED ON WITHDRAW!
-    Wait(3000);
+    TextOut(0,LCD_LINE4,"Arrow: abort");
+    TextOut(0,LCD_LINE5,"Orange: continue");
+    waitButton();
+    switch (pressedButton) {
+    case BTNLEFT:
+        TextOut(0,LCD_LINE6,"aborted");
+        break; 
+    case BTNRIGHT:
+        TextOut(0,LCD_LINE6,"aborted");
+        break; 
+    case BTNCENTER:
+        closeme.inactive=TRUE;
+        accountlist[accountno]=closeme;
+        ClearScreen();
+        TextOut(0,LCD_LINE1,"ACCOUNT:");
+        NumOut(50,LCD_LINE1,accountno);
+        TextOut(0,LCD_LINE2,"Set inactive");
+        break; 
+    }
+    Wait(3000);        
+
+   }
+
 }
 
-
-}
-
-void additionalFunds(int accountno) {
+void additionalFunds() {
+int accountno=getAccountNo();
 //does not check what is still given
 account addfunds=accountlist[accountno];
 int amount=100;
-NumOut(0,LCD_LINE2,amount);
-TextOut(0,LCD_LINE1,"Updated, balance:");
-if (pressedButton==BTNLEFT) {
-    amount+=100;
+bool addstate=TRUE;
+while (addstate) {
+    ClearScreen();
     TextOut(0,LCD_LINE1,"Add funds:");
-    NumOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
-}
-if (pressedButton==BTNRIGHT) {
-    amount -=100;
-    TextOut(0,LCD_LINE1,"Add funds:");
-    NumOut(0,LCD_LINE2,amount); //hier Währung anhängen, wie?
-}
-if (pressedButton==BTNCENTER) {
-    //hier muss es das account value field sein statt account
-    addfunds.amount+=amount;
-    if (addfunds.active==true) {
-        accountlist[accountno]=addfunds;
-        TextOut(0,LCD_LINE1,"Updated, balance:");
-        NumOut(0,LCD_LINE2,addfunds.amount);
-    } else {
-    TextOut(0,LCD_LINE1,"Sorry, inactive account");
-    }
-}
-
-}
-
-void getAccountNo(int &accountno) {
-//remove later
-accountno=3;
-TextOut(0,LCD_LINE1,"Account number:");
-NumOut(0,LCD_LINE2,accountno);
-while (true) {
+    NumOut(0,LCD_LINE2,amount);
     waitButton();
-    if (pressedButton==BTNLEFT) {
-        accountno--;
-        TextOut(0,LCD_LINE1,"Account number:");
-        NumOut(0,LCD_LINE2,accountno);
-    }
-
-    if (pressedButton==BTNRIGHT) {
-        accountno++;
-        TextOut(0,LCD_LINE1,"Account number:");
-        NumOut(0,LCD_LINE2,accountno);
-    }
-
-    if (pressedButton==BTNCENTER) {
+    switch (pressedButton) {
+        case BTNRIGHT:
+        amount+=20;
         break;
-        //reicht ein break?
+
+        case BTNLEFT:
+        amount -=20;
+        break;
+
+        case BTNCENTER:
+        ClearScreen();
+        if (addfunds.inactive==FALSE) {
+            addfunds.amount+=amount;
+            accountlist[accountno]=addfunds;
+            TextOut(0,LCD_LINE1,"Updated, balance:");
+            NumOut(0,LCD_LINE2,addfunds.amount);
+            Wait(2000);
+        } else {
+            TextOut(0,LCD_LINE1,"Sorry, inactive account");
+            Wait(2000);
+        }
+        addstate=FALSE;
+        break;
     }
 }
+
 }
+
+
 
 // === Network Communication ===
 
 task networkListener() {
+
 while(true) {
-int connection;
-string tc,tp,ta,requesta,requestb,requestc,request;
+    int connection;
+    string tc,tp,ta,requesta,requestb,requestc,request;
 
-until ((ReceiveRemoteString(1,true,requesta) == NO_ERR) ||
-       (ReceiveRemoteString(2,true,requestb) == NO_ERR) ||
-       (ReceiveRemoteString(3,true,requestc) == NO_ERR));
+    until ((ReceiveRemoteString(1,true,requesta) == NO_ERR) ||
+        (ReceiveRemoteString(2,true,requestb) == NO_ERR) ||
+        (ReceiveRemoteString(3,true,requestc) == NO_ERR));
 
+    if (StrLen(requesta) > 10) {
+        request=requesta;
+        connection=1;
+    } else if (StrLen(requestb) > 10) {
+        request=requestb;
+        connection=2;
+    } else {
+        request=requestc;
+        connection=3;
+    }
 
-if (StrLen(requesta) > 10) {
-    request=requesta;
-    connection=1;
-} else if (StrLen(requestb) > 10) {
-    request=requestb;
-    connection=2;
-} else {
-    request=requestc;
-    connection=3;
-}
+    tc=SubStr(request,0,2);
+    int scard=StrToNum(tc);
+    if (scard!=0) {
+        ClearScreen();
+        TextOut(0,LCD_LINE2,"Konto:");
+        NumOut(50,LCD_LINE2,scard);
+        tp=SubStr(request,3,4);
+        int spin=StrToNum(tp);
+        TextOut(0,LCD_LINE3,"Pin:");
+        NumOut(50,LCD_LINE3,spin);
+        ta=SubStr(request,9,4);
+        int samount=StrToNum(ta);
+        TextOut(0,LCD_LINE4,"Amt:");
+        NumOut(50,LCD_LINE4,samount);
 
-
-tc=SubStr(request,0,2);
-int scard=StrToNum(tc);
-if (scard!=0) {
-
-ClearScreen();
-TextOut(0,LCD_LINE2,"Konto:");
-NumOut(50,LCD_LINE2,scard);
-tp=SubStr(request,3,4);
-int spin=StrToNum(tp);
-TextOut(0,LCD_LINE3,"Pin:");
-NumOut(50,LCD_LINE3,spin);
-ta=SubStr(request,9,4);
-int samount=StrToNum(ta);
-TextOut(0,LCD_LINE4,"Amt:");
-NumOut(50,LCD_LINE4,samount);
-
-account person;
-person=accountlist[scard];
-TextOut(0,LCD_LINE5,"DB P:");
-NumOut(50,LCD_LINE5,person.pinno);
-TextOut(0,LCD_LINE6,"DB A:");
-NumOut(50,LCD_LINE6,person.amount);
-
-if (person.pinno==0) {
-    SendRemoteString(connection,7,"card");
-    TextOut(0,LCD_LINE7,"card");
-
-} else {
-
-if (spin == person.pinno) {
-    PlayTone(200,100);
-    Wait(200);
-    person.wrongpin=0;
-    accountlist[scard]=person;
-    if (samount <= person.amount) {
-        PlayTone(300,100);
-        person.amount-=samount;
-        TextOut(50,LCD_LINE6,"     ");
+        account person;
+        person=accountlist[scard];
+        TextOut(0,LCD_LINE5,"DB P:");
+        NumOut(50,LCD_LINE5,person.pinno);
+        TextOut(0,LCD_LINE6,"DB A:");
         NumOut(50,LCD_LINE6,person.amount);
-        SendRemoteString(connection,7,"ack");
-        accountlist[scard]=person;
-    } else {
-        SendRemoteString(connection,7,"funds");
-        TextOut(0,LCD_LINE7,"funds");
+
+        if (spin == person.pinno) {
+            if (person.inactive==FALSE) {
+                PlayTone(200,100);
+                Wait(200);
+                if (samount <= person.amount) {
+                    PlayTone(300,100);
+                    person.amount-=samount;
+                    TextOut(50,LCD_LINE6,"     ");
+                    NumOut(75,LCD_LINE6,person.amount);
+                    SendRemoteString(connection,7,"ack");
+                    accountlist[scard]=person;
+                } else {
+                    PlayTone(100,50);
+                    SendRemoteString(connection,7,"funds");
+                    TextOut(0,LCD_LINE6,"funds");
+                    Wait(1000);
+                }
+            } else {
+                PlayTone(100,50);
+                SendRemoteString(connection,7,"inactive");
+                TextOut(0,LCD_LINE6,"inactive");
+                Wait(1000);
+            }
+        } else {
+            person.wrongpin++;
+            accountlist[scard]=person;
+            if (person.wrongpin>=3) {
+                PlayTone(100,50);
+                SendRemoteString(connection,7,"kill");
+                TextOut(0,LCD_LINE6,"kill");
+                Wait(1000);
+            } else {
+                PlayTone(100,50);
+                SendRemoteString(connection,7,"pin");
+                TextOut(0,LCD_LINE6,"pin");
+                Wait(1000);
+            }
+
+        }
+    Wait(1000);
     }
-} else {
-    person.wrongpin++;
-    accountlist[scard]=person;
-    if (person.wrongpin>=3) {
-        SendRemoteString(connection,7,"kill");
-        TextOut(0,LCD_LINE7,"kill");
-    } else {
-        SendRemoteString(connection,7,"pin");
-        TextOut(0,LCD_LINE7,"pin");
-    }
 
-    }
-Wait(1000);
-
-}
-
-}
-
-requesta="a";
-requestb="a";
-requestc="a";
-request="a";
+    requesta="a";
+    requestb="a";
+    requestc="a";
+    request="a";
 
 }
 
 }
 
 // === File I/O ===
-// copied from NXC Guide & modified
+// based on NXC Guide & modified
 
 void startfile() {
-//open file to read
-FileOpenType foArgs;
-foArgs.Filename = ACCOUNTS_FILENAME;
-SysFileOpenRead(foArgs); // open the file for reading
 
-if (foArgs.Result == NO_ERR) {
-    // read data from the file using FileHandle
-    for (int i=0;i<64;i++) {
+byte handle;
+int fsize,accheck;
+bool eof = false;
+string buf,a;
+
+if (OpenFileRead(ACCOUNTS_FILENAME,fsize,handle) == NO_ERR) {
+//from NXC Tutorial
+    until (eof == TRUE) {
         account readperson;
-        ReadLn(foArgs,readperson.pinno);
-        accountlist[i]=readperson;
+        ReadLnString(handle,a);
+        readperson.accountno=StrToNum(a);
+        ReadLnString(handle,a);
+        readperson.pinno=StrToNum(a);
+        ReadLnString(handle,readperson.lastname);
+        ReadLnString(handle,readperson.firstname);
+        ReadLnString(handle,readperson.title);
+        ReadLnString(handle,a);
+        readperson.amount=StrToNum(a);
+        ReadLnString(handle,a);
+        readperson.inactive=StrToNum(a);
+        ReadLnString(handle,a);
+        readperson.wrongpin=StrToNum(a);
+
+        if(ReadLnString(handle,buf) != NO_ERR) eof = true;
+        accheck=readperson.accountno;
+        if (accheck != 0) {
+        TextOut(0,LCD_LINE1,"Load:");
+        NumOut(50,LCD_LINE1,accheck);
+        NumOut(50,LCD_LINE2,readperson.amount);
+        NumOut(50,LCD_LINE3,readperson.pinno);
+        NumOut(50,LCD_LINE4,readperson.wrongpin);
+        accountlist[readperson.accountno]=readperson;
+        Wait(700);
+        ClearScreen();
+        }
     }
-}
+if (CloseFile(handle) != NO_ERR)
+TextOut(0,LCD_LINE1,"Loose handle!");
 
+} else {
+    TextOut(0,LCD_LINE1,"Cannot open file");
 }
-
+Wait(2000);
+}
 
 void shutdownfile() {
-//missing
-FileOpenType foArgs;
-foArgs.Filename = ACCOUNTS_FILENAME;
-foArgs.Length = 256; // create with capacity for 256 bytes
-SysFileOpenWrite(foArgs); // create the file
-if (foArgs.Result == NO_ERR) {
-    // read data from the file using FileHandle
-    for (int i=0;i<64;i++) {
-        account writeperson;
-    accountlist[i]=writeperson;
-    WriteLn(foArgs,writeperson.accountno);
-    WriteLn(foArgs,writeperson.pinno);
-    WriteLn(foArgs,writeperson.amount);
+
+byte handle;
+int bwritten;
+string a;
+int w,x,y,z;
+if (DeleteFile(ACCOUNTS_FILENAME) != NO_ERR) {
+TextOut(0,LCD_LINE6,"Not deleted");
+Wait(1000);
+}
+if (CreateFile(ACCOUNTS_FILENAME,1024,handle) == NO_ERR) {
+    
+    for (int i=0;i<accounts;i++) {
+        account writeperson=accountlist[i];
+        x=writeperson.pinno;
+        if (x != 0) {
+            a=NumToStr(writeperson.accountno);
+            WriteLnString(handle,a,bwritten);
+            a=NumToStr(writeperson.pinno);
+            WriteLnString(handle,a,bwritten);
+            WriteLnString(handle,writeperson.lastname,bwritten);
+            WriteLnString(handle,writeperson.firstname,bwritten);
+            WriteLnString(handle,writeperson.title,bwritten);
+            a=NumToStr(writeperson.amount);
+            WriteLnString(handle,a,bwritten);
+            a=NumToStr(writeperson.inactive);
+            WriteLnString(handle,a,bwritten);
+            a=NumToStr(writeperson.wrongpin);
+            WriteLnString(handle,a,bwritten);
+            WriteLnString(handle,"spacer",bwritten);
+            TextOut(0,LCD_LINE1,"Saving:");
+            NumOut(50,LCD_LINE1,writeperson.accountno);
+            NumOut(50,LCD_LINE3,writeperson.amount);
+            NumOut(50,LCD_LINE2,writeperson.pinno);
+            NumOut(50,LCD_LINE4,writeperson.wrongpin);
+            Wait(700);
+            ClearScreen();
+        }
+        x=0;
     }
-    TextOut(0,LCD_LINE1,"Saved data, close program");
+    ClearScreen();
+    TextOut(0,LCD_LINE1,"Saved data");
+    if (CloseFile(handle) == NO_ERR) {
+    }
+    else {
+    TextOut(0,LCD_LINE2,"Loose handle!");
+    PlayTone(500,100);
+    }
+} else {
+    TextOut(0,LCD_LINE1,"Cannot open file");
+    PlayTone(500,100);
 }
 
+TextOut(0,LCD_LINE4,"DONE");
+Wait(1000);
 }
 
 // === UI ===
 
 void menu() {
 
-bool mstate=true;
-
+bool mstate=TRUE;
 int i=0;
+int accountno=0;
+
 while (mstate) {
-if (i > 3) i=0;
-if (i < 0) i=3;
-
-if (i==0) {
-    ClearScreen();
-    Textout(0,LCD_LINE1,"Update Balance");
-} else if (i==1) {
-    ClearScreen();
-    Textout(0,LCD_LINE1,"Create account");
-} else if (i==2) {
-    ClearScreen();
-    Textout(0,LCD_LINE1,"Close account");
-} else if (i==3) {
-    ClearScreen();
-    Textout(0,LCD_LINE1,"Shutdown");
-}
-
-waitButton();
-switch (pressedButton) {
-case BTNRIGHT: i++;
-    break;
-case BTNLEFT: i--;
-    break;
-case BTNCENTER:
+    if (i > 3) i=0;
+    if (i < 0) i=3;
     if (i==0) {
-        int accountno=0;
-        getAccountNo(accountno);
-        additionalFunds(accountno);
-    } else if (i==2) {
-        int accountno=0;
-        getAccountNo(accountno);
-        closeAccount(accountno);
+        ClearScreen();
+        Textout(0,LCD_LINE1,"Update Balance");
     } else if (i==1) {
-        createAccount();
+        ClearScreen();
+        Textout(0,LCD_LINE1,"Create account");
+    } else if (i==2) {
+        ClearScreen();
+        Textout(0,LCD_LINE1,"Close account");
     } else if (i==3) {
-        shutdownfile();
-        mstate=false;
+        ClearScreen();
+        Textout(0,LCD_LINE1,"Shutdown");
     }
-    break;
 
-}
-
+    waitButton();
+    switch (pressedButton) {
+    case BTNRIGHT: i++;
+        break;
+    case BTNLEFT: i--;
+        break;
+    case BTNCENTER:
+        if (i==0) {
+            additionalFunds();
+        } else if (i==2) {
+            closeAccount();
+        } else if (i==1) {
+            createAccount();
+        } else if (i==3) {
+            mstate=false;
+            shutdownfile();
+        }
+        break;
+    }
 }
 
 }
@@ -339,23 +439,11 @@ case BTNCENTER:
 // ===Main===
 
 task main() {
-SetBrickDataName("Mainframe");
+SetBrickDataName("HEMITO");
+startfile();
 
-//instantiate bank accounts (from file)
-
-account testperson=accountlist[3];
-testperson.accountno=3;
-testperson.amount=300;
-testperson.pinno=1234;
-testperson.lastname="Egli";
-accountlist[3]=testperson;
 start networkListener;
-//start networkListenerB;
-//start networkListener;
-
-bool kill=FALSE;
-while (!kill) {
-    menu();
-}
+menu();
+StopAllTasks();
 
 }
