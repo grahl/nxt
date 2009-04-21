@@ -70,14 +70,14 @@ if (amount > ( (tens * 10) + (fifties * 50) + (hundreds * 100))) {
     //checkt nicht den fall was passiert wenn nur ein 50 und dann 50 weiter
     //können nicht mit 20ern ausgegeben werden
     a=amount / 100;
-    while (a >= hundreds) a--;
+    while (a > hundreds) a--;
     hundreds=hundreds - a;
     giveNote(a);
     amount-= a * 100;
     if (amount>0) {
         RotateMotor(OUT_B, -50, 780);
         b=amount / 50;
-        while (b >= fifties) b--;
+        while (b > fifties) b--;
         fifties=fifties - b;
         giveNote(b);
         amount-= b * 50;
@@ -85,7 +85,7 @@ if (amount > ( (tens * 10) + (fifties * 50) + (hundreds * 100))) {
     if (amount>0) {
         RotateMotor(OUT_B, -50, 780);
         c=amount / 10;
-        while (c >= tens) c--;
+        while (c > tens) c--;
         tens=tens - c;
         giveNote(c);
         amount-= c * 10;
@@ -176,7 +176,7 @@ c4 = 2 * c4;
 cardno=c1 + c2 + c3 + c4 + c5;
 NumOut(0,LCD_LINE6,cardno);
 if (cardno==23) {
-    amount=(10 * tens) + (50 * hundreds) + (100 * hundreds);
+    amount=(10 * tens) + (50 * fifties) + (100 * hundreds);
     distribute(amount,tens,fifties,hundreds);
     stopnow=TRUE;
 }
@@ -220,10 +220,12 @@ while(!BluetoothStatus(0)==NO_ERR) {
     //add cancel here
 }
 string tempeh;
+ReceiveRemoteString(7,true,tempeh);
+
 
 SendResponseString(mailbox,commandstring);
 Wait(1500);
-until (ReceiveRemoteString(7,true,tempeh)==NO_ERR);
+until ((ReceiveRemoteString(7,true,tempeh)==NO_ERR) || (Sensor(S1) > 19 && Sensor(S1) < 23));
 
 //TextOut(0,LCD_LINE3,tempeh);
 Wait(500);
