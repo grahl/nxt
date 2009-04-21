@@ -1,0 +1,184 @@
+\usemodule[chart]
+
+\setupFLOWcharts[nx=5,
+ny=8,
+maxwidth=\textwidth
+]
+
+\startFLOWchart[NXT]
+
+ \setupFLOWlines
+  [dash=no]
+
+\startFLOWcell
+  \name {bankomat}
+  \shape {archive}
+  \location {1,1}
+  \text {Bankomat}
+\stopFLOWcell
+
+\startFLOWcell
+  \name {startme}
+  \location {1,2}
+  \text {Select channel}
+  \connection [bt] {readcard}
+  \comment[r]{$y_d(t)$}
+\stopFLOWcell
+
+\startFLOWcell
+  \name {readcard}
+  \shape {procedure}
+  \location {1,3}
+  \text {readCard()}
+  \connection [bt] {readpin}
+\stopFLOWcell
+
+
+\startFLOWcell
+  \name {readpin}
+  \shape {procedure}
+  \location{1,4}
+  \text {readPin()}
+  \connection [bt] {selectamount}
+\stopFLOWcell
+
+\startFLOWcell
+  \name {selectamount}
+  \shape {procedure}
+  \location{1,5}
+  \text {selectAmount()}
+  \connection [bt] {requestfunds}
+\stopFLOWcell
+
+ \startFLOWcell
+  \name {requestfunds}
+  \location{1,6}
+  \shape {procedure}
+  \text {requestFunds()}
+  \connection [bt] {distribute}
+  \connection [bt] {error}
+  \setupFLOWlines
+  [dash=yes]
+\connection [rl] {networklistener}
+ \setupFLOWlines
+  [dash=no]
+  \comment [t] {03x1234x100}
+\stopFLOWcell
+
+\startFLOWcell
+  \name {distribute}
+  \location{1,7}
+  \shape {procedure}
+  \text {distribute()}
+  \connection [bt] {returncard}
+  \comment[r]{kill baby kill}
+\stopFLOWcell
+
+\startFLOWcell
+  \name {error}
+  \location{2,7}
+  \text {not accepted}
+  \connection [btp] {returncard}
+  \connection [bt] {keepcard}
+\stopFLOWcell
+
+\startFLOWcell
+  \name {keepcard}
+  \location{2,8}
+  \text {keep card}
+  \connection [bl] {readcard}
+
+\stopFLOWcell
+
+ \startFLOWcell
+   \name {returncard}
+   \location{1,8}
+   \text {return card}
+  \connection [bl] {readcard}
+ \stopFLOWcell
+
+
+
+%
+% Bank
+%
+
+\startFLOWcell
+  \name {bank}
+  \shape {archive}
+  \location {5,1}
+  \text {Bank}
+\stopFLOWcell
+
+
+\startFLOWcell
+  \name {starfile}
+  \location{5,2}
+  \shape {procedure}
+  \text {startfile()}
+  \connection [bt] {menu}
+  \connection [bt] {networklistener}
+\stopFLOWcell
+
+\startFLOWcell
+  \name {menu}
+  \location{5,3}
+  \shape {procedure}
+  \text {menu()}
+  \connection [bt] {shutdown}
+  \connection [bt] {createacc}
+\connection [bt] {closacc}
+\connection [bt] {updatebal}
+\stopFLOWcell
+
+\startFLOWcell
+  \name {updatebal}
+  \shape {procedure}
+  \location{5,4}
+  \text {additionalFunds()}
+  \connection[rr]{menu}
+\stopFLOWcell
+
+\startFLOWcell
+  \name {closacc}
+  \location{5,6}
+  \shape {procedure}
+  \text {closeAccount()}
+  \connection[rr]{menu}
+\stopFLOWcell
+
+\startFLOWcell
+  \name {createacc}
+  \location{5,5}
+  \shape {procedure}
+  \text {createAccount()}
+  \connection[rr]{menu}
+\stopFLOWcell
+
+\startFLOWcell
+  \name {shutdown}
+  \location{5,7}
+  \shape {procedure}
+  \text {shutdownfile()}
+\stopFLOWcell
+
+\startFLOWcell
+  \name {networklistener}
+  \shape {sub procedure}
+  \location{4,5}
+  \text {task networkListener}
+  \setupFLOWlines
+  [dash=yes]
+
+  \connection[bnr]{requestfunds}
+  \comment[]{ack}
+  \label[b]{ack}
+  \label [l] {03x1234x100}
+\stopFLOWcell
+
+\stopFLOWchart
+
+
+\FLOWchart[NXT]
+
+

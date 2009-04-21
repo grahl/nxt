@@ -1,0 +1,20 @@
+•ist while{ … j--; } im DOC vorhanden?
+
+• if (!pending.lastname) ==> unset
+
+• createaccount if exists use amount,lastname,firstname,title
+
+• Pin Änderung wrongpin=0;
+
+• Kontostand überschrieben bei createaccount;
+
+• Konto schliessen neg. (?)
+
+• Was wenn keine Nummer erkannt? cardno fehlt?
+
+• Ist der Fall inactive im Bankomat recognized? (ja…?)
+    only allow update if inactive=false;
+
+• pin 12345 wird als 1234 gelesen?
+
+• status bankomat speichern 

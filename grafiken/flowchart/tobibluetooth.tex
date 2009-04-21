@@ -1,0 +1,66 @@
+\usemodule[chart]
+
+\defineoverlay [nxtgra]
+  [{\externalfigure
+	[drawing]
+	[	 height=\overlayheight,
+	 type=png]}]
+\setupbodyfont[modern,16pt]
+
+\setupFLOWcharts[nx=3,
+ny=3,
+maxwidth=\textwidth
+]
+
+\startFLOWchart[NXTBT]
+\setupFLOWlines
+  [dash=yes]
+\startFLOWcell
+  \name {nxt1}
+  \location {2,1}
+\bold
+\switchtobodyfont[11pt]
+  \text{Bank}
+  \label[r]{Master}
+  \overlay {nxtgra}
+%   \connection [nbt] {nxt2}
+%   \connection [pbt] {nxt3}
+%   \connection [rt] {nxt4}
+\stopFLOWcell
+
+
+\startFLOWcell
+  \name {nxt2}
+  \location{1,2}
+  \shape {procedure}
+  \overlay {nxtgra}
+  \text {Bankomat 1}
+    \label[r]{Slave}
+\connection [tbn] {nxt1}
+\stopFLOWcell
+
+\startFLOWcell
+  \name {nxt3}
+  \location{3,2}
+  \shape {procedure}
+  \overlay {nxtgra}
+  \text {Bankomat 2}
+   \label[l]{Slave}
+ \connection [tbp] {nxt1}
+\stopFLOWcell
+
+% \startFLOWcell
+%   \name {nxt4}
+%   \location{3,2}
+%   \shape {procedure}
+%   \overlay {nxtgra}
+%   \text {(Bankomat 3) Slave}
+%   \connection [tr] {nxt1}
+% \stopFLOWcell
+
+\stopFLOWchart
+
+
+\FLOWchart[NXTBT]
+
+
