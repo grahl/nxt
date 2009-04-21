@@ -90,10 +90,10 @@ TextOut(0,LCD_LINE5,"Orange: continue");
     switch (pressedButton) {
     case BTNLEFT:
         TextOut(0,LCD_LINE6,"aborted");
-        break; 
+        break;
     case BTNRIGHT:
         TextOut(0,LCD_LINE6,"aborted");
-        break; 
+        break;
     case BTNCENTER:
         ClearScreen();
         TextOut(0,LCD_LINE1,"ACCOUNT:");
@@ -101,7 +101,7 @@ TextOut(0,LCD_LINE5,"Orange: continue");
         TextOut(0,LCD_LINE2,"PIN:");
         NumOut(50,LCD_LINE2,pending.pinno);
         accountlist[accountno]=pending;
-        break; 
+        break;
     }
 Wait(3000);
 
@@ -125,10 +125,10 @@ if (temp > 0) {
     switch (pressedButton) {
     case BTNLEFT:
         TextOut(0,LCD_LINE6,"aborted");
-        break; 
+        break;
     case BTNRIGHT:
         TextOut(0,LCD_LINE6,"aborted");
-        break; 
+        break;
     case BTNCENTER:
         closeme.inactive=TRUE;
         accountlist[accountno]=closeme;
@@ -136,9 +136,9 @@ if (temp > 0) {
         TextOut(0,LCD_LINE1,"ACCOUNT:");
         NumOut(50,LCD_LINE1,accountno);
         TextOut(0,LCD_LINE2,"Set inactive");
-        break; 
+        break;
     }
-    Wait(3000);        
+    Wait(3000);
 
    }
 
@@ -230,10 +230,17 @@ while(true) {
         TextOut(0,LCD_LINE6,"DB A:");
         NumOut(50,LCD_LINE6,person.amount);
 
+        if (person.pinno==0) {
+            SendRemoteString(connection,7,"card");
+            TextOut(0,LCD_LINE7,"card");
+
+        } else {
         if (spin == person.pinno) {
             if (person.inactive==FALSE) {
                 PlayTone(200,100);
                 Wait(200);
+                person.wrongpin=0;
+                accountlist[scard]=person;
                 if (samount <= person.amount) {
                     PlayTone(300,100);
                     person.amount-=samount;
@@ -244,14 +251,12 @@ while(true) {
                 } else {
                     PlayTone(100,50);
                     SendRemoteString(connection,7,"funds");
-                    TextOut(0,LCD_LINE6,"funds");
-                    Wait(1000);
+                    TextOut(0,LCD_LINE7,"funds");
                 }
             } else {
                 PlayTone(100,50);
                 SendRemoteString(connection,7,"inactive");
-                TextOut(0,LCD_LINE6,"inactive");
-                Wait(1000);
+                TextOut(0,LCD_LINE7,"inactive");
             }
         } else {
             person.wrongpin++;
@@ -259,17 +264,17 @@ while(true) {
             if (person.wrongpin>=3) {
                 PlayTone(100,50);
                 SendRemoteString(connection,7,"kill");
-                TextOut(0,LCD_LINE6,"kill");
-                Wait(1000);
+                TextOut(0,LCD_LINE7,"kill");
             } else {
                 PlayTone(100,50);
                 SendRemoteString(connection,7,"pin");
-                TextOut(0,LCD_LINE6,"pin");
-                Wait(1000);
+                TextOut(0,LCD_LINE7,"pin");
             }
 
         }
     Wait(1000);
+
+    }
     }
 
     requesta="a";
@@ -342,7 +347,7 @@ TextOut(0,LCD_LINE6,"Not deleted");
 Wait(1000);
 }
 if (CreateFile(ACCOUNTS_FILENAME,1024,handle) == NO_ERR) {
-    
+
     for (int i=0;i<accounts;i++) {
         account writeperson=accountlist[i];
         x=writeperson.pinno;
