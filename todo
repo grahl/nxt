@@ -18,3 +18,11 @@
 • pin 12345 wird als 1234 gelesen?
 
 • status bankomat speichern 
+
+• cancel during network wait
+
+• invalid card value never given when applicable
+
+• error messages not visible on bank
+
+• clear queue?
