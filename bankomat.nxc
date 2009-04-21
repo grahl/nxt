@@ -207,7 +207,6 @@ if (amount<1000) {
 commandstring+=NumToStr(amount);
 //ClearScreen();
 if (lang==2) {
-    TextOut(0,LCD_LINE1,commandstring);
     TextOut(0,LCD_LINE4,"Attendez SVP");
 } else if (lang==1) {
     TextOut(10,LCD_LINE4,"Bitte warten");
@@ -222,24 +221,11 @@ while(!BluetoothStatus(0)==NO_ERR) {
 }
 string tempeh;
 
-/* not working
-string tempeh="leer";
-SetSensorMode(1, IN_MODE_RAW);
-SetSensorType(1, IN_TYPE_SWITCH);
-int xcan=Sensor(S1);
-while (tempeh=="leer" && (!(xcan > 19 && xcan < 23))) {
-    SendResponseString(mailbox,commandstring);
-    Wait(1500);
-    ReceiveRemoteString(7,true,tempeh);
-    xcan=Sensor(S1);
-}
-*/
-
 SendResponseString(mailbox,commandstring);
-Wait(500);
+Wait(1500);
 until (ReceiveRemoteString(7,true,tempeh)==NO_ERR);
 
-TextOut(0,LCD_LINE3,tempeh);
+//TextOut(0,LCD_LINE3,tempeh);
 Wait(500);
 return tempeh;
 
@@ -459,9 +445,19 @@ TextOut(0,LCD_LINE1,nresponse);
 Wait(500);
 ClearScreen();
 if (nresponse=="ack") {
-    distribute(amount,tens,fifties,hundreds);
+   DrawGraphicType dgArgs;
+  dgArgs.Location.X = 0;
+  dgArgs.Location.Y = 0;
+  dgArgs.Filename = "iss.ric";
+  ArrayInit(dgArgs.Variables, 0, 10); // 10 zeros
+  dgArgs.Variables[0] = 12;
+  dgArgs.Variables[1] = 14; // etc...
+  dgArgs.Options = 0x00; // do not clear before drawing
+  SysDrawGraphic(dgArgs);
+   distribute(amount,tens,fifties,hundreds);
     PlayTone(450,100);
     PlayTone(500,200);
+
 } else if (nresponse=="pin") {
     PlayTone(100,200);
     if (lang==2) {
@@ -472,6 +468,7 @@ if (nresponse=="ack") {
         TextOut(0,LCD_LINE2,"Sorry, wrong PIN.");
     }
     PlayTone(100,200);
+Wait(4000);
 } else if (nresponse=="card") {
         if (lang==2) {
             TextOut(0,LCD_LINE2,"Compte invalide");
@@ -481,6 +478,7 @@ if (nresponse=="ack") {
             TextOut(0,LCD_LINE2,"Account not found");
         }
     PlayTone(100,200);
+Wait(4000);
 } else if (nresponse=="funds") {
     if (lang==2) {
         TextOut(0,LCD_LINE2,"Montant");
@@ -493,13 +491,9 @@ if (nresponse=="ack") {
         TextOut(0,LCD_LINE3,"funds.");
     }
     PlayTone(100,200);
-}
-
 Wait(4000);
-ClearScreen();
-
-if (nresponse=="kill")  {
-    RotateMotor(OUT_A,-100,720);
+} else if (nresponse=="kill")  {
+    ClearScreen(); 
     if (lang==2) {
         TextOut(0,LCD_LINE1,"Pin invalide,");
         TextOut(0,LCD_LINE2,"carte est gardee");
@@ -510,13 +504,16 @@ if (nresponse=="kill")  {
         TextOut(0,LCD_LINE1,"Wrong PIN, we");
         TextOut(0,LCD_LINE2,"keep your card.");
     }
+    RotateMotor(OUT_A,-100,720);
     PlayTone(100,200);
     Wait(1000);
     PlayTone(100,200);
     Wait(1000);
     PlayTone(100,200);
     Wait(1000);
-} else {
+} 
+
+if (nresponse!="kill") {
 ClearScreen();
     if (lang==2) {
         TextOut(0,LCD_LINE1,"Merci bcp!");
@@ -533,6 +530,7 @@ ClearScreen();
     }
     RotateMotor(OUT_A,70,720);
 }
+Wait(3000);
 
 ClearScreen();
 if (lang==2) {
