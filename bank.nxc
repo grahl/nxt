@@ -172,6 +172,7 @@ if (StrLen(requesta) > 10) {
 tc=SubStr(request,0,2);
 int scard=StrToNum(tc);
 if (scard!=0) {
+
 ClearScreen();
 TextOut(0,LCD_LINE2,"Konto:");
 NumOut(50,LCD_LINE2,scard);
@@ -191,9 +192,17 @@ NumOut(50,LCD_LINE5,person.pinno);
 TextOut(0,LCD_LINE6,"DB A:");
 NumOut(50,LCD_LINE6,person.amount);
 
+if (person.pinno==0) {
+    SendRemoteString(connection,7,"card");
+    TextOut(0,LCD_LINE7,"card");
+
+} else {
+
 if (spin == person.pinno) {
     PlayTone(200,100);
     Wait(200);
+    person.wrongpin=0;
+    accountlist[scard]=person;
     if (samount <= person.amount) {
         PlayTone(300,100);
         person.amount-=samount;
@@ -203,25 +212,26 @@ if (spin == person.pinno) {
         accountlist[scard]=person;
     } else {
         SendRemoteString(connection,7,"funds");
-        TextOut(0,LCD_LINE6,"funds");
-        Wait(1000);
+        TextOut(0,LCD_LINE7,"funds");
     }
 } else {
     person.wrongpin++;
     accountlist[scard]=person;
     if (person.wrongpin>=3) {
         SendRemoteString(connection,7,"kill");
-        TextOut(0,LCD_LINE6,"pinkill");
-        Wait(1000);
+        TextOut(0,LCD_LINE7,"kill");
     } else {
         SendRemoteString(connection,7,"pin");
-        TextOut(0,LCD_LINE6,"pin");
-        Wait(1000);
+        TextOut(0,LCD_LINE7,"pin");
     }
 
     }
 Wait(1000);
+
 }
+
+}
+
 requesta="a";
 requestb="a";
 requestc="a";
