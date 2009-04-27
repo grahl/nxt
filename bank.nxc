@@ -71,7 +71,10 @@ return NumToStr(check);
 
 void createAccount() {
 int accountno=getAccountNo();
-account pending;
+//TODO: verify accounts are created correctly and amount is no longer lost
+account pending=accountlist[accountno];
+//TODO: does not allow to set digits
+
 string a=limitnumber();
 string b=limitnumber();
 string c=limitnumber();
@@ -81,8 +84,10 @@ string trypin=a+b+c+d;
 pending.accountno = accountno;
 pending.pinno = StrToNum(trypin);
 pending.wrongpin = 0;
+if pending.wrongpin = 0;
 ClearScreen();
-TextOut(0,LCD_LINE1,"Create account:");
+TextOut(0,LCD_LINE1,"Create account");
+TextOut(0,LCD_LINE1,"/ New PIN:");
 NumOut(0,LCD_LINE2,accountno);
 TextOut(0,LCD_LINE4,"Arrow: abort");
 TextOut(0,LCD_LINE5,"Orange: continue");
