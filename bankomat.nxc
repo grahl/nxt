@@ -209,6 +209,7 @@ if (amount<1000) {
 commandstring+=NumToStr(amount);
 commandstring+="z";
 //ClearScreen();
+TextOut(0,LCD_LINE7,commandstring);
 if (lang==2) {
     TextOut(0,LCD_LINE4,"Attendez SVP");
 } else if (lang==1) {
