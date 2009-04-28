@@ -252,11 +252,13 @@ while(true) {
                     accountlist[scard]=person;
                 } else {
                     PlayTone(100,50);
+                    Wait(200);
                     SendRemoteString(connection,7,"funds");
                     TextOut(0,LCD_LINE7,"funds");
                 }
             } else {
                 PlayTone(100,50);
+                Wait(200);
                 SendRemoteString(connection,7,"inactive");
                 TextOut(0,LCD_LINE7,"inactive");
             }
@@ -265,11 +267,13 @@ while(true) {
             accountlist[scard]=person;
             if (person.wrongpin>=3) {
                 PlayTone(100,50);
+                Wait(200);
                 SendRemoteString(connection,7,"kill");
                 TextOut(0,LCD_LINE7,"kill");
             } else {
                 PlayTone(100,50);
-                SendRemoteString(connection,7,"pin");
+                Wait(200);
+		SendRemoteString(connection,7,"pin");
                 TextOut(0,LCD_LINE7,"pin");
             }
 

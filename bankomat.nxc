@@ -220,7 +220,7 @@ while(!BluetoothStatus(0)==NO_ERR) {
     //add cancel here
 }
 string tempeh;
-ReceiveRemoteString(7,true,tempeh);
+//ReceiveRemoteString(7,true,tempeh);
 
 
 SendResponseString(mailbox,commandstring);
