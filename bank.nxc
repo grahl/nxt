@@ -261,11 +261,11 @@ while(true) {
         //extract pin and amount and display
         TextOut(0,LCD_LINE2,"Konto:");
         NumOut(45,LCD_LINE2,scard);
-        tp=SubStr(request,3,4);
+        tp=SubStr(request,3,6);
         int spin=StrToNum(tp);
         TextOut(0,LCD_LINE3,"Pin:");
         NumOut(45,LCD_LINE3,spin);
-        ta=SubStr(request,9,4);
+        ta=SubStr(request,10,4);
         int samount=StrToNum(ta);
         TextOut(0,LCD_LINE4,"Amt:");
         NumOut(45,LCD_LINE4,samount);
