@@ -217,6 +217,22 @@ if (StrLen(actemp)==1) {
 }
 //delimiter, pin, delimiter
 commandstring+="X";
+//add enough zeros to alywas have 6
+if (pin<100000) {
+    commandstring+="0";
+}
+if (pin<10000) {
+    commandstring+="0";
+}
+if (pin<1000) {
+    commandstring+="0";
+}
+if (pin<100) {
+    commandstring+="0";
+}
+if (pin<10) {
+    commandstring+="0";
+}
 commandstring+=NumToStr(pin);
 commandstring+="X";
 
@@ -466,10 +482,10 @@ if (x > 30 && x < 35) {
             Stelle6 = NumToStr(Pin[5]);
             Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4,Stelle5,Stelle6);
         } else {
-            Pincode = StrCat("0",Stelle1,Stelle2,Stelle3,Stelle4,Stelle5);
+            Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4,Stelle5);
         }
     } else {
-    Pincode = StrCat("0","0",Stelle1,Stelle2,Stelle3,Stelle4);
+    Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4);
     }
 
     pinno=StrToNum(Pincode);
