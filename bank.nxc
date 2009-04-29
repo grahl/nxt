@@ -2,8 +2,10 @@
 #define CLEARLINE(L) TextOut(0,L,"                ");
 byte pressedButton;
 int selectButton;
+//account limit set to 32 because cards have 5 fields
 int accounts=32;
 
+//general account structure
 struct account {
 int accountno;
 int pinno;
@@ -21,7 +23,6 @@ bool finish=FALSE;
 // === Functions & Operations ===
 
 // taken from NXTmenu.nxc
-//is it necessary to pass by reference here?
 void waitButton() {
 byte wbIndex=BTNRIGHT;
 while (wbIndex <= BTNCENTER)   {
@@ -36,7 +37,10 @@ pressedButton = wbIndex;
 }
 
 int getAccountNo() {
+//generic function to let user select account no with L/R arrows on nxt
+//and confirm with the orange button
 bool accstate=TRUE;
+//default to test account: 3
 int accountno=3;
 
 while (accstate) {
@@ -62,7 +66,10 @@ return accountno;
 
 
 string limitnumber() {
+//FN to call to get a random digit, for simplicity we assume
+//this to be a true random number generator
 int check=Random(9);
+//reject values if not 1-4 due to limited pin field & try again
 while (check < 1 || check > 4) {
     check=Random(9);
 }
@@ -70,20 +77,28 @@ return NumToStr(check);
 }
 
 void createAccount() {
+//FN to create an account or reset the pin on an existing one,
+// since we differentiate created accounts by having a pin number
 int accountno=getAccountNo();
-account pending;
+//TODO:VERIFY PIN CHANGE KEEPS AMOUNT
+account pending=accountlist[accountno];
 string a=limitnumber();
 string b=limitnumber();
 string c=limitnumber();
 string d=limitnumber();
 
 string trypin=a+b+c+d;
+
 pending.accountno = accountno;
 pending.pinno = StrToNum(trypin);
 pending.wrongpin = 0;
+pending.inactive = FALSE;
+
 ClearScreen();
-TextOut(0,LCD_LINE1,"Create account:");
-NumOut(0,LCD_LINE2,accountno);
+TextOut(0,LCD_LINE1,"Create account/");
+TextOut(0,LCD_LINE2,"new PIN for:");
+//TODO:visible well?
+NumOut(50,LCD_LINE2,accountno);
 TextOut(0,LCD_LINE4,"Arrow: abort");
 TextOut(0,LCD_LINE5,"Orange: continue");
     waitButton();
@@ -108,6 +123,7 @@ Wait(3000);
 }
 
 void closeAccount() {
+//if the balance in the selected account is 0, set to inactive
 int accountno=getAccountNo();
 account closeme=accountlist[accountno];
 int temp=closeme.amount;
@@ -144,9 +160,35 @@ if (temp > 0) {
 
 }
 
-void additionalFunds() {
+void showAccount() {
+//just show one account's details
 int accountno=getAccountNo();
-//does not check what is still given
+account showaccount=accountlist[accountno];
+
+TextOut(0,LCD_LINE1,"Konto:");
+NumOut(45,LCD_LINE1,showaccount.accountno);
+
+TextOut(0,LCD_LINE2,"Pin:");
+NumOut(45,LCD_LINE2,showaccount.pinno);
+
+
+TextOut(0,LCD_LINE3,"Amt:");
+NumOut(45,LCD_LINE3,showaccount.amount);
+
+TextOut(0,LCD_LINE4,"WPin:");
+NumOut(45,LCD_LINE4,showaccount.wrongpin);
+tp=SubStr(request,3,4);
+
+TextOut(0,LCD_LINE5,"Inv:");
+NumOut(45,LCD_LINE5,showaccount.inactive);
+
+Wait (6000);
+}
+
+void additionalFunds() {
+//add funds to selected account, increase/decrease by 20
+//with L/R arrows on NXT
+int accountno=getAccountNo();
 account addfunds=accountlist[accountno];
 int amount=100;
 bool addstate=TRUE;
@@ -193,10 +235,12 @@ while(true) {
     int connection=0;
     string tc,tp,ta,requesta,requestb,requestc,request;
 
+    //loop until either in mailbox one,two,or three a message is found
     until ((ReceiveRemoteString(1,true,requesta) == NO_ERR) ||
         (ReceiveRemoteString(2,true,requestb) == NO_ERR) ||
         (ReceiveRemoteString(3,true,requestc) == NO_ERR));
 
+    //determine the connection based upon in which mailbox the message was
     if (StrLen(requesta) > 9) {
         request=requesta;
         connection=1;
@@ -207,11 +251,14 @@ while(true) {
         request=requestc;
         connection=3;
     }
-
+    //extract two digit account number
     tc=SubStr(request,0,2);
     int scard=StrToNum(tc);
+    //if connection and card not 0
     if ((scard!=0) && (connection!=0)) {
         ClearScreen();
+
+        //extract pin and amount and display
         TextOut(0,LCD_LINE2,"Konto:");
         NumOut(45,LCD_LINE2,scard);
         tp=SubStr(request,3,4);
@@ -223,6 +270,7 @@ while(true) {
         TextOut(0,LCD_LINE4,"Amt:");
         NumOut(45,LCD_LINE4,samount);
 
+        //compare and display to accountlist
         account person;
         person=accountlist[scard];
         TextOut(0,LCD_LINE5,"DB P:");
@@ -231,49 +279,62 @@ while(true) {
         NumOut(45,LCD_LINE6,person.amount);
 
         if (person.pinno==0) {
+            //no pin number set, not a valid account
             PlayTone(200,100);
             Wait(200);
             SendRemoteString(connection,7,"card");
             TextOut(0,LCD_LINE7,"card");
 
         } else {
+        //it has a pin number
         if (spin == person.pinno) {
+            //correct pin number
             if (person.inactive==FALSE) {
+                //also account active
                 PlayTone(200,100);
                 Wait(200);
+                //active and right pin>>reset wrong pin count
                 person.wrongpin=0;
                 accountlist[scard]=person;
                 if (samount <= person.amount) {
+                    //enough funds, dispense!
                     PlayTone(300,100);
+                    //decrease account balance
                     person.amount-=samount;
-                    //TextOut(50,LCD_LINE6,"     ");
+                    //show new balance next to previous balance
                     NumOut(75,LCD_LINE6,person.amount);
                     SendRemoteString(connection,7,"ack");
                     accountlist[scard]=person;
                 } else {
+                    //insufficient funds
                     PlayTone(100,50);
                     Wait(200);
                     SendRemoteString(connection,7,"funds");
                     TextOut(0,LCD_LINE7,"funds");
                 }
             } else {
+                //account inactive
                 PlayTone(100,50);
                 Wait(200);
                 SendRemoteString(connection,7,"inactive");
                 TextOut(0,LCD_LINE7,"inactive");
             }
         } else {
+            //wrong pin number
+            //increase person's wrong pin number count
             person.wrongpin++;
             accountlist[scard]=person;
             if (person.wrongpin>=3) {
+                //already three times, keep card
                 PlayTone(100,50);
                 Wait(200);
                 SendRemoteString(connection,7,"kill");
                 TextOut(0,LCD_LINE7,"kill");
             } else {
+                //less than three wrong tries, give card back
                 PlayTone(100,50);
                 Wait(200);
-		SendRemoteString(connection,7,"pin");
+                SendRemoteString(connection,7,"pin");
                 TextOut(0,LCD_LINE7,"pin");
             }
 
@@ -281,6 +342,8 @@ while(true) {
     Wait(1000);
 
     }
+    } else {
+        SendRemoteString(connection,7,"card");
     }
 
     requesta="a";
@@ -293,7 +356,7 @@ while(true) {
 }
 
 // === File I/O ===
-// based on NXC Guide & modified
+
 
 void startfile() {
 
@@ -302,9 +365,11 @@ int fsize,accheck;
 bool eof = false;
 string buf,a;
 
+//open the file and read until end of file
 if (OpenFileRead(ACCOUNTS_FILENAME,fsize,handle) == NO_ERR) {
-//from NXC Tutorial
+//based on the NXC_Tutorial.pdf
     until (eof == TRUE) {
+        //simply redo the structure from shutdownFile()
         account readperson;
         ReadLnString(handle,a);
         readperson.accountno=StrToNum(a);
@@ -320,6 +385,7 @@ if (OpenFileRead(ACCOUNTS_FILENAME,fsize,handle) == NO_ERR) {
         ReadLnString(handle,a);
         readperson.wrongpin=StrToNum(a);
 
+        //eof determined by having the 'spacer' line be a safe throwaway here
         if(ReadLnString(handle,buf) != NO_ERR) eof = true;
         accheck=readperson.accountno;
         if (accheck != 0) {
@@ -344,20 +410,28 @@ Wait(2000);
 
 void shutdownfile() {
 
+//Write a file to disk with all accounts where a pin number is set
+//the latter prevents from writing 20+ empty accounts
+
 byte handle;
 int bwritten;
 string a;
 int w,x,y,z;
+//delete file to be on the save side
 if (DeleteFile(ACCOUNTS_FILENAME) != NO_ERR) {
 TextOut(0,LCD_LINE6,"Not deleted");
 Wait(1000);
 }
+//create file again
 if (CreateFile(ACCOUNTS_FILENAME,1024,handle) == NO_ERR) {
 
     for (int i=0;i<accounts;i++) {
         account writeperson=accountlist[i];
         x=writeperson.pinno;
         if (x != 0) {
+            //use WriteLnString for all values because WriteLn
+            //seems to dump binary data in the file and makes it
+            //unreadable
             a=NumToStr(writeperson.accountno);
             WriteLnString(handle,a,bwritten);
             a=NumToStr(writeperson.pinno);
@@ -408,18 +482,23 @@ int i=0;
 int accountno=0;
 
 while (mstate) {
-    if (i > 3) i=0;
-    if (i < 0) i=3;
+//menu that call maintenance functions until mstate
+//set to false by shutdown command
+    if (i > 4) i=0;
+    if (i < 0) i=4;
     if (i==0) {
         ClearScreen();
-        Textout(0,LCD_LINE1,"Update Balance");
+        Textout(0,LCD_LINE1,"Show account");
     } else if (i==1) {
         ClearScreen();
-        Textout(0,LCD_LINE1,"Create account");
+        Textout(0,LCD_LINE1,"Add funds");
     } else if (i==2) {
         ClearScreen();
-        Textout(0,LCD_LINE1,"Close account");
+        Textout(0,LCD_LINE1,"Create/PIN");
     } else if (i==3) {
+        ClearScreen();
+        Textout(0,LCD_LINE1,"Close account");
+    } else if (i==4) {
         ClearScreen();
         Textout(0,LCD_LINE1,"Shutdown");
     }
@@ -432,12 +511,14 @@ while (mstate) {
         break;
     case BTNCENTER:
         if (i==0) {
+            showAccount();
+        } else if (i==1) {
             additionalFunds();
         } else if (i==2) {
-            closeAccount();
-        } else if (i==1) {
             createAccount();
         } else if (i==3) {
+            closeAccount();
+        } else if (i==4) {
             mstate=false;
             shutdownfile();
         }
@@ -452,9 +533,11 @@ while (mstate) {
 task main() {
 SetBrickDataName("HEMITO");
 startfile();
-
+//start the seperate network listener task
 start networkListener;
+//start the menu
 menu();
+//once menu stopped, stop all tasks (networkListener)
 StopAllTasks();
 
 }

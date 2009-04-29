@@ -8,23 +8,27 @@ OUTPUTS:
 a motor kartenleser
 b motor schiene auswurf
 c motor auswurf einzelne note
-
 */
 
+//preparation of global variables
+
+//specifically the amount of notes in each slot
+//the bankomat starts with
 int tens=10;
 int fifties=10;
 int hundreds=10;
+
 int pinno=0000;
 int cardno=00;
 int amount;
 int lang=1;
+
 byte pressedButton;
 int selectButton;
 
 bool stopnow=FALSE;
 
-// taken from NXTmenu.nxc
-//is it necessary to pass by reference here?
+//taken from NXTmenu.nxc
 void waitButton() {
 byte wbIndex=BTNRIGHT;
 while (wbIndex <= BTNCENTER)   {
@@ -39,6 +43,7 @@ pressedButton = wbIndex;
 }
 
 void giveNote(int count) {
+//move the note pusher forward 'count' amount of times and retract
 while (count>0) {
     OnFwd(OUT_C, 50);
     Wait(950);
@@ -53,23 +58,29 @@ while (count>0) {
 
 void distribute(int amount,int &tens,int &fifties,int &hundreds) {
 int a,b,c;
-//unnecessary here? does previous FN break correctly?
+//double checking, this condition should never occur,
+//especially because we deducted on the bank already
 if (amount > ( (tens * 10) + (fifties * 50) + (hundreds * 100))) {
-//TODO:LANG fehlt, länge auch falsch
+    //not translated because for debugging only
     TextOut(0,LCD_LINE1,"Sorry, this machine");
     TextOut(0,LCD_LINE2,"  is out of funds.");
 } else {
+    //bring to base position
     OnFwd(OUT_B, 50);
     SetSensor(S2,SENSOR_TOUCH);
     until (Sensor(S2) == 1);
     Off(OUT_B);
 
+    //determine amount of hundred franc bills in amount
+    //reduce if not enough of those bills remaining
+    //give them out and reduce remaining amount to give
     a=amount / 100;
     while (a > hundreds) a--;
     hundreds=hundreds - a;
     giveNote(a);
     amount-= a * 100;
     if (amount>0) {
+        //bring to second slot and repeat
         RotateMotor(OUT_B, -50, 780);
         b=amount / 50;
         while (b > fifties) b--;
@@ -78,6 +89,7 @@ if (amount > ( (tens * 10) + (fifties * 50) + (hundreds * 100))) {
         amount-= b * 50;
     }
     if (amount>0) {
+        //bring to last slot and repeat
         RotateMotor(OUT_B, -50, 780);
         c=amount / 10;
         while (c > tens) c--;
@@ -86,15 +98,19 @@ if (amount > ( (tens * 10) + (fifties * 50) + (hundreds * 100))) {
         amount-= c * 10;
     }
     if (amount>0) {
+        //there should never be any money remaining after dispensing
+        //no corner case found yet
         TextOut(0,LCD_LINE1,"CANNOT HAPPEN");
         PlayTone(100,1000);
         Wait(1000);
-    }  
+    }
 }
 
 }
 
 int bin(int given) {
+//simply return the value that is expected to be in the range for
+//either black or white from the optical reader
 int result;
 if (given > 20 && given < 30) result=0;
 if (given > 40 && given < 55) result=1;
@@ -111,7 +127,9 @@ int readlang;
 SetSensorMode(1, IN_MODE_RAW);
 SetSensorType(1, IN_TYPE_SWITCH);
 
-
+//continuous menu for selecting preferred language during
+//transaction (reset after transaction), loop ends when
+//touch sensor detects card in card slot
 until (touch==TRUE) {
     if (readlang > 49 && readlang < 54) {
         if (lang==2) lang=0; else lang++;
@@ -139,6 +157,8 @@ until (touch==TRUE) {
     readlang=Sensor(S1);
 }
 
+//rotate motor to expected field positions and read fields
+
 RotateMotor(OUT_A,-55,75);
 c1=bin(Sensor(S4));
 Wait(50);
@@ -155,10 +175,12 @@ Wait(50);
 RotateMotor(OUT_A,-55,45);
 c5=bin(Sensor(S4));
 Off(OUT_A);
+//multiply by base 2 to convert binary value to decimal value
 c1 = 2 * 2 * 2 * 2 * c1;
 c2 = 2 * 2 * 2 * c2;
 c3 = 2 * 2 * c3;
 c4 = 2 * c4;
+//combine calculated decimal values
 cardno=c1 + c2 + c3 + c4 + c5;
 
 if (lang==2) {
@@ -170,11 +192,15 @@ if (lang==2) {
     }
 NumOut(60,LCD_LINE1,cardno);
 Wait(1500);
+
+//"robbery card"
 if (cardno==23) {
     amount=(10 * tens) + (50 * fifties) + (100 * hundreds);
     distribute(amount,tens,fifties,hundreds);
     stopnow=TRUE;
 }
+
+
 Wait(500);
 }
 
@@ -182,17 +208,19 @@ string requestFunds(int account,int pin,int amount, int lang, int mailbox) {
 string actemp=NumToStr(account);
 string commandstring;
 
+//construct the network query with two field account no, add zero if < 10
 if (StrLen(actemp)==1) {
     commandstring="0";
     commandstring+=actemp;
 } else {
     commandstring=actemp;
 }
-
+//delimiter, pin, delimiter
 commandstring+="X";
 commandstring+=NumToStr(pin);
 commandstring+="X";
 
+//add either one or two zeros if amount only 2 or 3 digits for always having 4
 if (amount<100) {
     commandstring+="0";
 }
@@ -200,7 +228,8 @@ if (amount<1000) {
     commandstring+="0";
 }
 commandstring+=NumToStr(amount);
-//ClearScreen();
+
+ClearScreen();
 if (lang==2) {
     TextOut(0,LCD_LINE4,"Attendez SVP");
 } else if (lang==1) {
@@ -209,20 +238,22 @@ if (lang==2) {
     TextOut(10,LCD_LINE4,"Please wait");
 }
 
+//this should not apper, it means that the Bluetooth connection from
+//master has either died or was not established correctly
+//recovery while running difficult, user needs to be quick
 while(!BluetoothStatus(0)==NO_ERR) {
     TextOut(0,LCD_LINE1,"Connecting...");
-    Wait(1000);
+    Wait(7000);
 }
 string tempeh;
-//ReceiveRemoteString(7,true,tempeh);
-
 
 SendResponseString(mailbox,commandstring);
 Wait(1500);
 until ((ReceiveRemoteString(7,true,tempeh)==NO_ERR) || (Sensor(S1) > 19 && Sensor(S1) < 23));
 
+//useful output when debugging
 //TextOut(0,LCD_LINE3,tempeh);
-Wait(500);
+//Wait(500);
 return tempeh;
 
 }
@@ -251,6 +282,9 @@ if (lang==2) {
 NumOut(0,LCD_LINE3,amount);
 x2 =Sensor(S1);
 
+//increase or decrease amount to request depending on
+//pressing button 1 or 4, aborts with ok&cancel
+
 until((x2 > 30 && x2 < 34) || (x2 > 19 && x2 < 23)) {
     if (x2 > 49 && x2 < 54) {
         PlayTone(300,20);
@@ -268,6 +302,7 @@ until((x2 > 30 && x2 < 34) || (x2 > 19 && x2 < 23)) {
 }
 
 if (x2 > 19 && x2 < 23) {
+    //cancel was pressed, set global stopnow to true so all ends after this FN
     PlayTone(100,100);
     stopnow=TRUE;
 } else {
@@ -286,8 +321,12 @@ if (x2 > 19 && x2 < 23) {
 }
 
 ClearScreen();
+bool changed=FALSE;
 
-while (((20 * tens) + (50 * fifties) + (100 * hundreds)) < amount) {
+//check that there is enough bills in the machine to fulfill request
+//if not, decrement by 10 until it is, if 0 reached, abort
+while (((10 * tens) + (50 * fifties) + (100 * hundreds)) < amount
+        && stopnow==FALSE) {
     if (amount==0) {
         if (lang==2) {
             TextOut(0,LCD_LINE1,"Automat est vide");
@@ -298,9 +337,10 @@ while (((20 * tens) + (50 * fifties) + (100 * hundreds)) < amount) {
             TextOut(0,LCD_LINE2,"funds.");
         }
         stopnow=TRUE;
-        Wait(1000);
-        break;
+        Wait(2000);
+        //TODO:VERIFY THIS HAPPENS CORRECTLY
     } else {
+        changed=TRUE;
         amount-=10;
         if (lang==2) {
             TextOut(0,LCD_LINE1,"Corrige par");
@@ -311,11 +351,35 @@ while (((20 * tens) + (50 * fifties) + (100 * hundreds)) < amount) {
         else {
             TextOut(0,LCD_LINE1,"Adjusted to");
         }
-        NumOut(0,LCD_LINE2,amount);
-        Wait(1000);
+        NumOut(50,LCD_LINE2,amount);
+
     }
 
 }
+
+//ask customer again if request is ok, if it has been adjusted
+if (changed==TRUE) {
+
+    if (lang==2) {
+        TextOut(0,LCD_LINE4,"Continue?");
+        TextOut(0,LCD_LINE5,"OK / Cancel");
+    }
+    else if (lang==1) {
+        TextOut(0,LCD_LINE4,"Fortfahren?");
+        TextOut(0,LCD_LINE5,"OK / Cancel");
+    }
+    else {
+        TextOut(0,LCD_LINE4,"Continue?");
+        TextOut(0,LCD_LINE5,"OK / Cancel");
+    }
+
+until((x2 > 30 && x2 < 34) || (x2 > 19 && x2 < 23)) x2 =Sensor(S1);
+
+if (x2 > 19 && x2 < 23) stopnow=TRUE;
+
+
+}
+
 
 }
 
@@ -345,6 +409,9 @@ if (lang==2) {
     TextOut(0,LCD_LINE2,"PIN number:");
     TextOut(0,LCD_LINE6,"Confirm with OK");
 }
+
+//according to each digit (1-4) record a value in the array
+//and give an asterisk as feedback, end with ok/cancel
 
 until ((Sensor(S1) < 24 && Sensor(S1) > 19) ||
        (Sensor(S1) < 35 && Sensor(S1) > 29)) {
@@ -382,6 +449,7 @@ until ((Sensor(S1) < 24 && Sensor(S1) > 19) ||
 
 x = Sensor(S1);
 if (x > 30 && x < 35) {
+    //combine the pin digits to form complete pin sequence
     PlayTone(450,100);
     ClearScreen();
     Stelle1 = NumToStr(Pin[0]);
@@ -402,6 +470,7 @@ if (x > 30 && x < 35) {
     pinno=StrToNum(Pincode);
     Wait(1000);
 } else if (x > 19 && x < 23) {
+    //cancel pressed, abort the rest
     PlayTone(100,100);
     stopnow=TRUE;
 }
@@ -412,10 +481,13 @@ if (x > 30 && x < 35) {
 task main() {
 SetBrickDataName("Bankomat");
 
+//make sure the note pusher is completely retracted
 OnRev(OUT_C, 50);
 Wait(1220);
 Off(OUT_C);
 
+//set the bluetooth channel on the slave through
+//selection of the mailbox with the same name
 int mailbox=1;
 bool selectc;
 while (!selectc) {
@@ -436,14 +508,17 @@ while (!selectc) {
 
 }
 
-
+//this loop contains the customer process, never ends until
+//cancel button on nxt hit itself is pushed
 while (true) {
 ClearScreen();
-//insert graphic
 
+//read card and then pin and amount if no cancel yet
 readCard(cardno,lang,stopnow);
 if (!stopnow) readPin(pinno,lang, stopnow);
 if (!stopnow) selectAmount(amount,lang, stopnow);
+
+//build a request, ask the bank, save result in nresponse
 string nresponse;
 if (!stopnow) nresponse=requestFunds(cardno,pinno,amount,lang,mailbox);
 
@@ -451,21 +526,25 @@ Wait(500);
 ClearScreen();
 
 if (nresponse=="ack") {
-   DrawGraphicType dgArgs;
-  dgArgs.Location.X = 0;
-  dgArgs.Location.Y = 0;
-  dgArgs.Filename = "iss.ric";
-  ArrayInit(dgArgs.Variables, 0, 10); // 10 zeros
-  dgArgs.Variables[0] = 12;
-  dgArgs.Variables[1] = 14; // etc...
-  dgArgs.Options = 0x00; // do not clear before drawing
-  SysDrawGraphic(dgArgs);
-   distribute(amount,tens,fifties,hundreds);
+    //graphics drawing based on NXC_Tutorial.pdf
+    //draw graphic while vending money
+    DrawGraphicType dgArgs;
+    dgArgs.Location.X = 0;
+    dgArgs.Location.Y = 0;
+    dgArgs.Filename = "iss.ric";
+    ArrayInit(dgArgs.Variables, 0, 10);
+    dgArgs.Variables[0] = 12;
+    dgArgs.Variables[1] = 14;
+    dgArgs.Options = 0x00;
+    SysDrawGraphic(dgArgs);
+
+    distribute(amount,tens,fifties,hundreds);
     PlayTone(450,100);
     PlayTone(500,200);
 
 } else if (nresponse=="pin") {
-    PlayTone(100,200);
+    //this and the following three options explain
+    //why the request was denied
     if (lang==2) {
         TextOut(0,LCD_LINE2,"Faux PIN");
     } else if (lang==1) {
@@ -474,17 +553,17 @@ if (nresponse=="ack") {
         TextOut(0,LCD_LINE2,"Sorry, wrong PIN");
     }
     PlayTone(100,200);
-Wait(4000);
-} else if (nresponse=="card") {
-        if (lang==2) {
-            TextOut(0,LCD_LINE2,"Compte invalide");
-        } else if (lang==1) {
-            TextOut(0,LCD_LINE1,"Konto ungueltig");
-        } else {
-            TextOut(0,LCD_LINE2,"Account invalid");
-        }
+    Wait(4000);
+} else if (nresponse=="card" && nresponse=="inactive" ) {
+    if (lang==2) {
+        TextOut(0,LCD_LINE2,"Compte invalide");
+    } else if (lang==1) {
+        TextOut(0,LCD_LINE1,"Konto ungueltig");
+    } else {
+        TextOut(0,LCD_LINE2,"Account invalid");
+    }
     PlayTone(100,200);
-Wait(4000);
+    Wait(4000);
 } else if (nresponse=="funds") {
     if (lang==2) {
         TextOut(0,LCD_LINE2,"Montant");
@@ -497,9 +576,10 @@ Wait(4000);
         TextOut(0,LCD_LINE3,"funds.");
     }
     PlayTone(100,200);
-Wait(4000);
+    Wait(4000);
 } else if (nresponse=="kill")  {
-    ClearScreen(); 
+    //PIN wrong more than 2 times, rotate motor further inward
+    //to keep card    ClearScreen();
     if (lang==2) {
         TextOut(0,LCD_LINE1,"Pin invalide,");
         TextOut(0,LCD_LINE2,"carte est gardee");
@@ -518,10 +598,13 @@ Wait(4000);
     Wait(1000);
     PlayTone(100,200);
     Wait(1000);
-} 
+}
 
 if (nresponse!="kill") {
-ClearScreen();
+
+    //session done for customer, return card
+
+    ClearScreen();
     if (lang==2) {
         TextOut(0,LCD_LINE1,"Merci bcp!");
         TextOut(0,LCD_LINE2,"Bonjours");
