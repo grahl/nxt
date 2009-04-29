@@ -177,7 +177,6 @@ NumOut(45,LCD_LINE3,showaccount.amount);
 
 TextOut(0,LCD_LINE4,"WPin:");
 NumOut(45,LCD_LINE4,showaccount.wrongpin);
-tp=SubStr(request,3,4);
 
 TextOut(0,LCD_LINE5,"Inv:");
 NumOut(45,LCD_LINE5,showaccount.inactive);

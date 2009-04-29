@@ -308,12 +308,13 @@ until((x2 > 30 && x2 < 34) || (x2 > 19 && x2 < 23)) {
         TextOut(0,LCD_LINE3,"    ");
         NumOut(0,LCD_LINE3,amount);
     } else if (x2 >= 6 && x2 < 11) {
-        PlayTone(300,200);
+        PlayTone(300,20);
         if (amount>10) amount-=10;
         TextOut(0,LCD_LINE3,"    ");
         NumOut(0,LCD_LINE3,amount);
     }
-    Wait(200);
+    //TODO:adjusted time, still ok?
+    Wait(150);
     x2 =Sensor(S1);
 }
 
