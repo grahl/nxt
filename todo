@@ -1,12 +1,6 @@
-•ist while{ … j--; } im DOC vorhanden?
+••• if (!pending.lastname) ==> unset
 
-• if (!pending.lastname) ==> unset
-
-• createaccount if exists use amount,lastname,firstname,title
-
-• Pin Änderung wrongpin=0;
-
-• Kontostand überschrieben bei createaccount;
+• createaccount if exists use amount,lastname,firstname,title [resolved by proxy]
 
 • Konto schliessen neg. (?)
 
@@ -15,14 +9,15 @@
 • Ist der Fall inactive im Bankomat recognized? (ja…?)
     only allow update if inactive=false;
 
-• pin 12345 wird als 1234 gelesen?
+••• pin 12345 wird als 1234 gelesen?
 
-• status bankomat speichern 
+[• status bankomat speichern ]
 
-• cancel during network wait
-
-• invalid card value never given when applicable
-
-• error messages not visible on bank
+• invalid card value never given when applicable [don't we have always return?]
 
 • clear queue?
+----------------
+Doku:
+• Eingabetastatur
+• Bluetooth
+
