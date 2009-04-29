@@ -456,6 +456,8 @@ if (x > 30 && x < 35) {
     Stelle2 = NumToStr(Pin[1]);
     Stelle3 = NumToStr(Pin[2]);
     Stelle4 = NumToStr(Pin[3]);
+    /* excluded to prevent attacks from malformed pin since message
+       format not updated in final release
     if (Pin[4] > 0) {
     Stelle5 = NumToStr(Pin[4]);
         if (Pin[5] > 0) {
@@ -467,6 +469,8 @@ if (x > 30 && x < 35) {
     } else {
     Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4);
     }
+    */
+    Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4);
     pinno=StrToNum(Pincode);
     Wait(1000);
 } else if (x > 19 && x < 23) {
