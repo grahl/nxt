@@ -71,10 +71,7 @@ return NumToStr(check);
 
 void createAccount() {
 int accountno=getAccountNo();
-//TODO: verify accounts are created correctly and amount is no longer lost
-account pending=accountlist[accountno];
-//TODO: does not allow to set digits
-
+account pending;
 string a=limitnumber();
 string b=limitnumber();
 string c=limitnumber();
@@ -85,8 +82,7 @@ pending.accountno = accountno;
 pending.pinno = StrToNum(trypin);
 pending.wrongpin = 0;
 ClearScreen();
-TextOut(0,LCD_LINE1,"Create account");
-TextOut(0,LCD_LINE1,"/ New PIN:");
+TextOut(0,LCD_LINE1,"Create account:");
 NumOut(0,LCD_LINE2,accountno);
 TextOut(0,LCD_LINE4,"Arrow: abort");
 TextOut(0,LCD_LINE5,"Orange: continue");
@@ -196,58 +192,34 @@ task networkListener() {
 while(true) {
     int connection=0;
     string tc,tp,ta,requesta,requestb,requestc,request;
-    int posi=0;
-    int x=0; 
-    int y=0; 
-    int z=0;
 
     until ((ReceiveRemoteString(1,true,requesta) == NO_ERR) ||
         (ReceiveRemoteString(2,true,requestb) == NO_ERR) ||
         (ReceiveRemoteString(3,true,requestc) == NO_ERR));
 
-    if (StrLen(requesta) > 6) {
+    if (StrLen(requesta) > 9) {
         request=requesta;
         connection=1;
-    } else if (StrLen(requestb) > 6) {
+    } else if (StrLen(requestb) > 9) {
         request=requestb;
         connection=2;
-    } else if (StrLen(requestc) > 6 ) {
+    } else if (StrLen(requestc) > 9 ) {
         request=requestc;
         connection=3;
-    } 
-    
-    while (x == 0) {
-        if ( SubStr(request,posi,1) == "x" ) {
-    	    x=posi;
-        }
-        posi++;
     }
-    
-    tc=SubStr(request,0,1);
 
+    tc=SubStr(request,0,2);
     int scard=StrToNum(tc);
     if ((scard!=0) && (connection!=0)) {
         ClearScreen();
         TextOut(0,LCD_LINE2,"Konto:");
         NumOut(45,LCD_LINE2,scard);
-
-        while (y==0) {
-            if ( SubStr(request,posi,1) == "y" ) y=posi;
-            posi++;
-        }
-
-        tp=SubStr(request,( x + 1 ),( y - x ));
+        tp=SubStr(request,3,4);
         int spin=StrToNum(tp);
         TextOut(0,LCD_LINE3,"Pin:");
         NumOut(45,LCD_LINE3,spin);
-        
-	while (z==0) {
-            if ( SubStr(request,posi,1) == "z" ) z=posi;
-            posi++;
-        }
-    
-    	ta=SubStr(request,( y + 1 ),( z - y  ));
-	int samount=StrToNum(ta);
+        ta=SubStr(request,9,4);
+        int samount=StrToNum(ta);
         TextOut(0,LCD_LINE4,"Amt:");
         NumOut(45,LCD_LINE4,samount);
 
