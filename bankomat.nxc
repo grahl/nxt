@@ -187,29 +187,25 @@ string requestFunds(int account,int pin,int amount, int lang, int mailbox) {
 string actemp=NumToStr(account);
 string commandstring;
 
-/* if (StrLen(actemp)==1) {
+if (StrLen(actemp)==1) {
     commandstring="0";
     commandstring+=actemp;
-} else { 
-*/
+} else {
     commandstring=actemp;
-//}
+}
 
-commandstring+="x";
+commandstring+="X";
 commandstring+=NumToStr(pin);
-commandstring+="y";
-/*
+commandstring+="X";
+
 if (amount<100) {
     commandstring+="0";
 }
 if (amount<1000) {
     commandstring+="0";
 }
-*/
 commandstring+=NumToStr(amount);
-commandstring+="z";
 //ClearScreen();
-TextOut(0,LCD_LINE7,commandstring);
 if (lang==2) {
     TextOut(0,LCD_LINE4,"Attendez SVP");
 } else if (lang==1) {
