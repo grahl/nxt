@@ -16,8 +16,25 @@
 • invalid card value never given when applicable [don't we have always return?]
 
 • clear queue?
+
+• Fährt in Ausgangsposition wenn Cancel an inopportuner Stelle
+
+• Angepasst an 0 >> still connecting
+
+• an bank show nutzer info 
+
+• Card Wait() (20)
+
+• Ungueltiges Kont (?)
+
+• reset kill
+
+• robbery card later > cancel
+
+
+
 ----------------
 Doku:
 • Eingabetastatur
 • Bluetooth
-
+• long erwähnen
