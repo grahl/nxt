@@ -18,7 +18,7 @@ int tens=10;
 int fifties=10;
 int hundreds=10;
 
-int pinno=0000;
+long pinno=000000;
 int cardno=00;
 int amount;
 int lang=1;
@@ -204,7 +204,7 @@ if (cardno==23) {
 Wait(500);
 }
 
-string requestFunds(int account,int pin,int amount, int lang, int mailbox) {
+string requestFunds(int account,long pin,int amount, int lang, int mailbox) {
 string actemp=NumToStr(account);
 string commandstring;
 
@@ -383,7 +383,7 @@ if (x2 > 19 && x2 < 23) stopnow=TRUE;
 
 }
 
-void readPin(int &pinno, int lang, bool &stopnow) {
+void readPin(long &pinno, int lang, bool &stopnow) {
 int x = 0;
 int y = 5;
 int i = 0;
@@ -458,19 +458,20 @@ if (x > 30 && x < 35) {
     Stelle4 = NumToStr(Pin[3]);
     /* excluded to prevent attacks from malformed pin since message
        format not updated in final release
+       TODO: ONE LAST TRY
+    */
     if (Pin[4] > 0) {
     Stelle5 = NumToStr(Pin[4]);
         if (Pin[5] > 0) {
             Stelle6 = NumToStr(Pin[5]);
             Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4,Stelle5,Stelle6);
         } else {
-            Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4,Stelle5);
+            Pincode = StrCat("0",Stelle1,Stelle2,Stelle3,Stelle4,Stelle5);
         }
     } else {
-    Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4);
+    Pincode = StrCat("0","0",Stelle1,Stelle2,Stelle3,Stelle4);
     }
-    */
-    Pincode = StrCat(Stelle1,Stelle2,Stelle3,Stelle4);
+
     pinno=StrToNum(Pincode);
     Wait(1000);
 } else if (x > 19 && x < 23) {

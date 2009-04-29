@@ -8,7 +8,7 @@ int accounts=32;
 //general account structure
 struct account {
 int accountno;
-int pinno;
+long pinno;
 string lastname;
 string firstname;
 string title;
