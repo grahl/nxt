@@ -212,7 +212,6 @@ if (lang==2) {
 while(!BluetoothStatus(0)==NO_ERR) {
     TextOut(0,LCD_LINE1,"Connecting...");
     Wait(1000);
-    //add cancel here
 }
 string tempeh;
 //ReceiveRemoteString(7,true,tempeh);
@@ -443,13 +442,14 @@ ClearScreen();
 //insert graphic
 
 readCard(cardno,lang,stopnow);
-readPin(pinno,lang, stopnow);
+if (!stopnow) readPin(pinno,lang, stopnow);
 if (!stopnow) selectAmount(amount,lang, stopnow);
 string nresponse;
 if (!stopnow) nresponse=requestFunds(cardno,pinno,amount,lang,mailbox);
-TextOut(0,LCD_LINE1,nresponse);
+
 Wait(500);
 ClearScreen();
+
 if (nresponse=="ack") {
    DrawGraphicType dgArgs;
   dgArgs.Location.X = 0;
@@ -549,11 +549,15 @@ if (lang==2) {
 }
 
 Wait(1500);
+
+//Resetting relevant variables if case they aren't
+//instantiated correctly during the loop
 cardno=0;
 amount=0;
 pinno=0;
 stopnow=FALSE;
 lang=1;
+nresponse="no";
 }
 
 }
