@@ -86,8 +86,10 @@ string a=limitnumber();
 string b=limitnumber();
 string c=limitnumber();
 string d=limitnumber();
+string e=limitnumber();
+string f=limitnumber();
 
-string trypin=a+b+c+d;
+string trypin=a+b+c+d+e+f;
 
 pending.accountno = accountno;
 pending.pinno = StrToNum(trypin);
@@ -98,7 +100,7 @@ ClearScreen();
 TextOut(0,LCD_LINE1,"Create account/");
 TextOut(0,LCD_LINE2,"new PIN for:");
 //TODO:visible well?
-NumOut(50,LCD_LINE2,accountno);
+NumOut(75,LCD_LINE2,accountno);
 TextOut(0,LCD_LINE4,"Arrow: abort");
 TextOut(0,LCD_LINE5,"Orange: continue");
     waitButton();
@@ -165,21 +167,28 @@ void showAccount() {
 int accountno=getAccountNo();
 account showaccount=accountlist[accountno];
 
+ClearScreen();
+
 TextOut(0,LCD_LINE1,"Konto:");
-NumOut(45,LCD_LINE1,showaccount.accountno);
+int tmp=showaccount.accountno;
+NumOut(45,LCD_LINE1,tmp);
 
 TextOut(0,LCD_LINE2,"Pin:");
-NumOut(45,LCD_LINE2,showaccount.pinno);
+long tmp2=showaccount.pinno;
+NumOut(45,LCD_LINE2,tmp2);
 
 
 TextOut(0,LCD_LINE3,"Amt:");
-NumOut(45,LCD_LINE3,showaccount.amount);
+tmp=showaccount.amount;
+NumOut(45,LCD_LINE3,tmp);
 
 TextOut(0,LCD_LINE4,"WPin:");
-NumOut(45,LCD_LINE4,showaccount.wrongpin);
+tmp=showaccount.wrongpin;
+NumOut(45,LCD_LINE4,tmp);
 
 TextOut(0,LCD_LINE5,"Inv:");
-NumOut(45,LCD_LINE5,showaccount.inactive);
+tmp=showaccount.inactive;
+NumOut(45,LCD_LINE5,tmp);
 
 Wait (6000);
 }
@@ -261,7 +270,7 @@ while(true) {
         TextOut(0,LCD_LINE2,"Konto:");
         NumOut(45,LCD_LINE2,scard);
         tp=SubStr(request,3,6);
-        int spin=StrToNum(tp);
+        long spin=StrToNum(tp);
         TextOut(0,LCD_LINE3,"Pin:");
         NumOut(45,LCD_LINE3,spin);
         ta=SubStr(request,10,4);
@@ -303,6 +312,7 @@ while(true) {
                     //show new balance next to previous balance
                     NumOut(75,LCD_LINE6,person.amount);
                     SendRemoteString(connection,7,"ack");
+                    TextOut(0,LCD_LINE7,"ack");
                     accountlist[scard]=person;
                 } else {
                     //insufficient funds
@@ -338,17 +348,19 @@ while(true) {
             }
 
         }
-    Wait(1000);
 
     }
     } else {
         SendRemoteString(connection,7,"card");
+        TextOut(0,LCD_LINE7,"card");
     }
-
+    NumOut(75,LCD_LINE7,connection);
+    Wait(1000);
     requesta="a";
     requestb="a";
     requestc="a";
     request="a";
+    connection=0;
 
 }
 
