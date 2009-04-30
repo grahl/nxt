@@ -117,7 +117,7 @@ if (given > 40 && given < 55) result=1;
 return result;
 }
 
-void readCard(int &cardno,int &lang, bool stopnow) {
+void readCard(int &cardno,int &lang, bool &stopnow) {
 int val,c1,c2,c3,c4,c5,touch;
 string s1,s2,s3,s4,s5,sum;
 SetSensor(S4,SENSOR_LIGHT);
@@ -222,15 +222,6 @@ if (pin<100000) {
     commandstring+="0";
 }
 if (pin<10000) {
-    commandstring+="0";
-}
-if (pin<1000) {
-    commandstring+="0";
-}
-if (pin<100) {
-    commandstring+="0";
-}
-if (pin<10) {
     commandstring+="0";
 }
 commandstring+=NumToStr(pin);
@@ -342,21 +333,7 @@ bool changed=FALSE;
 
 //check that there is enough bills in the machine to fulfill request
 //if not, decrement by 10 until it is, if 0 reached, abort
-while (((10 * tens) + (50 * fifties) + (100 * hundreds)) < amount
-        && stopnow==FALSE) {
-    if (amount==0) {
-        if (lang==2) {
-            TextOut(0,LCD_LINE1,"Automat est vide");
-        } else if (lang==1) {
-            TextOut(0,LCD_LINE1,"Bankomat leer.");
-        } else {
-            TextOut(0,LCD_LINE1,"Sorry, out of");
-            TextOut(0,LCD_LINE2,"funds.");
-        }
-        stopnow=TRUE;
-        Wait(2000);
-        //TODO:VERIFY THIS HAPPENS CORRECTLY
-    } else {
+while ((10 * tens) + (50 * fifties) + (100 * hundreds) < amount ) {
         changed=TRUE;
         amount-=10;
         if (lang==2) {
@@ -369,35 +346,37 @@ while (((10 * tens) + (50 * fifties) + (100 * hundreds)) < amount
             TextOut(0,LCD_LINE1,"Adjusted to");
         }
         NumOut(50,LCD_LINE2,amount);
-
-    }
-
 }
 
-//ask customer again if request is ok, if it has been adjusted
-if (changed==TRUE) {
+if (amount==0) {
+	ClearScreen();
+        if (lang==2) {
+            TextOut(0,LCD_LINE1,"Automat est vide");
+        } else if (lang==1) {
+            TextOut(0,LCD_LINE1,"Bankomat leer.");
+        } else {
+            TextOut(0,LCD_LINE1,"Sorry, out of");
+            TextOut(0,LCD_LINE2,"funds.");
+        }
+        stopnow=TRUE;
+        Wait(2000);
+} else if (changed==TRUE) {
+    //ask customer again if request is ok, if it has been adjusted
 
     if (lang==2) {
         TextOut(0,LCD_LINE4,"Continue?");
         TextOut(0,LCD_LINE5,"OK / Cancel");
-    }
-    else if (lang==1) {
+    } else if (lang==1) {
         TextOut(0,LCD_LINE4,"Fortfahren?");
         TextOut(0,LCD_LINE5,"OK / Cancel");
-    }
-    else {
+    } else {
         TextOut(0,LCD_LINE4,"Continue?");
         TextOut(0,LCD_LINE5,"OK / Cancel");
     }
-
-until((x2 > 30 && x2 < 34) || (x2 > 19 && x2 < 23)) x2 =Sensor(S1);
-
-if (x2 > 19 && x2 < 23) stopnow=TRUE;
-
-
-}
-
-
+    x2=Sensor(S1);
+    until((x2 > 30 && x2 < 34) || (x2 > 19 && x2 < 23)) x2=Sensor(S1);
+    if (x2 > 19 && x2 < 23) stopnow=TRUE;
+    }
 }
 
 void readPin(long &pinno, int lang, bool &stopnow) {
