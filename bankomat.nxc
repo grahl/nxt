@@ -304,7 +304,6 @@ until((x2 > 30 && x2 < 34) || (x2 > 19 && x2 < 23)) {
         TextOut(0,LCD_LINE3,"    ");
         NumOut(0,LCD_LINE3,amount);
     }
-    //TODO:adjusted time, still ok?
     Wait(150);
     x2 =Sensor(S1);
 }
@@ -452,10 +451,7 @@ if (x > 30 && x < 35) {
     Stelle2 = NumToStr(Pin[1]);
     Stelle3 = NumToStr(Pin[2]);
     Stelle4 = NumToStr(Pin[3]);
-    /* excluded to prevent attacks from malformed pin since message
-       format not updated in final release
-       TODO: ONE LAST TRY
-    */
+   
     if (Pin[4] > 0) {
     Stelle5 = NumToStr(Pin[4]);
         if (Pin[5] > 0) {

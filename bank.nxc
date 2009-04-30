@@ -80,7 +80,6 @@ void createAccount() {
 //FN to create an account or reset the pin on an existing one,
 // since we differentiate created accounts by having a pin number
 int accountno=getAccountNo();
-//TODO:VERIFY PIN CHANGE KEEPS AMOUNT
 account pending=accountlist[accountno];
 string a=limitnumber();
 string b=limitnumber();
@@ -99,7 +98,6 @@ pending.inactive = FALSE;
 ClearScreen();
 TextOut(0,LCD_LINE1,"Create account/");
 TextOut(0,LCD_LINE2,"new PIN for:");
-//TODO:visible well?
 NumOut(75,LCD_LINE2,accountno);
 TextOut(0,LCD_LINE4,"Arrow: abort");
 TextOut(0,LCD_LINE5,"Orange: continue");
