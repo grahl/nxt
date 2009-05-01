@@ -330,22 +330,21 @@ if (x2 > 19 && x2 < 23) {
 ClearScreen();
 bool changed=FALSE;
 
+//make sure that enough tens are available
+int fortens=amount % 50;
+while (fortens > (10 * tens)) {
+    amount-=10;
+    fortens-=10;
+    changed=TRUE;
+}
+
 //check that there is enough bills in the machine to fulfill request
 //if not, decrement by 10 until it is, if 0 reached, abort
 while ((10 * tens) + (50 * fifties) + (100 * hundreds) < amount ) {
         changed=TRUE;
         amount-=10;
-        if (lang==2) {
-            TextOut(0,LCD_LINE1,"Corrige par");
-        }
-        else if (lang==1) {
-            TextOut(0,LCD_LINE1,"Angepasst an");
-        }
-        else {
-            TextOut(0,LCD_LINE1,"Adjusted to");
-        }
-        NumOut(50,LCD_LINE2,amount);
 }
+
 
 if (amount==0) {
 	ClearScreen();
@@ -363,19 +362,24 @@ if (amount==0) {
     //ask customer again if request is ok, if it has been adjusted
 
     if (lang==2) {
+        TextOut(0,LCD_LINE1,"Corrige par");
         TextOut(0,LCD_LINE4,"Continue?");
         TextOut(0,LCD_LINE5,"OK / Cancel");
     } else if (lang==1) {
+        TextOut(0,LCD_LINE1,"Angepasst an");
         TextOut(0,LCD_LINE4,"Fortfahren?");
         TextOut(0,LCD_LINE5,"OK / Cancel");
     } else {
+        TextOut(0,LCD_LINE1,"Adjusted to");
         TextOut(0,LCD_LINE4,"Continue?");
         TextOut(0,LCD_LINE5,"OK / Cancel");
     }
+    NumOut(50,LCD_LINE2,amount);
     x2=Sensor(S1);
     until((x2 > 30 && x2 < 34) || (x2 > 19 && x2 < 23)) x2=Sensor(S1);
     if (x2 > 19 && x2 < 23) stopnow=TRUE;
-    }
+}
+
 }
 
 void readPin(long &pinno, int lang, bool &stopnow) {
