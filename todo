@@ -9,8 +9,6 @@
 • Ist der Fall inactive im Bankomat recognized? (ja…?)
     only allow update if inactive=false;
 
-••• pin 12345 wird als 1234 gelesen?
-
 [• status bankomat speichern ]
 
 • invalid card value never given when applicable [don't we have always return?]
@@ -21,17 +19,9 @@
 
 • Angepasst an 0 >> still connecting
 
-• an bank show nutzer info 
-
 • Card Wait() (20)
 
 • Ungueltiges Kont (?)
-
-• reset kill
-
-• robbery card later > cancel
-
-
 
 ----------------
 Doku:
