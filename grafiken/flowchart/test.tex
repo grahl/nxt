@@ -127,21 +127,31 @@ maxwidth=\textwidth
   \text {menu()}
   \connection [bt] {shutdown}
   \connection [bt] {createacc}
+  \connection [bt] {showacc}
 \connection [bt] {closacc}
 \connection [bt] {updatebal}
 \stopFLOWcell
 
 \startFLOWcell
+  \name {showacc}
+  \location{5,4}
+  \shape {procedure}
+  \text {showAccount()}
+  \connection[rr]{menu}
+\stopFLOWcell
+
+
+\startFLOWcell
   \name {updatebal}
   \shape {procedure}
-  \location{5,4}
+  \location{5,5}
   \text {additionalFunds()}
   \connection[rr]{menu}
 \stopFLOWcell
 
 \startFLOWcell
   \name {closacc}
-  \location{5,6}
+  \location{5,7}
   \shape {procedure}
   \text {closeAccount()}
   \connection[rr]{menu}
@@ -149,7 +159,7 @@ maxwidth=\textwidth
 
 \startFLOWcell
   \name {createacc}
-  \location{5,5}
+  \location{5,6}
   \shape {procedure}
   \text {createAccount()}
   \connection[rr]{menu}
@@ -157,7 +167,7 @@ maxwidth=\textwidth
 
 \startFLOWcell
   \name {shutdown}
-  \location{5,7}
+  \location{5,8}
   \shape {procedure}
   \text {shutdownfile()}
 \stopFLOWcell
@@ -173,7 +183,7 @@ maxwidth=\textwidth
   \connection[bnr]{requestfunds}
   \comment[]{ack}
   \label[b]{ack}
-  \label [l] {03x1234x100}
+  \label [l] {03x001234x0100}
 \stopFLOWcell
 
 \stopFLOWchart
