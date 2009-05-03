@@ -555,7 +555,7 @@ if (nresponse=="ack") {
     }
     PlayTone(100,200);
     Wait(4000);
-} else if (nresponse=="card" && nresponse=="inactive" ) {
+} else if ((nresponse=="card") || (nresponse=="inactive" )) {
     if (lang==2) {
         TextOut(0,LCD_LINE2,"Compte invalide");
     } else if (lang==1) {

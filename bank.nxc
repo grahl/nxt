@@ -349,6 +349,8 @@ while(true) {
 
     }
     } else {
+        PlayTone(100,50);
+        Wait(200);
         SendRemoteString(connection,7,"card");
         TextOut(0,LCD_LINE7,"card");
     }
