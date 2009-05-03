@@ -195,7 +195,8 @@ while(true) {
 
     until ((ReceiveRemoteString(1,true,requesta) == NO_ERR) ||
         (ReceiveRemoteString(2,true,requestb) == NO_ERR) ||
-        (ReceiveRemoteString(3,true,requestc) == NO_ERR));
+        (ReceiveRemoteString(3,true,requestc) == NO_ERR))
+        Wait(100);
 
     if (StrLen(requesta) > 9) {
         request=requesta;
