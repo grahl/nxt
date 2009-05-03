@@ -228,7 +228,7 @@ Wait(1500);
 until ((ReceiveRemoteString(7,true,tempeh)==NO_ERR) || (Sensor(S1) > 19 && Sensor(S1) < 23));
 
 //TextOut(0,LCD_LINE3,tempeh);
-Wait(500);
+//Wait(500);
 return tempeh;
 
 }

@@ -196,7 +196,7 @@ while(true) {
     until ((ReceiveRemoteString(1,true,requesta) == NO_ERR) ||
         (ReceiveRemoteString(2,true,requestb) == NO_ERR) ||
         (ReceiveRemoteString(3,true,requestc) == NO_ERR))
-        Wait(100);
+        Wait(50);
 
     if (StrLen(requesta) > 9) {
         request=requesta;
@@ -233,7 +233,6 @@ while(true) {
 
         if (person.pinno==0) {
             PlayTone(200,100);
-            Wait(200);
             SendRemoteString(connection,7,"card");
             TextOut(0,LCD_LINE7,"card");
 
@@ -241,7 +240,6 @@ while(true) {
         if (spin == person.pinno) {
             if (person.inactive==FALSE) {
                 PlayTone(200,100);
-                Wait(200);
                 person.wrongpin=0;
                 accountlist[scard]=person;
                 if (samount <= person.amount) {
@@ -253,13 +251,11 @@ while(true) {
                     accountlist[scard]=person;
                 } else {
                     PlayTone(100,50);
-                    Wait(200);
                     SendRemoteString(connection,7,"funds");
                     TextOut(0,LCD_LINE7,"funds");
                 }
             } else {
                 PlayTone(100,50);
-                Wait(200);
                 SendRemoteString(connection,7,"inactive");
                 TextOut(0,LCD_LINE7,"inactive");
             }
@@ -268,22 +264,19 @@ while(true) {
             accountlist[scard]=person;
             if (person.wrongpin>=3) {
                 PlayTone(100,50);
-                Wait(200);
                 SendRemoteString(connection,7,"kill");
                 TextOut(0,LCD_LINE7,"kill");
             } else {
                 PlayTone(100,50);
-                Wait(200);
 		SendRemoteString(connection,7,"pin");
                 TextOut(0,LCD_LINE7,"pin");
             }
 
         }
-    Wait(1000);
 
     }
     }
-
+    Wait(500);
     requesta="a";
     requestb="a";
     requestc="a";
